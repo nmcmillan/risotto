@@ -1,5 +1,4 @@
 The readme file for a future Android application.
 
-This is my first change. Hi.
-
-A second change.
+2011-02-13
+- Added a pop-up dialog class which extends from Activity.
