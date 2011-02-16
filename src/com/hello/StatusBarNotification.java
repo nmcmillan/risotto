@@ -14,30 +14,39 @@ public class StatusBarNotification {
 	 * the manifest. The context object passed in, will be the same one that is
 	 * used throughout the application
 	 */
-	private static Context context;
-	private int NOTIFICATION_ID = 0;
 	
-	public StatusBarNotification(Context ctx) {
+	private static Context context;
+	private static int NOTIFICATION_ID = 0;
+	private String statusBarText, messageTitle, messageText;
+	private int not_id;
+	private String ns = Context.NOTIFICATION_SERVICE;
+	private long time;
+	private int icon;
+	
+	public StatusBarNotification(Context ctx, String stBrTxt, String msgTitle, String msgText) {
 		context = ctx;
+		statusBarText = stBrTxt;
+		messageTitle = msgTitle;
+		messageText = msgText;
+		not_id = NOTIFICATION_ID;
+		icon = R.drawable.icon;
+		NOTIFICATION_ID++;
 	}
 	
-	public void notify(String statusBarText,String title, String messageText){
-		final int INTENT = 1;
-        String ns = Context.NOTIFICATION_SERVICE;
+	public void sendMessage() {
         
         NotificationManager nm = (NotificationManager) context.getSystemService(ns);
+
+        time = System.currentTimeMillis();
         
-        int n = R.drawable.icon;
-        long time = 400000000;
-        
-        Notification myNot = new Notification(n,statusBarText,time);
+        Notification myNot = new Notification(icon,statusBarText,time);
         
         Intent notificationIntent = new Intent(context, HelloWorld.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
         
-        myNot.setLatestEventInfo(context, title, messageText, contentIntent);
+        myNot.setLatestEventInfo(context, messageTitle, messageText, contentIntent);
 
-        nm.notify(INTENT,myNot);
+        nm.notify(not_id, myNot);
 	}
 	
 	
