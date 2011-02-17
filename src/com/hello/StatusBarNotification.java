@@ -23,14 +23,18 @@ public class StatusBarNotification {
 	private long time;
 	private int icon;
 	
-	public StatusBarNotification(Context ctx, String stBrTxt, String msgTitle, String msgText) {
+	public StatusBarNotification(Context ctx) {
 		context = ctx;
-		statusBarText = stBrTxt;
-		messageTitle = msgTitle;
-		messageText = msgText;
 		not_id = NOTIFICATION_ID;
 		icon = R.drawable.icon;
 		NOTIFICATION_ID++;
+	}
+	
+	public void setNotificationContent(String stBrTxt, String msgTitle, String msgText)
+	{
+		statusBarText = stBrTxt;
+		messageTitle = msgTitle;
+		messageText = msgText;
 	}
 	
 	public void sendMessage() {
@@ -40,6 +44,8 @@ public class StatusBarNotification {
         time = System.currentTimeMillis();
         
         Notification myNot = new Notification(icon,statusBarText,time);
+        
+        myNot.defaults |= Notification.DEFAULT_VIBRATE;
         
         Intent notificationIntent = new Intent(context, HelloWorld.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);

@@ -11,7 +11,12 @@ public class StatusBarNotificationManager {
 	
 	StatusBarNotificationManager(Context ctx) {
 		context = ctx;
-		notifications = new Hashtable();
+		//notifications = new Hashtable<StatusBarNotification>();
+	}
+	
+	public void addNotification(StatusBarNotification stbn)
+	{
+		//this.notifications.put(key, value)
 	}
 
 }
