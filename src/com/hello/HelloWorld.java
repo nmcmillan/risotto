@@ -11,9 +11,7 @@ public class HelloWorld extends Activity {
         setContentView(R.layout.main);
         
         // Show the new DialogActivity
-        //this.startActivity(new Intent(this, DialogActivity.class));
-        new StatusBarNotification(this.getApplicationContext()).notify("This is just a test", "It's only a test", "If it were a real emergency, we'd be fucked.");        
-        
+        DialogActivity.showDialog(this);
 
     }
 }
