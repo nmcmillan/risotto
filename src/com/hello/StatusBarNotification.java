@@ -16,45 +16,47 @@ public class StatusBarNotification {
 	 */
 	
 	private static Context context;
-	private static int NOTIFICATION_ID = 0;
-	private String statusBarText, messageTitle, messageText;
-	private int not_id;
-	private String ns = Context.NOTIFICATION_SERVICE;
-	private long time;
 	private int icon;
+	private String statusBarText, messageTitle, messageText;
+	private Notification myNot = null;
+	private Intent notificationIntent;
+	private PendingIntent contentIntent;
+	
+	public enum Content { 
+		STATUS_BAR,
+		MSG_TITLE,
+		MSG_TEXT
+	}
 	
 	public StatusBarNotification(Context ctx) {
 		context = ctx;
-		not_id = NOTIFICATION_ID;
 		icon = R.drawable.icon;
-		NOTIFICATION_ID++;
+		myNot = new Notification();
+		notificationIntent = new Intent(ctx, StatusBarNotification.class);
+		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+		myNot.setLatestEventInfo(ctx, "", "", contentIntent);
+	}
+
+	public void setVibrate() {
+		myNot.defaults |= Notification.DEFAULT_VIBRATE;
 	}
 	
-	public void setNotificationContent(String stBrTxt, String msgTitle, String msgText)
-	{
-		statusBarText = stBrTxt;
-		messageTitle = msgTitle;
+	public void setVibrate(long[] settings) {
+		myNot.vibrate = settings;
+	}
+	
+	public void setNotificationContent(String stBrTxt, String msgTitle, String msgText) {
+		myNot.tickerText = stBrTxt;
+		//myNot.messageTitle = msgTitle;
 		messageText = msgText;
+		//myNot.tickerText = st
 	}
 	
-	public void sendMessage() {
-        
-        NotificationManager nm = (NotificationManager) context.getSystemService(ns);
-
-        time = System.currentTimeMillis();
-        
-        Notification myNot = new Notification(icon,statusBarText,time);
-        
-        myNot.defaults |= Notification.DEFAULT_VIBRATE;
-        
-        Intent notificationIntent = new Intent(context, HelloWorld.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-        
-        myNot.setLatestEventInfo(context, messageTitle, messageText, contentIntent);
-
-        nm.notify(not_id, myNot);
+	public void changeNotification(Content c, String s) {
+		switch(c) {
+			case STATUS_BAR: this.statusBarText = s;
+			case MSG_TITLE:  this.messageTitle = s;
+			case MSG_TEXT:   this.messageText = s;
+		}
 	}
-	
-	
-
 }

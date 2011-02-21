@@ -26,7 +26,7 @@ public class HelloWorld extends Activity {
 	        asparin = new StatusBarNotification(this.getApplicationContext());
 	        vicodin.setNotificationContent("Medicine", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
 	        //asparin.sendMessage();
-	        vicodin.sendMessage();
+	        //vicodin.sendMessage();
         }
         
     }
