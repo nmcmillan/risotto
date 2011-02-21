@@ -28,7 +28,8 @@ public class HelloWorld extends Activity {
 	        //asparin.sendMessage();
 	        //vicodin.sendMessage();
         }
-        
+        DialogActivity.showDialog(this);
+
     }
 
 	/*@Override

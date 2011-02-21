@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, HelloWorld!</string>
-    <string name="app_name">HelloWorld</string>
+	
+	<!-- Application Strings -->
+	<string name="hello">Hello World, HelloWorld!</string>
+	<string name="app_name">HelloWorld</string>
+
+	<!-- DialogActivity Strings -->
+	<string name="text_patientName">Patient Name</string>
+	<string name="text_reminderTime">3:00pm</string>
+	<string name="text_reminderMessage">Time to take 2 Tylenol.</string>
+	<string name="button_snooze">Snooze</string>
+	<string name="button_taken">Taken</string>
+
 </resources>

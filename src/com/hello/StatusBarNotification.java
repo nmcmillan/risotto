@@ -14,7 +14,6 @@ public class StatusBarNotification {
 	 * the manifest. The context object passed in, will be the same one that is
 	 * used throughout the application
 	 */
-	
 	private static Context context;
 	private int icon;
 	private String statusBarText, messageTitle, messageText;

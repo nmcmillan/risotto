@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="215dp" 
+	android:layout_height="150dp"
+	android:orientation="vertical" 
+	android:padding="5dp" >
+
+	<!-- The text field for the patient name. -->
+	<TextView android:id="@+id/text_name" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" 
+		android:text="@string/text_patientName"
+		android:textStyle="bold"
+		android:textSize="20dp"
+		android:layout_alignParentLeft="true" />
+		
+	<!-- The text field for the current notification time. -->
+	<TextView android:id="@+id/text_time" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" 
+		android:text="@string/text_reminderTime"
+		android:textStyle="bold"
+		android:layout_alignParentRight="true" />
+
+	<!-- The image for this dialog notification. -->
+	<ImageView android:id="@+id/image_pills"
+		android:layout_height="wrap_content" 
+		android:layout_width="wrap_content"
+		android:src="@drawable/red_pill_and_tablet" 
+		android:layout_below="@id/text_name" />
+
+	<!-- The text field for the prescription reminder. -->
+	<TextView android:id="@+id/text_message" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" 
+		android:text="@string/text_reminderMessage"
+		android:layout_toRightOf="@id/image_pills" 
+		android:layout_below="@id/text_name" />
+
+	<!-- The "Snooze" button. -->
+	<Button android:id="@+id/button_snooze" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" 
+		android:text="@string/button_snooze"
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentLeft="true" />
+	
+	<!-- The "Taken" button. -->
+	<Button android:id="@+id/button_taken" 
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" 
+		android:text="@string/button_taken"
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentRight="true" />
+
+</RelativeLayout>
