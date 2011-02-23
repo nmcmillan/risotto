@@ -24,7 +24,7 @@ public class StatusBarNotification {
 	public enum Content { 
 		STATUS_BAR,
 		MSG_TITLE,
-		MSG_TEXT
+		MSG_TEXT;
 	}
 	
 	public StatusBarNotification(Context ctx) {
