@@ -68,24 +68,29 @@ public class Drug {
  		NONE,
  		OTHER
  	}
+ 	
+ 	/**
+ 	 * Generates an empty Drug object where:
+ 	 *  - unitVolume = 0
+ 	 *  - strength = 0
+ 	 *  - genericName = ""
+ 	 */
+ 	public Drug() {
+ 		this(0,0,"");
+ 	}
 	
-	
-	public Drug() {
-		this("","","");
-	}
-	
-	public Drug(String medName) {
-		this(medName,"","");
-	}
-	
-	public Drug(String medName, String comName) {
-		this(medName,comName,"");
-	}
-	
-	public Drug(String medName, String comName, String manu) {
-		this.genericName = medName;
-		this.brandName = comName;
-		this.manufacturer = manu;
+ 	/**
+ 	 * 
+ 	 * Creates a Drug object with the given input parameters set.
+ 	 * 
+ 	 * @param unitVolume 
+ 	 * @param strength
+ 	 * @param genericName
+ 	 */
+	public Drug(int unitVolume, int strength, String genericName) {
+		this.setUnitVolume(unitVolume);
+		this.strength = strength;
+		this.genericName = genericName;
 	}
 
 	public String getMedicalName() {
@@ -119,7 +124,77 @@ public class Drug {
 	private void setInteractions(Vector<Drug> interactions) {
 		this.interactions = interactions;
 	}
-	
-	
+
+	public int getStrength() {
+		return strength;
+	}
+
+	public void setStrength(int strength) {
+		this.strength = strength;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
+	public int getDrugId() {
+		return drugId;
+	}
+
+	public void setDrugId(int drugId) {
+		this.drugId = drugId;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
+	public int getGrossCost() {
+		return grossCost;
+	}
+
+	public void setGrossCost(int grossCost) {
+		this.grossCost = grossCost;
+	}
+
+	public SHAPE getShape() {
+		return shape;
+	}
+
+	public void setShape(SHAPE shape) {
+		this.shape = shape;
+	}
+
+	public FORM getForm() {
+		return form;
+	}
+
+	public void setForm(FORM form) {
+		this.form = form;
+	}
+
+	public SIZE getSize() {
+		return size;
+	}
+
+	public void setSize(SIZE size) {
+		this.size = size;
+	}
+
+	public void setUnitVolume(int unitVolume) {
+		this.unitVolume = unitVolume;
+	}
+
+	public int getUnitVolume() {
+		return unitVolume;
+	}
 
 }
