@@ -1,10 +1,12 @@
-package com.hello;
+package com.risotto.controller;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+
+import com.hello.R;
+import com.risotto.model.Prescription;
 
 public class StatusBarNotification {
 
@@ -20,6 +22,7 @@ public class StatusBarNotification {
 	private Notification myNot = null;
 	private Intent notificationIntent;
 	private PendingIntent contentIntent;
+	private Prescription prescription;
 	
 	public enum Content { 
 		STATUS_BAR,
@@ -27,17 +30,22 @@ public class StatusBarNotification {
 		MSG_TEXT;
 	}
 	
-	public StatusBarNotification(Context ctx) {
+	public StatusBarNotification(Context ctx, Prescription p) {
 		context = ctx;
 		icon = R.drawable.icon;
 		myNot = new Notification();
 		notificationIntent = new Intent(ctx, StatusBarNotification.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
 		myNot.setLatestEventInfo(ctx, "", "", contentIntent);
+		this.prescription = p;
 	}
 
 	public void setVibrate() {
 		myNot.defaults |= Notification.DEFAULT_VIBRATE;
+	}
+	
+	public Notification getNotification() {
+		return this.myNot;
 	}
 	
 	public void setVibrate(long[] settings) {
@@ -46,9 +54,7 @@ public class StatusBarNotification {
 	
 	public void setNotificationContent(String stBrTxt, String msgTitle, String msgText) {
 		myNot.tickerText = stBrTxt;
-		//myNot.messageTitle = msgTitle;
-		messageText = msgText;
-		//myNot.tickerText = st
+		myNot.setLatestEventInfo(context, msgTitle, msgText, contentIntent);
 	}
 	
 	public void changeNotification(Content c, String s) {

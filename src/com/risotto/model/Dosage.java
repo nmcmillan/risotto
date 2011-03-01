@@ -1,6 +1,6 @@
 package com.risotto.model;
 
-public class Doseage {
+public class Dosage {
 	
 	public enum DOSE_TYPE {
 		EVERY_DAY_OF_WEEK,

@@ -1,8 +1,9 @@
-package com.hello;
+package com.risotto.controller;
 
 //import java.util.Hashtable;
 
 import java.util.Hashtable;
+
 
 import android.app.NotificationManager;
 import android.content.Context;
@@ -17,8 +18,9 @@ public class StatusBarNotificationManager {
 	private String ns = Context.NOTIFICATION_SERVICE;
 	private long time;
 	private int icon;
+	private StatusBarNotification myNot;
 
-	StatusBarNotificationManager(Context ctx) {
+	public StatusBarNotificationManager(Context ctx) {
 		context = ctx;
 		notifications = new Hashtable<Integer, StatusBarNotification>();
 	}
@@ -41,14 +43,12 @@ public class StatusBarNotificationManager {
 	public int sendMessage(int id) {
 		if (this.notifications.containsKey(id)) {
 			
-			this.notifications.get(id);
+			myNot = this.notifications.get(id);
 			NotificationManager nm = (NotificationManager) context.getSystemService(ns);
 
 			time = System.currentTimeMillis();
 
-
-
-			//nm.notify(not_id, myNot);
+			nm.notify(id, myNot.getNotification());
 		}
 		return 0;
 

@@ -1,7 +1,15 @@
 package com.hello;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+
+import com.risotto.controller.StatusBarNotification;
+import com.risotto.controller.StatusBarNotificationManager;
+import com.risotto.model.Dosage;
+import com.risotto.model.Drug;
+import com.risotto.model.Patient;
+import com.risotto.model.Prescription;
 
 public class HelloWorld extends Activity {
 	
@@ -10,25 +18,28 @@ public class HelloWorld extends Activity {
 	 * and then create, start, resume every time the phone's orientation is changed.
 	 */
 	StatusBarNotification vicodin = null; 
-    StatusBarNotification asparin = null;
+    int vicID = -1;
+    Patient patient = new Patient();
+    Drug drug = new Drug();
+    Prescription prep = new Prescription(patient, drug, Prescription.DOSE_TYPE.EVERY_DAY, 2, 20);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-     
-        // Show the new DialogActivity
-        //this.startActivity(new Intent(this, DialogActivity.class));
-        if(null == vicodin)
-        {
-	        vicodin = new StatusBarNotification(this.getApplicationContext());
-	        asparin = new StatusBarNotification(this.getApplicationContext());
-	        vicodin.setNotificationContent("Medicine", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
-	        //asparin.sendMessage();
-	        //vicodin.sendMessage();
-        }
-        DialogActivity.showDialog(this);
+        StatusBarNotificationManager notMgr = new StatusBarNotificationManager(this.getApplicationContext());
+        
+        vicodin = new StatusBarNotification(this.getApplicationContext(), prep);
+        vicodin.setNotificationContent("Medicine", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
+        vicID = notMgr.add(vicodin);
+        
+        notMgr.sendMessage(vicID);
+        
+	    //this.startActivity(new Intent(this, DialogActivity.class));
+	    //this.startActivity(new Intent(this, HelloWorld.class));
+   
+        //DialogActivity.showDialog(this);
 
     }
 

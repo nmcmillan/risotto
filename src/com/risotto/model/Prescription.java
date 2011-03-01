@@ -5,7 +5,7 @@ import java.util.Date;
 public class Prescription {
 	
 	// Required fields
-	private Doseage dose;
+	private Dosage dose;
 	private Patient patient;
 	private Drug drug;
 	private DOSE_TYPE doseType;
@@ -29,8 +29,7 @@ public class Prescription {
 		EVERY_DAY
 	}
 	
-	public Prescription(Patient patient, Drug drug, DOSE_TYPE doseType,
-			int doseSize, int totalUnits) {
+	public Prescription(Patient patient, Drug drug, DOSE_TYPE doseType, int doseSize, int totalUnits) {
 		this.patient = patient;
 		this.drug = drug;
 		this.doseType = doseType;
@@ -38,11 +37,11 @@ public class Prescription {
 		this.totalUnits = totalUnits;
 	}
 
-	public Doseage getDose() {
+	public Dosage getDose() {
 		return dose;
 	}
 
-	public void setDose(Doseage dose) {
+	public void setDose(Dosage dose) {
 		this.dose = dose;
 	}
 
