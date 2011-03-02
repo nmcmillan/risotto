@@ -20,7 +20,7 @@ public class StatusBarNotification {
 	private int icon;
 	private String statusBarText, messageTitle, messageText;
 	private Notification myNot = null;
-	private Intent notificationIntent;
+	private Intent intent;
 	private PendingIntent contentIntent;
 	private Prescription prescription;
 	
@@ -33,10 +33,10 @@ public class StatusBarNotification {
 	public StatusBarNotification(Context ctx, Prescription p) {
 		context = ctx;
 		icon = R.drawable.icon;
-		myNot = new Notification();
-		notificationIntent = new Intent(ctx, StatusBarNotification.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-		myNot.setLatestEventInfo(ctx, "", "", contentIntent);
+		long time = System.currentTimeMillis();
+		myNot = new Notification(icon,"",time);
+		intent = new Intent(ctx, StatusBarNotification.class);
+		contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
 		this.prescription = p;
 	}
 
@@ -52,16 +52,28 @@ public class StatusBarNotification {
 		myNot.vibrate = settings;
 	}
 	
+	/**
+	 * 
+	 * @param stBrTxt - the text which will appear in the status bar of the phone
+	 * @param msgTitle - the text which will be the heading in the notification tray
+	 * @param msgText - the text which will be in the body of the notification
+	 */
 	public void setNotificationContent(String stBrTxt, String msgTitle, String msgText) {
 		myNot.tickerText = stBrTxt;
 		myNot.setLatestEventInfo(context, msgTitle, msgText, contentIntent);
 	}
 	
-	public void changeNotification(Content c, String s) {
-		switch(c) {
-			case STATUS_BAR: this.statusBarText = s;
-			case MSG_TITLE:  this.messageTitle = s;
-			case MSG_TEXT:   this.messageText = s;
+	/**
+	 * Method to change the textual content of a notification using the enum defined in the class
+	 * 
+	 * @param content - which element is being updated, should be enum value
+	 * @param string - the new text
+	 */
+	public void changeNotification(Content content, String string) {
+		switch(content) {
+			case STATUS_BAR: this.statusBarText = string;
+			case MSG_TITLE:  this.messageTitle = string;
+			case MSG_TEXT:   this.messageText = string;
 		}
 	}
 }

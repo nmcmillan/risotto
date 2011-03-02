@@ -32,14 +32,30 @@ public class HelloWorld extends Activity {
         
         vicodin = new StatusBarNotification(this.getApplicationContext(), prep);
         vicodin.setNotificationContent("Medicine", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
+        
+        /*
+         * TO DO (what happens if we want to add vibrate to the notification, but we call the setVibrate method after adding
+         * it to the manager?
+         *  - still works because it's only a reference to the object, so when the object gets updated, there's no updating needed
+         */
+        
         vicID = notMgr.add(vicodin);
         
-        notMgr.sendMessage(vicID);
+        vicodin.setVibrate();
+        
+        try {
+			notMgr.sendMessage(vicID);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        System.out.println("vicID = " + vicID);
         
 	    //this.startActivity(new Intent(this, DialogActivity.class));
 	    //this.startActivity(new Intent(this, HelloWorld.class));
    
-        //DialogActivity.showDialog(this);
+        DialogActivity.showDialog(this);
 
     }
 

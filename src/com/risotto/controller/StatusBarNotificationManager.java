@@ -4,7 +4,6 @@ package com.risotto.controller;
 
 import java.util.Hashtable;
 
-
 import android.app.NotificationManager;
 import android.content.Context;
 
@@ -20,38 +19,60 @@ public class StatusBarNotificationManager {
 	private int icon;
 	private StatusBarNotification myNot;
 
+	/**
+	 * Constructor - saves a local copy of the context (TO DO: is that correct?) & initializes the hashtable
+	 * 
+	 * @param ctx - the application's current context
+	 */
 	public StatusBarNotificationManager(Context ctx) {
 		context = ctx;
 		notifications = new Hashtable<Integer, StatusBarNotification>();
 	}
 
+	/**
+	 * Adds a notification to the manager (TO DO: should we generalize this class in the case that we have other types of notifications?)
+	 * 
+	 * @param stbn - the status bar notification to add to the manager
+	 * @return the id for a given notification
+	 */
 	public int add(StatusBarNotification stbn) {
-		this.notifications.put(NOTIFICATION_ID, stbn);
-		NOTIFICATION_ID++;
+		this.notifications.put(++NOTIFICATION_ID, stbn);
 		return NOTIFICATION_ID;
 	}
 
-	public int cancel(int id) {
+	/**
+	 * Removes notification from the manager
+	 * 
+	 * @param id - number which identifies which element to remove
+	 * @return true if the element was in the manager's store and was removed, false if the element was not in the manager's store
+	 */
+	public boolean cancel(int id) {
 		if (this.notifications.containsKey(id)) {
 			this.notifications.remove(id);
-			return 0;
-		} else
-			return 1;
+			return true;
+		}
+		return false;
 
 	}
 
-	public int sendMessage(int id) {
+	/**
+	 * 
+	 * @param id - number of the notification to be enabled
+	 * @throws Exception - (TO DO) place holder, needs to throw exception if the id isn't in the store; the application needs to
+	 * 					   handle it if the situation arises because that means a notification was attempted to be enabled and doesn't
+	 * 					   exist, which could be cause for concern
+	 * 
+	 */
+	public void sendMessage(int id) throws Exception {		
 		if (this.notifications.containsKey(id)) {
-			
+			System.out.println("Inside Stat Bar Not Mgr, id = " + id);
 			myNot = this.notifications.get(id);
 			NotificationManager nm = (NotificationManager) context.getSystemService(ns);
 
-			time = System.currentTimeMillis();
-
 			nm.notify(id, myNot.getNotification());
 		}
-		return 0;
-
+		else
+			throw new Exception();
 	}
 
 }
