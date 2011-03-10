@@ -30,8 +30,7 @@ public class HelloWorld extends Activity {
         
         StatusBarNotificationManager notMgr = new StatusBarNotificationManager(this.getApplicationContext());
         
-        vicodin = new StatusBarNotification(this.getApplicationContext(), prep);
-        vicodin.setNotificationContent("Medicine", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
+        vicodin = new StatusBarNotification(this.getApplicationContext(), prep, "Medicine", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
         
         /*
          * TO DO (what happens if we want to add vibrate to the notification, but we call the setVibrate method after adding

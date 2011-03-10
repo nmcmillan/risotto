@@ -30,7 +30,9 @@ public class StatusBarNotification {
 		MSG_TEXT;
 	}
 	
-	public StatusBarNotification(Context ctx, Prescription p) {
+	public StatusBarNotification(Context ctx, Prescription p, String stBrTxt, String msgTitle, String msgText) {
+		myNot.tickerText = stBrTxt;
+		myNot.setLatestEventInfo(context, msgTitle, msgText, contentIntent);
 		context = ctx;
 		icon = R.drawable.icon;
 		long time = System.currentTimeMillis();
