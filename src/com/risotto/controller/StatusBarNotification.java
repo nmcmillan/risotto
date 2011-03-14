@@ -31,14 +31,17 @@ public class StatusBarNotification {
 	}
 	
 	public StatusBarNotification(Context ctx, Prescription p, String stBrTxt, String msgTitle, String msgText) {
-		myNot.tickerText = stBrTxt;
-		myNot.setLatestEventInfo(context, msgTitle, msgText, contentIntent);
-		context = ctx;
-		icon = R.drawable.icon;
 		long time = System.currentTimeMillis();
-		myNot = new Notification(icon,"",time);
+		icon = R.drawable.icon;
+		context = ctx;
 		intent = new Intent(ctx, StatusBarNotification.class);
 		contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
+		
+		myNot = new Notification(icon,"",time);
+		myNot.tickerText = stBrTxt;
+		myNot.setLatestEventInfo(context, msgTitle, msgText, contentIntent);
+		
+		
 		this.prescription = p;
 	}
 
