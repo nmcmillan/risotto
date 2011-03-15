@@ -72,6 +72,11 @@ public class MainService extends Service {
 			
 			// Create an intent that will launch when the trigger is done.
 			Intent newIntent = new Intent(ACTION_ALARM_TRIGGER);
+			
+			newIntent.putExtra("TOP_TEXT", "Blake is an ass.");
+			newIntent.putExtra("TITLE_TEXT", "Always");
+			newIntent.putExtra("BODY_TEXT", "Side of jack.");
+			
 			newIntent.setClass(this, MainService.class);
 			
 			// Create a pending intent which will be sent when the alarm is done.
@@ -89,7 +94,7 @@ public class MainService extends Service {
 		
 	}
 	
-	private void notifyAlarmDone() {
+	private void notifyAlarmDone(Intent intent) {
 		// Get an instance of the SBNM
 		StatusBarNotificationManager sbnm = new StatusBarNotificationManager(this.getApplicationContext());
 		
@@ -97,7 +102,8 @@ public class MainService extends Service {
 		Prescription prep = new Prescription(new Patient(),new Drug(10,10,"Name"),Prescription.DOSE_TYPE.EVERY_DAY,10,10);
 		
 		// Create the new status bar notification.
-		StatusBarNotification not = new StatusBarNotification(this, prep, "Blake is an ass.", "Always", "Side of jack.");
+		//StatusBarNotification not = new StatusBarNotification(this, prep, "Blake is an ass.", "Always", "Side of jack.");
+		StatusBarNotification not = new StatusBarNotification(this, prep, intent.getStringExtra("TOP_TEXT"), intent.getStringExtra("TITLE_TEXT"), intent.getStringExtra("BODY_TEXT"));
 		
 		// Get the index of this notification
 		int x = sbnm.add(not);
@@ -129,7 +135,7 @@ public class MainService extends Service {
 		
 		if ( intentAction.equals(ACTION_ALARM_TRIGGER) ) {
 			// An alarm has completed!
-			notifyAlarmDone();
+			notifyAlarmDone(intent);
 		} else if ( intentAction.equals(ACTION_ALARM_SCHEDULE) ) {
 			// Schedule the alarm...
 			this.scheduleAlarm();
