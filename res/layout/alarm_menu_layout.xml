@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/alarm_menu_add_alarm"
+          android:icon="@android:drawable/ic_menu_add"
+          android:title="Add Alarm" />
+    <item android:id="@+id/alarm_menu_remove_all_alarms"
+          android:icon="@android:drawable/ic_menu_close_clear_cancel"
+          android:title="Clear All" />
+</menu>

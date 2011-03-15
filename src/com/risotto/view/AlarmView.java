@@ -2,6 +2,12 @@ package com.risotto.view;
 
 import android.app.ListActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -9,6 +15,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.hello.R;
+import com.risotto.service.MainService;
 
 public class AlarmView extends ListActivity {
 
@@ -57,12 +66,45 @@ public class AlarmView extends ListActivity {
 	    "Yemen", "Yugoslavia", "Zambia", "Zimbabwe"
 	  };
 	
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.layout.alarm_menu_layout, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.alarm_menu_add_alarm:
+	    	Log.d(MainService.LOG_TAG, "You clicked add an alarm...");
+	        return true;
+	    case R.id.alarm_menu_remove_all_alarms:
+	        Log.d(MainService.LOG_TAG, "You clicked remove all alarms...");
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	                                ContextMenuInfo menuInfo) {
+	  super.onCreateContextMenu(menu, v, menuInfo);
+	  MenuInflater inflater = getMenuInflater();
+	  inflater.inflate(R.layout.alarm_menu_context_layout, menu);
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	  super.onCreate(savedInstanceState);
 
 	  setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, COUNTRIES));
 
+	  registerForContextMenu(getListView());
+	  
 	  ListView lv = getListView();
 	  lv.setTextFilterEnabled(true);
 

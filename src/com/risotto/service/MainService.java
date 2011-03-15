@@ -16,12 +16,17 @@ import com.risotto.model.Prescription;
 
 public class MainService extends Service {
 	
-	protected static final String LOG_TAG = "RISOTTO_SERVICE";
-	private static boolean serviceStarted = false;
-	private StatusBarNotificationManager sbnm = null;
+	// A log tag used for debugging.
+	public static final String LOG_TAG = "RISOTTO_SERVICE";
 	
-	public static final String SERVICE_START = "com.risotto.service.SERVICE_START";
-	public static final String ALARM_TRIGGER = "com.risotto.service.ALARM_TRIGGER";
+	// The intent used to start this service.
+	public static final String ACTION_START_SERVICE = "com.risotto.service.START_SERVICE";
+	// The intent used to schedule an alarm.
+	public static final String ACTION_ALARM_TRIGGER = "com.risotto.service.ALARM_TRIGGER";
+	// The intent used to schedule an alarm.
+	public static final String ACTION_ALARM_SCHEDULE = "com.risotto.service.ALARM_SCHEDULE";
+	
+	private static boolean alarmScheduled = false;
 	
 
 	@Override
@@ -33,8 +38,6 @@ public class MainService extends Service {
 	public void onCreate() {
 		Log.d(LOG_TAG, "onCreate has been called...");
 		super.onCreate();
-		serviceStarted = true;
-		sbnm = new StatusBarNotificationManager(this.getApplicationContext());
 	}
 
 	@Override
@@ -50,76 +53,91 @@ public class MainService extends Service {
 	}
 
 	@Override
-	@Deprecated
-	public void onStart(Intent intent, int startId) {
-		Log.d(LOG_TAG, "onStart has been called...");
-		Log.d(LOG_TAG, "Intent Info: " + intent.getAction());
-		Log.d(LOG_TAG, "Start ID: " + startId);
-		super.onStart(intent, startId);
-	}
-
-	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-//		int returnValue;
-//		Log.d(LOG_TAG, "onStartCommand has been called...");
-//		Log.d(LOG_TAG, "Intent Info: " + intent.getAction());
-//		Log.d(LOG_TAG, "Flags: " + flags);
-//		Log.d(LOG_TAG, "Start ID: " + startId);
-//		returnValue = super.onStartCommand(intent, flags, startId);
-//		Log.d(LOG_TAG, "Returning: " + returnValue);
-		
-		handleCommand(intent);
-		
-		// If this is an alarm trigger
-		if (intent.getAction().equals("com.risotto.service.ALARM_TRIGGER")) {
-			Prescription prep = new Prescription(new Patient(),new Drug(10,10,"Name"),Prescription.DOSE_TYPE.EVERY_DAY,10,10);
-			StatusBarNotification not = new StatusBarNotification(this, prep, "Blake is an ass.", "Always", "Side of jack.");
-			int x = sbnm.add(not);
-			try {
-				sbnm.sendMessage(x);
-			}
-			catch(Exception e) {Log.d(LOG_TAG, "THERE WAS AN EXCEPTION!!");}
-			Log.d(LOG_TAG, "ALARM UP!!!!!");
-		}
-		
-		if (isAlarmScheduled()) {
-			scheduleAlarm();
-		}
-		
-		
+		// If this is NOT the BOOT_COMPLETE or USER_PRESENT action...
+		if ( !(intent.getAction().equals(ACTION_START_SERVICE)) ) {
+			// ...send the intent to the handler.
+			handleCommand(intent);
+		}	
 		return Service.START_STICKY;
 	}
 	
+	
 	private void scheduleAlarm() {
-		AlarmManager am = (AlarmManager)this.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
 		
-		Intent newIntent = new Intent("com.risotto.service.ALARM_TRIGGER");
-		newIntent.setClass(this, MainService.class);
+		// If we have not scheduled the alarm yet...
+		if ( ! this.isAlarmScheduled() ) {
+			// Get an instance of the AlarmManager
+			AlarmManager am = (AlarmManager)this.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+			
+			// Create an intent that will launch when the trigger is done.
+			Intent newIntent = new Intent(ACTION_ALARM_TRIGGER);
+			newIntent.setClass(this, MainService.class);
+			
+			// Create a pending intent which will be sent when the alarm is done.
+			PendingIntent pi = PendingIntent.getService(this, 0, newIntent, PendingIntent.FLAG_ONE_SHOT);
+			
+			// Have the AlarmManager schedule the alarm.
+			am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 10000, pi );
+			
+			// Set the alarm flag to true, as we have scheduled it
+			alarmScheduled = true;
+			
+		} else {
+			Log.d(LOG_TAG, "No need to schedule an alarm, already done once...");
+		}
 		
+	}
+	
+	private void notifyAlarmDone() {
+		// Get an instance of the SBNM
+		StatusBarNotificationManager sbnm = new StatusBarNotificationManager(this.getApplicationContext());
 		
+		// Create a new prescription.
+		Prescription prep = new Prescription(new Patient(),new Drug(10,10,"Name"),Prescription.DOSE_TYPE.EVERY_DAY,10,10);
 		
+		// Create the new status bar notification.
+		StatusBarNotification not = new StatusBarNotification(this, prep, "Blake is an ass.", "Always", "Side of jack.");
 		
+		// Get the index of this notification
+		int x = sbnm.add(not);
+		try {
+			// Send the message to the NM to display
+			sbnm.sendMessage(x);
+		}
+		catch(Exception e) {
+			Log.d(LOG_TAG, "THERE WAS AN EXCEPTION!!");
+		}
 		
-		PendingIntent pi = PendingIntent.getService(this, 0, newIntent, PendingIntent.FLAG_ONE_SHOT);
-		
-		am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 10000, pi );
-		
-		
+		Log.d(LOG_TAG, "ALARM UP!!!!!");
 	}
 	
 	private boolean isAlarmScheduled() {
-		return true;
+		return alarmScheduled;
 	}
 	
-	private int handleCommand(Intent intent) {
-		int returnValue;
+	/**
+	 * Handles the given intent by performing a class specific action.
+	 * @param intent the intent to handle
+	 */
+	private void handleCommand(Intent intent) {
 		Log.d(LOG_TAG, "handleCommand has been called...");
 		Log.d(LOG_TAG, "Intent Info: " + intent.getAction());
 		
+		// Get the string action from the intent object.
+		String intentAction = intent.getAction();
 		
-		returnValue = 0;
-		Log.d(LOG_TAG, "Returning: " + returnValue);
-		return returnValue;
+		if ( intentAction.equals(ACTION_ALARM_TRIGGER) ) {
+			// An alarm has completed!
+			notifyAlarmDone();
+		} else if ( intentAction.equals(ACTION_ALARM_SCHEDULE) ) {
+			// Schedule the alarm...
+			this.scheduleAlarm();
+		} else {
+			// How did we get this action? What is this!?
+			Log.d(LOG_TAG, "handleCommand() - Unknown intent: " + intentAction);
+		}	
+		
 	}
 
 }
