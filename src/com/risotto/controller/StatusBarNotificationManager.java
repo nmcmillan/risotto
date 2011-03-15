@@ -2,6 +2,7 @@ package com.risotto.controller;
 
 //import java.util.Hashtable;
 
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 import android.app.NotificationManager;
@@ -54,6 +55,25 @@ public class StatusBarNotificationManager {
 		return false;
 
 	}
+	
+	/**
+	 * Returns the status bar texts for all the notifications created thus far 
+	 * @return vector containing all the strings
+	 */
+	public Enumeration<StatusBarNotification> getAllNotifications() {
+		return this.notifications.elements();
+	}
+	
+	/**
+	 * Prints all notifications contained in the local hash table to the system log.
+	 */
+	public void printAllNotifications() {
+		Enumeration<StatusBarNotification> en = this.getAllNotifications();
+		while(en.hasMoreElements()) {
+			System.out.println(en.nextElement().getStatusBarText());
+		}
+	}
+	
 
 	/**
 	 * 
