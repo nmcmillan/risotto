@@ -1,7 +1,9 @@
 package com.hello;
 
+import java.util.Enumeration;
+import java.util.Vector;
+
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 
 import com.risotto.controller.StatusBarNotification;
@@ -9,7 +11,6 @@ import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
-import com.risotto.view.AlarmView;
 
 public class HelloWorld extends Activity {
 	
@@ -17,8 +18,10 @@ public class HelloWorld extends Activity {
 	 * When the device is rotated, Android runs through the full lifecycle of your application.  It calls pause, stop, destroy
 	 * and then create, start, resume every time the phone's orientation is changed.
 	 */
-	StatusBarNotification vicodin = null; 
+	StatusBarNotification vicodin = null;
+	StatusBarNotification advil = null;
     int vicID = -1;
+    int adID = -1;
     Patient patient = new Patient();
     Drug drug = new Drug();
     Prescription prep = new Prescription(patient, drug, Prescription.DOSE_TYPE.EVERY_DAY, 2, 20);
@@ -30,7 +33,8 @@ public class HelloWorld extends Activity {
         
         StatusBarNotificationManager notMgr = new StatusBarNotificationManager(this.getApplicationContext());
         
-        vicodin = new StatusBarNotification(this.getApplicationContext(), prep, "Medicine", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
+        vicodin = new StatusBarNotification(this.getApplicationContext(), prep, "Vicodin", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
+        advil = new StatusBarNotification(this.getApplicationContext(), prep, "Advil", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
         
         /*
          * TO DO (what happens if we want to add vibrate to the notification, but we call the setVibrate method after adding
@@ -39,8 +43,14 @@ public class HelloWorld extends Activity {
          */
         
         vicID = notMgr.add(vicodin);
+        adID = notMgr.add(advil);
         
         vicodin.setVibrate();
+        
+        System.out.println("vicID: " + vicID);
+        System.out.println("adID: " + adID);
+        
+        notMgr.printAllNotifications();
         
         try {
 			notMgr.sendMessage(vicID);
@@ -56,7 +66,7 @@ public class HelloWorld extends Activity {
    
         DialogActivity.showDialog(this);
         
-        this.startActivity(new Intent(this, AlarmView.class));
+        //this.startActivity(new Intent(this, AlarmView.class));
 
     }
 

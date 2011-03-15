@@ -36,7 +36,9 @@ public class StatusBarNotification {
 		context = ctx;
 		intent = new Intent(ctx, StatusBarNotification.class);
 		contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
-		
+		this.statusBarText = stBrTxt;
+		this.messageTitle = msgTitle;
+		this.messageText = msgText;
 		myNot = new Notification(icon,"",time);
 		myNot.tickerText = stBrTxt;
 		myNot.setLatestEventInfo(context, msgTitle, msgText, contentIntent);
@@ -44,7 +46,7 @@ public class StatusBarNotification {
 		
 		this.prescription = p;
 	}
-
+	
 	public void setVibrate() {
 		myNot.defaults |= Notification.DEFAULT_VIBRATE;
 	}
@@ -80,5 +82,26 @@ public class StatusBarNotification {
 			case MSG_TITLE:  this.messageTitle = string;
 			case MSG_TEXT:   this.messageText = string;
 		}
+	}
+
+	/**
+	 * @return the statusBarText
+	 */
+	public String getStatusBarText() {
+		return statusBarText;
+	}
+
+	/**
+	 * @return the messageTitle
+	 */
+	public String getMessageTitle() {
+		return messageTitle;
+	}
+
+	/**
+	 * @return the messageText
+	 */
+	public String getMessageText() {
+		return messageText;
 	}
 }
