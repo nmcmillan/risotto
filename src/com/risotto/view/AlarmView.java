@@ -1,5 +1,7 @@
 package com.risotto.view;
 
+import java.util.Enumeration;
+
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,11 +19,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hello.R;
+import com.risotto.controller.StatusBarNotification;
+import com.risotto.controller.StatusBarNotification.Content;
+import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.service.MainService;
 
 public class AlarmView extends ListActivity {
 
-	
+	StatusBarNotificationManager stbm = new StatusBarNotificationManager(this);
 	static final String[] COUNTRIES = new String[] {
 	    "Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra",
 	    "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda", "Argentina",
@@ -67,6 +72,10 @@ public class AlarmView extends ListActivity {
 	  };
 	
 	
+	/**
+	 * Create a menu that will pop up when the user presses the Menu button.
+	 */
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
@@ -74,6 +83,9 @@ public class AlarmView extends ListActivity {
 	    return true;
 	}
 	
+	/**
+	 * Handles actions when buttons from the menu created in 'onCreateOptionsMenu'
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
@@ -98,10 +110,35 @@ public class AlarmView extends ListActivity {
 	}
 	
 	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.alarm_view_context_menu_edit:
+			stbm.modify(0, Content.STATUS_BAR, "This is a test.");
+			stbm.printAllNotifications();
+			return true;
+		case R.id.alarm_view_context_menu_remove:
+			return true;
+		default:
+			return super.onContextItemSelected(item);
+		}
+	}
+	
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	  super.onCreate(savedInstanceState);
 
-	  setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, COUNTRIES));
+	  String[] nots = new String[2];
+	  
+	  Enumeration<StatusBarNotification> n = stbm.getAllNotifications();
+	  
+	  int count = 0;
+	  
+	  while(null != n && n.hasMoreElements()) {
+			nots[count] = n.nextElement().getStatusBarText();
+			count++;
+	  }
+	  
+	  setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, nots));
 
 	  registerForContextMenu(getListView());
 	  

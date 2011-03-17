@@ -5,12 +5,14 @@ package com.risotto.controller;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import com.risotto.controller.StatusBarNotification.Content;
+
 import android.app.NotificationManager;
 import android.content.Context;
 
 public class StatusBarNotificationManager {
 
-	private Hashtable<Integer, StatusBarNotification> notifications;
+	private static Hashtable<Integer, StatusBarNotification> notifications = new Hashtable<Integer, StatusBarNotification>();
 	private static Context context;
 	private static int NOTIFICATION_ID = 0;
 	private String statusBarText, messageTitle, messageText;
@@ -27,7 +29,6 @@ public class StatusBarNotificationManager {
 	 */
 	public StatusBarNotificationManager(Context ctx) {
 		context = ctx;
-		notifications = new Hashtable<Integer, StatusBarNotification>();
 	}
 
 	/**
@@ -37,8 +38,22 @@ public class StatusBarNotificationManager {
 	 * @return the id for a given notification
 	 */
 	public int add(StatusBarNotification stbn) {
-		this.notifications.put(++NOTIFICATION_ID, stbn);
+		notifications.put(++NOTIFICATION_ID, stbn);
 		return NOTIFICATION_ID;
+	}
+	
+	/**
+	 * This method modifies a notification in the manager
+	 * 
+	 * @param id - the id of the notification attempting to be retrieved
+	 * @return the notification if it was in the manager, or else a null object
+	 */
+	public boolean modify(int id, Content c, String s) {
+		if(notifications.containsKey(id)) {
+			notifications.get(id).changeNotification(c,s);
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -48,8 +63,8 @@ public class StatusBarNotificationManager {
 	 * @return true if the element was in the manager's store and was removed, false if the element was not in the manager's store
 	 */
 	public boolean cancel(int id) {
-		if (this.notifications.containsKey(id)) {
-			this.notifications.remove(id);
+		if (notifications.containsKey(id)) {
+			notifications.remove(id);
 			return true;
 		}
 		return false;
@@ -61,7 +76,7 @@ public class StatusBarNotificationManager {
 	 * @return vector containing all the strings
 	 */
 	public Enumeration<StatusBarNotification> getAllNotifications() {
-		return this.notifications.elements();
+		return notifications.elements();
 	}
 	
 	/**
@@ -84,9 +99,9 @@ public class StatusBarNotificationManager {
 	 * 
 	 */
 	public void sendMessage(int id) throws Exception {		
-		if (this.notifications.containsKey(id)) {
+		if (notifications.containsKey(id)) {
 			System.out.println("Inside Stat Bar Not Mgr, id = " + id);
-			myNot = this.notifications.get(id);
+			myNot = notifications.get(id);
 			NotificationManager nm = (NotificationManager) context.getSystemService(ns);
 
 			nm.notify(id, myNot.getNotification());

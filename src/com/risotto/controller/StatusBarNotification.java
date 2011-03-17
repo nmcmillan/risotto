@@ -51,6 +51,10 @@ public class StatusBarNotification {
 		myNot.defaults |= Notification.DEFAULT_VIBRATE;
 	}
 	
+	public void setLight() {
+		myNot.defaults |= Notification.DEFAULT_LIGHTS;
+	}
+	
 	public Notification getNotification() {
 		return this.myNot;
 	}
@@ -60,7 +64,7 @@ public class StatusBarNotification {
 	}
 	
 	/**
-	 * 
+	 * Set the content of the notification
 	 * @param stBrTxt - the text which will appear in the status bar of the phone
 	 * @param msgTitle - the text which will be the heading in the notification tray
 	 * @param msgText - the text which will be in the body of the notification
