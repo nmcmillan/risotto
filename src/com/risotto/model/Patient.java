@@ -16,7 +16,8 @@ public class Patient {
 		GRANDMOTHER,
 		AUNT,
 		UNCLE,
-		COUSIN;
+		COUSIN,
+		OTHER;
 	}
 	
 	public enum GENDER {
@@ -24,5 +25,7 @@ public class Patient {
 		FEMALE,
 		OTHER;
 	}
+	
+	
 
 }

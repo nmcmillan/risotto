@@ -1,9 +1,7 @@
 package com.hello;
 
-import java.util.Enumeration;
-import java.util.Vector;
-
 import android.app.Activity;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import com.risotto.controller.StatusBarNotification;
@@ -11,6 +9,7 @@ import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
+import com.risotto.storage.StorageProvider;
 
 public class HelloWorld extends Activity {
 	
@@ -67,6 +66,10 @@ public class HelloWorld extends Activity {
         DialogActivity.showDialog(this);
         
         //this.startActivity(new Intent(this, AlarmView.class));
+        
+        StorageProvider sp = new StorageProvider(this.getApplicationContext());
+        SQLiteDatabase db = sp.getDatabase();
+        db.close();
 
     }
 
