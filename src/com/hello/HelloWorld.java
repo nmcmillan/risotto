@@ -3,9 +3,12 @@ package com.hello;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
+
 import com.risotto.controller.StatusBarNotification;
 import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
@@ -113,7 +116,10 @@ public class HelloWorld extends TabActivity {
 	    //this.startActivity(new Intent(this, HelloWorld.class));
    
         //DialogActivity.showDialog(this);
-
+        
+        Log.d("HELLO_TAG", "Attempting a query...");
+        Cursor c = this.managedQuery(com.risotto.storage.StorageProvider.DrugColumns.CONTENT_URI, null, null, null, null);
+        
         Resources res = getResources(); // Resource object to get Drawables
         TabHost tabHost = getTabHost();  // The activity TabHost
         TabSpec spec;  // Resusable TabSpec for each tab
