@@ -1,15 +1,36 @@
 package com.risotto.model;
 
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.Vector;
 
+import android.content.ContentValues;
 import android.graphics.Color;
+
+import com.risotto.storage.StorageProvider;
 
 public class Drug {
 	
 	// Required Fields
-	private int unitVolume;
-	private int strength;	
+	
+	/**
+	 * As of (3/22) we are thinking this is unnecessary
+	 */
+	//private int unitVolume;
+	
+	/**
+	 * Medicare data: amount of active ingredient in the pill, not the size of the pill; we are saying that a drug (e.g. Advil)
+	 * can have multiple strengths, but we don't want to have duplicate drug entries in the database; all strenths for a given drug
+	 * will be captured in this array
+	 */
+	private int[] strength;	
+	
+	/**
+	 * 
+	 */
 	private String genericName;
+	
+	private FORM form;
 	
 	// Optional Fields
 	private String brandName;
@@ -20,7 +41,8 @@ public class Drug {
 	private Color color;
 	private int grossCost;
 	private SHAPE shape;
-	private FORM form;
+	
+	
 	private SIZE size;
 	
 	// Over-the-counter drug.
@@ -72,11 +94,11 @@ public class Drug {
  	/**
  	 * Generates an empty Drug object where:
  	 *  - unitVolume = 0
- 	 *  - strength = 0
+ 	 *  - strength[] = null
  	 *  - genericName = ""
  	 */
  	public Drug() {
- 		this(0,0,"");
+ 		this(0,null,"");
  	}
 	
  	/**
@@ -87,10 +109,24 @@ public class Drug {
  	 * @param strength
  	 * @param genericName
  	 */
-	public Drug(int unitVolume, int strength, String genericName) {
-		this.setUnitVolume(unitVolume);
+	public Drug(int unitVolume, int[] strength, String genericName) {
+		//this.setUnitVolume(unitVolume);
 		this.strength = strength;
 		this.genericName = genericName;
+	}
+	
+	public ContentValues toContentValues() {
+		ContentValues cv = new ContentValues();
+		cv.put(StorageProvider.DrugColumns.DRUG_NAME, this.genericName);
+		
+		ByteBuffer byteBuffer = ByteBuffer.allocate(this.strength.length * 4);        
+        IntBuffer intBuffer = byteBuffer.asIntBuffer();
+        intBuffer.put(this.strength);
+        byte[] array = byteBuffer.array();
+        
+        cv.put(StorageProvider.DrugColumns.DRUG_STRENGTH, array);
+
+        return cv;
 	}
 
 	public String getMedicalName() {
@@ -125,11 +161,11 @@ public class Drug {
 		this.interactions = interactions;
 	}
 
-	public int getStrength() {
+	public int[] getStrength() {
 		return strength;
 	}
 
-	public void setStrength(int strength) {
+	public void setStrength(int[] strength) {
 		this.strength = strength;
 	}
 
@@ -189,12 +225,12 @@ public class Drug {
 		this.size = size;
 	}
 
-	public void setUnitVolume(int unitVolume) {
+	/*public void setUnitVolume(int unitVolume) {
 		this.unitVolume = unitVolume;
 	}
 
 	public int getUnitVolume() {
 		return unitVolume;
-	}
+	}*/
 
 }
