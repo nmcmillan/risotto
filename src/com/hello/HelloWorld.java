@@ -139,7 +139,6 @@ public class HelloWorld extends TabActivity {
         Log.d("HELLO_TAG", "Attempting a full query...");
         Cursor c = this.managedQuery(com.risotto.storage.StorageProvider.DrugColumns.CONTENT_URI, null, null, null, null);
         
-        Resources res = getResources(); // Resource object to get Drawables
         if (c.moveToFirst()) {
 
             String name; 
