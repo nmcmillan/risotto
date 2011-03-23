@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- This XML file defines the values & associated actions that take place when a user presses the 'Menu' button
+while looking at the drug tab. -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/drug_menu_add"
+          android:icon="@android:drawable/ic_menu_add"
+          android:title="Add Drug" />
+    <item android:id="@+id/drug_menu_remove_all"
+          android:icon="@android:drawable/ic_menu_close_clear_cancel"
+          android:title="Clear All Saved Drugs" />
+</menu>
