@@ -1,15 +1,18 @@
 package com.risotto.storage;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 import android.util.Log;
 
 public class StorageProvider extends ContentProvider {
@@ -206,11 +209,11 @@ public class StorageProvider extends ContentProvider {
 	    public static final String DEFAULT_SORT_ORDER = SCHEDULES_NEXT_TIME + " DESC";	
 	}
 
-	private StorageDatabaseHelper dbHelper;
+	private StorageDatabaseHelper mOpenHelper;
 	
 	@Override
 	public boolean onCreate() {
-		dbHelper = new StorageDatabaseHelper(getContext());
+		mOpenHelper = new StorageDatabaseHelper(getContext());
 		return true;
 	}
 
@@ -249,29 +252,39 @@ public class StorageProvider extends ContentProvider {
 		
 		switch(sUriMatcher.match(uri)) {
 		case URI_TYPE_DRUGS:
-			Log.d(LOG_TAG, "Query for all drugs...");
-			break;
+			Log.d(LOG_TAG, "Insert into the drugs table...");
+			// Get a handle to the database
+			SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+			long rowId = db.insert(DRUGS_TABLE_NAME, null, values);
+			
+			if (rowId > 0) {
+				Uri drugUri = ContentUris.withAppendedId(DrugColumns.CONTENT_URI, rowId);
+				getContext().getContentResolver().notifyChange(drugUri, null);
+	            return drugUri;
+			} else {
+				throw new SQLException("Failed to insert row into " + uri);
+			}
 		case URI_TYPE_DRUG_ID:
-			Log.d(LOG_TAG, "Query for one drug...");
-			break;
+			Log.d(LOG_TAG, "Use update to modify a row in the drug table...");
+			throw new IllegalArgumentException("Invalid URI: " + uri);
 		case URI_TYPE_PATIENTS:
-			Log.d(LOG_TAG, "Query for all patients...");
+			Log.d(LOG_TAG, "Insert into the patients table...");
 			break;
 		case URI_TYPE_PATIENT_ID:
-			Log.d(LOG_TAG, "Query for one patient...");
-			break;
+			Log.d(LOG_TAG, "Use update to modify a row in the patients table...");
+			throw new IllegalArgumentException("Invalid URI: " + uri);
 		case URI_TYPE_PRESCRIPTIONS:
-			Log.d(LOG_TAG, "Query for all prescriptions...");
+			Log.d(LOG_TAG, "Insert into the prescriptions table...");
 			break;
 		case URI_TYPE_PRESCRIPTION_ID:
-			Log.d(LOG_TAG, "Query for one prescription...");
-			break;
+			Log.d(LOG_TAG, "Use update to modify a row in the prescriptions table...");
+			throw new IllegalArgumentException("Invalid URI: " + uri);
 		case URI_TYPE_SCHEDULES:
-			Log.d(LOG_TAG, "Query for all schedules...");
+			Log.d(LOG_TAG, "Insert into the schedules table...");
 			break;
 		case URI_TYPE_SCHEDULE_ID:
-			Log.d(LOG_TAG, "Query for one schedule...");
-			break;
+			Log.d(LOG_TAG, "Use update to modify a row in the schedules table...");
+			throw new IllegalArgumentException("Invalid URI: " + uri);
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri); 
 		}
@@ -294,7 +307,23 @@ public class StorageProvider extends ContentProvider {
 		switch(sUriMatcher.match(uri)) {
 		case URI_TYPE_DRUGS:
 			Log.d(LOG_TAG, "Query for all drugs...");
-			break;
+			qb.setTables(DRUGS_TABLE_NAME);
+			
+	        String orderBy;
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = DrugColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+	        Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;
+			
 		case URI_TYPE_DRUG_ID:
 			Log.d(LOG_TAG, "Query for one drug...");
 			break;
