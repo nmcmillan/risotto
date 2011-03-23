@@ -27,6 +27,7 @@ import com.risotto.service.MainService;
 public class AlarmView extends ListActivity {
 
 	StatusBarNotificationManager stbm = new StatusBarNotificationManager(this);
+	String[] nots = new String[2];
 	static final String[] COUNTRIES = new String[] {
 	    "Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra",
 	    "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda", "Argentina",
@@ -75,7 +76,6 @@ public class AlarmView extends ListActivity {
 	/**
 	 * Create a menu that will pop up when the user presses the Menu button.
 	 */
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
@@ -113,8 +113,11 @@ public class AlarmView extends ListActivity {
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.alarm_view_context_menu_edit:
-			stbm.modify(0, Content.STATUS_BAR, "This is a test.");
-			stbm.printAllNotifications();
+			System.out.println("Attempting to change notification");
+			stbm.modify(1, Content.STATUS_BAR, "This is a test.");
+			nots[0] = "New";
+			//onContentChanged();
+			((ArrayAdapter<String>)(this.getListAdapter())).notifyDataSetChanged();
 			return true;
 		case R.id.alarm_view_context_menu_remove:
 			return true;
@@ -126,8 +129,6 @@ public class AlarmView extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	  super.onCreate(savedInstanceState);
-
-	  String[] nots = new String[2];
 	  
 	  Enumeration<StatusBarNotification> n = stbm.getAllNotifications();
 	  
@@ -138,7 +139,9 @@ public class AlarmView extends ListActivity {
 			count++;
 	  }
 	  
-	  setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, nots));
+	  
+	  //setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, nots));
+	  setListAdapter(new ArrayAdapter<String>(this,android.R.layout. simple_list_item_1, nots));
 
 	  registerForContextMenu(getListView());
 	  
@@ -149,6 +152,7 @@ public class AlarmView extends ListActivity {
 	    public void onItemClick(AdapterView<?> parent, View view,
 	        int position, long id) {
 	      // When clicked, show a toast with the TextView text
+	      System.out.println("Toast.");
 	      Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
 	          Toast.LENGTH_SHORT).show();
 	    }
