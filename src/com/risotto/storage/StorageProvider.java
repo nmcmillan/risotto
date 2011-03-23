@@ -290,7 +290,7 @@ public class StorageProvider extends ContentProvider {
 			// Check to make sure that the insert was successful
 			if (rowId > 0) {
 				// Append the row ID to the content uri
-				Uri patientUri = ContentUris.withAppendedId(DrugColumns.CONTENT_URI, rowId);
+				Uri patientUri = ContentUris.withAppendedId(PatientColumns.CONTENT_URI, rowId);
 				// Notify the application that the content has changed
 				getContext().getContentResolver().notifyChange(patientUri, null);
 				// Return the uri to the caller
@@ -312,7 +312,7 @@ public class StorageProvider extends ContentProvider {
 			// Check to make sure that the insert was successful
 			if (rowId > 0) {
 				// Append the row ID to the content uri
-				Uri prescriptionUri = ContentUris.withAppendedId(DrugColumns.CONTENT_URI, rowId);
+				Uri prescriptionUri = ContentUris.withAppendedId(PrescriptionColumns.CONTENT_URI, rowId);
 				// Notify the application that the content has changed
 				getContext().getContentResolver().notifyChange(prescriptionUri, null);
 				// Return the uri to the caller
@@ -334,7 +334,7 @@ public class StorageProvider extends ContentProvider {
 			// Check to make sure that the insert was successful
 			if (rowId > 0) {
 				// Append the row ID to the content uri
-				Uri schedulesUri = ContentUris.withAppendedId(DrugColumns.CONTENT_URI, rowId);
+				Uri schedulesUri = ContentUris.withAppendedId(ScheduleColumns.CONTENT_URI, rowId);
 				// Notify the application that the content has changed
 				getContext().getContentResolver().notifyChange(schedulesUri, null);
 				// Return the uri to the caller
@@ -352,9 +352,58 @@ public class StorageProvider extends ContentProvider {
 	}
 
 	@Override
-	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int delete(Uri uri, String where, String[] whereArgs) {
+		
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int count;
+		
+		switch(sUriMatcher.match(uri)) {
+		case URI_TYPE_DRUGS:
+			Log.d(LOG_TAG, "Deleting the drug table...");
+			count = db.delete(DRUGS_TABLE_NAME, where, whereArgs);
+			break;
+		case URI_TYPE_DRUG_ID:
+			Log.d(LOG_TAG, "Deleting one drug entry...");
+			String drugId = uri.getPathSegments().get(1);
+            count = db.delete(DRUGS_TABLE_NAME, DrugColumns._ID + "=" + drugId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+			break;
+		case URI_TYPE_PATIENTS:
+			Log.d(LOG_TAG, "Deleting the patients table...");
+			count = db.delete(PATIENTS_TABLE_NAME, where, whereArgs);
+			break;
+		case URI_TYPE_PATIENT_ID:
+			Log.d(LOG_TAG, "Deleting one patient entry...");
+			String patientId = uri.getPathSegments().get(1);
+            count = db.delete(PATIENTS_TABLE_NAME, PatientColumns._ID + "=" + patientId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+			break;
+		case URI_TYPE_PRESCRIPTIONS:
+			Log.d(LOG_TAG, "Deleting the prescriptions table...");
+			count = db.delete(PRESCRIPTIONS_TABLE_NAME, where, whereArgs);
+			break;
+		case URI_TYPE_PRESCRIPTION_ID:
+			Log.d(LOG_TAG, "Deleting one prescription entry...");
+			String prescriptionId = uri.getPathSegments().get(1);
+            count = db.delete(PRESCRIPTIONS_TABLE_NAME, PrescriptionColumns._ID + "=" + prescriptionId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+			break;
+		case URI_TYPE_SCHEDULES:
+			Log.d(LOG_TAG, "Deleting the schedules table...");
+			count = db.delete(SCHEDULES_TABLE_NAME, where, whereArgs);
+			break;
+		case URI_TYPE_SCHEDULE_ID:
+			Log.d(LOG_TAG, "Deleting one schedule entry...");
+			String scheduleId = uri.getPathSegments().get(1);
+            count = db.delete(SCHEDULES_TABLE_NAME, ScheduleColumns._ID + "=" + scheduleId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+			break;
+		default:
+			throw new IllegalArgumentException("Unknown URI " + uri); 
+		}
+		
+		getContext().getContentResolver().notifyChange(uri, null);
+		return count;
 	}
 
 	@Override
@@ -407,35 +456,180 @@ public class StorageProvider extends ContentProvider {
 	        return c;
 	        
 		case URI_TYPE_PATIENTS:
+			
 			Log.d(LOG_TAG, "Query for all patients...");
-			break;
+			qb.setTables(PATIENTS_TABLE_NAME);
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = PatientColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;
+	        
 		case URI_TYPE_PATIENT_ID:
+			
 			Log.d(LOG_TAG, "Query for one patient...");
-			break;
+			qb.setTables(PATIENTS_TABLE_NAME);
+			qb.appendWhere(PatientColumns._ID + "=" + uri.getPathSegments().get(1));
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = PatientColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;
+	        
 		case URI_TYPE_PRESCRIPTIONS:
+			
 			Log.d(LOG_TAG, "Query for all prescriptions...");
-			break;
+			qb.setTables(PRESCRIPTIONS_TABLE_NAME);
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = PrescriptionColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;
+	        
 		case URI_TYPE_PRESCRIPTION_ID:
+			
 			Log.d(LOG_TAG, "Query for one prescription...");
-			break;
+			qb.setTables(PRESCRIPTIONS_TABLE_NAME);
+			qb.appendWhere(PatientColumns._ID + "=" + uri.getPathSegments().get(1));
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = PrescriptionColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;
+			
 		case URI_TYPE_SCHEDULES:
+			
 			Log.d(LOG_TAG, "Query for all schedules...");
-			break;
+			qb.setTables(SCHEDULES_TABLE_NAME);
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = ScheduleColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;
+			
 		case URI_TYPE_SCHEDULE_ID:
+			
 			Log.d(LOG_TAG, "Query for one schedule...");
-			break;
+			qb.setTables(SCHEDULES_TABLE_NAME);
+			qb.appendWhere(PatientColumns._ID + "=" + uri.getPathSegments().get(1));
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = ScheduleColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;
+			
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri); 
 		}
-	
-		return null;
 	}
 
 	@Override
-	public int update(Uri uri, ContentValues values, String selection,
-			String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int update(Uri uri, ContentValues values, String where,
+			String[] whereArgs) {
+		
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int count;
+		
+		switch(sUriMatcher.match(uri)) {
+		case URI_TYPE_DRUGS:
+			Log.d(LOG_TAG, "Update called on drugs table...");
+			count = db.update(DRUGS_TABLE_NAME, values, where, whereArgs);
+            break;
+		case URI_TYPE_DRUG_ID:
+			Log.d(LOG_TAG, "Update called for one drug...");
+			String drugId = uri.getPathSegments().get(1);
+            count = db.update(DRUGS_TABLE_NAME, values, DrugColumns._ID + "=" + drugId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+            break;
+		case URI_TYPE_PATIENTS:
+			Log.d(LOG_TAG, "Update called on patients table...");
+			count = db.update(PATIENTS_TABLE_NAME, values, where, whereArgs);
+            break;
+		case URI_TYPE_PATIENT_ID:
+			Log.d(LOG_TAG, "Update called for one patient...");
+			String patientId = uri.getPathSegments().get(1);
+            count = db.update(PATIENTS_TABLE_NAME, values, PatientColumns._ID + "=" + patientId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+            break;
+		case URI_TYPE_PRESCRIPTIONS:
+			Log.d(LOG_TAG, "Updates called on prescriptions table...");
+			count = db.update(PRESCRIPTIONS_TABLE_NAME, values, where, whereArgs);
+            break;
+		case URI_TYPE_PRESCRIPTION_ID:
+			Log.d(LOG_TAG, "Update called for one prescription...");
+			String prescriptionId = uri.getPathSegments().get(1);
+            count = db.update(PRESCRIPTIONS_TABLE_NAME, values, PrescriptionColumns._ID + "=" + prescriptionId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+            break;
+		case URI_TYPE_SCHEDULES:
+			Log.d(LOG_TAG, "Updates called on schedules table...");
+			count = db.update(SCHEDULES_TABLE_NAME, values, where, whereArgs);
+            break;
+		case URI_TYPE_SCHEDULE_ID:
+			Log.d(LOG_TAG, "Update called for one schedule...");
+			String scheduleId = uri.getPathSegments().get(1);
+            count = db.update(SCHEDULES_TABLE_NAME, values, ScheduleColumns._ID + "=" + scheduleId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+            break;
+		default:
+			throw new IllegalArgumentException("Unknown URI " + uri); 
+		}
+		
+		return count;
 	}
 	
 	

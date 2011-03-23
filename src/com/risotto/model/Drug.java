@@ -2,6 +2,9 @@ package com.risotto.model;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Vector;
 
 import android.content.ContentValues;
@@ -127,6 +130,34 @@ public class Drug {
         cv.put(StorageProvider.DrugColumns.DRUG_STRENGTH, array);
 
         return cv;
+	}
+	
+	public static Drug fromContentValues(ContentValues cv) {
+		// Declare a return object
+		Drug returnDrug = null;
+		
+		// Declare required fields.
+		int unitVolume = 0;
+		int[] strength = null;
+		String genericName = "";
+		
+		// Set required fields
+		if (cv.containsKey(StorageProvider.DrugColumns.DRUG_NAME)) {
+			genericName = cv.getAsString(StorageProvider.DrugColumns.DRUG_NAME);
+		} else if (cv.containsKey(StorageProvider.DrugColumns.DRUG_STRENGTH)) {
+			byte[] byteStrength = cv.getAsByteArray(StorageProvider.DrugColumns.DRUG_STRENGTH);
+			/**
+			 * Nick - Put the byte array back into an int array.
+			 */
+			
+		}
+		// Create the object with required fields
+		returnDrug = new Drug(unitVolume, strength, genericName);
+		
+		// Check/set any non-required fields.
+		
+		
+		return returnDrug;
 	}
 
 	public String getMedicalName() {
