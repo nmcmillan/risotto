@@ -135,15 +135,15 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.drug";
 		
-		private static final String DRUG_NAME = "name";
+		public static final String DRUG_NAME = "name";
 		
-	    private static final String DRUG_UNIT_VOLUME = "unit_volume";
+	    public static final String DRUG_UNIT_VOLUME = "unit_volume";
 	    
-	    private static final String DRUG_UNIT_VOLUME_LABEL = "unit_volume_label";
+	    public static final String DRUG_UNIT_VOLUME_LABEL = "unit_volume_label";
 	    
-	    private static final String DRUG_STRENGTH = "strength";
+	    public static final String DRUG_STRENGTH = "strength";
 	    
-	    private static final String DRUG_STRENGTH_LABEL = "strength_label";
+	    public static final String DRUG_STRENGTH_LABEL = "strength_label";
 	    
 	    public static final String DEFAULT_SORT_ORDER = DRUG_NAME + " DESC";	
 	}

@@ -1,6 +1,7 @@
 package com.hello;
 
 import android.app.TabActivity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -14,6 +15,7 @@ import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
+import com.risotto.storage.StorageProvider;
 import com.risotto.view.AlarmView;
 import com.risotto.view.DrugView;
 
@@ -112,6 +114,14 @@ public class HelloWorld extends TabActivity {
         
         System.out.println("vicID = " + vicID);
         
+        int[] ar = {3,4,5,6};
+        Drug test = new Drug(20,ar,"This is a test");
+        
+        ContentValues cv = test.toContentValues();
+        
+        String br = (String)cv.get(StorageProvider.DrugColumns.DRUG_NAME);
+        
+        System.out.println(br);
 	    //this.startActivity(new Intent(this, DialogActivity.class));
 	    //this.startActivity(new Intent(this, HelloWorld.class));
    
