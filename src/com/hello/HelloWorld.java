@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TabHost;
@@ -115,7 +116,7 @@ public class HelloWorld extends TabActivity {
         System.out.println("vicID = " + vicID);
         
         int[] ar = {3,4,5,6};
-        Drug test = new Drug(20,ar,"This is a test");
+        Drug test = new Drug(20,ar,"Tylenol");
         
         ContentValues cv = test.toContentValues();
         
@@ -127,8 +128,45 @@ public class HelloWorld extends TabActivity {
    
         //DialogActivity.showDialog(this);
         
-        Log.d("HELLO_TAG", "Attempting a query...");
+        
+        // START DATABASE TESTING
+        Log.d("HELLO_TAG", "Attempting to store a drug...");
+        
+        Uri drugUri = getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
+        
+        Log.d("HELLO_TAG", "Row URI: " + drugUri.toString());
+        
+        Log.d("HELLO_TAG", "Attempting a full query...");
         Cursor c = this.managedQuery(com.risotto.storage.StorageProvider.DrugColumns.CONTENT_URI, null, null, null, null);
+        
+        
+        if (c.moveToFirst()) {
+
+            String name; 
+            byte[] strength; 
+            int nameColumn = c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME); 
+            int strengthColumn = c.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH);
+        
+            do {
+                // Get the field values
+                name = c.getString(nameColumn);
+                strength = c.getBlob(strengthColumn);
+                
+                Log.d("HELLO_TAG", "Name: " + name);
+                Log.d("HELLO_TAG", "Strength: " + strength);
+
+            } while (c.moveToNext());
+
+        }
+        
+        Log.d("HELLO_TAG", "Attempting a partial query...");
+        Cursor newCursor = this.managedQuery(Uri.withAppendedPath(com.risotto.storage.StorageProvider.DrugColumns.CONTENT_URI, "/2"), null, null, null, null);
+        newCursor.moveToFirst();
+        Log.d("HELLO_TAG", "Return: " + newCursor.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME)));
+        
+        
+        
+        // END DATABASE TESTING
         
         Resources res = getResources(); // Resource object to get Drawables
         TabHost tabHost = getTabHost();  // The activity TabHost

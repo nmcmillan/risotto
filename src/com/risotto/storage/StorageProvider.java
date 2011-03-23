@@ -88,7 +88,6 @@ public class StorageProvider extends ContentProvider {
 					+ ");");	
 		}
 		
-		
 		private void createPatientsTable(SQLiteDatabase db) {
 			Log.d(LOG_TAG, "Creating the " + PATIENTS_TABLE_NAME + " table...");
 			db.execSQL("CREATE TABLE " + PATIENTS_TABLE_NAME + " ("
@@ -103,13 +102,15 @@ public class StorageProvider extends ContentProvider {
 			Log.d(LOG_TAG, "Creating the " + PRESCRIPTIONS_TABLE_NAME + " table...");
 			db.execSQL("CREATE TABLE " + PRESCRIPTIONS_TABLE_NAME + " ("
 					+ PrescriptionColumns._ID + " INTEGER PRIMARY KEY,"
+					+ PrescriptionColumns.PRESCRIPTION_PATIENT + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_DRUG + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_DOSE_TYPE + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_DOSE_SIZE + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS + " INTEGER,"
 					// FOREIGN KEY(patient) REFERENCES patients(_id), 
 					+ "FOREIGN KEY(" + PrescriptionColumns.PRESCRIPTION_PATIENT + ") REFERENCES " + PATIENTS_TABLE_NAME + "(" + PatientColumns._ID + "),"
 					// FOREIGN KEY(drug) REFERENCES drugs(_id),
-					+ "FOREIGN KEY(" + PrescriptionColumns.PRESCRIPTION_DRUG + ") REFERENCES " + DRUGS_TABLE_NAME + "(" + DrugColumns._ID + "),"
-					+ PrescriptionColumns.PRESCRIPTION_DOSE_TYPE + " INTEGER,"
-					+ PrescriptionColumns.PRESCRIPTION_DOSE_SIZE + " INTEGER,"
-					+ PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS + " INTEGER"
+					+ "FOREIGN KEY(" + PrescriptionColumns.PRESCRIPTION_DRUG + ") REFERENCES " + DRUGS_TABLE_NAME + "(" + DrugColumns._ID + ")"
 					+ ");");
 		}
 		
@@ -119,6 +120,7 @@ public class StorageProvider extends ContentProvider {
 					+ ScheduleColumns._ID + " INTEGER PRIMARY KEY,"
 					+ ScheduleColumns.SCHEDULES_NEXT_TIME + " INTEGER,"
 					+ ScheduleColumns.SCHEDULES_DELAY + " INTEGER,"
+					+ ScheduleColumns.SCHEDULES_PRESCRIPTION + " INTEGER,"
 					// FOREIGN KEY(prescription) REFERENCES prescriptions(_id)
 					+ "FOREIGN KEY(" + ScheduleColumns.SCHEDULES_PRESCRIPTION + ") REFERENCES " + PRESCRIPTIONS_TABLE_NAME + "(" + PrescriptionColumns._ID + ")"
 					+ ");");
@@ -158,11 +160,11 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.patient";
 		
-		private static final String PATIENT_FIRST_NAME = "first_name";
+		public static final String PATIENT_FIRST_NAME = "first_name";
 		
-	    private static final String PATIENT_LAST_NAME = "last_name";
+	    public static final String PATIENT_LAST_NAME = "last_name";
 	    
-	    private static final String PATIENT_GENDER = "gender";
+	    public static final String PATIENT_GENDER = "gender";
 	    
 	    public static final String DEFAULT_SORT_ORDER = PATIENT_LAST_NAME + " DESC";	
 	}
@@ -177,15 +179,15 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.prescription";
 		
-	    private static final String PRESCRIPTION_DOSE_TYPE = "dose_type";
+	    public static final String PRESCRIPTION_DOSE_TYPE = "dose_type";
 	    
-	    private static final String PRESCRIPTION_DOSE_SIZE = "dose_size";
+	    public static final String PRESCRIPTION_DOSE_SIZE = "dose_size";
 	    
-	    private static final String PRESCRIPTION_TOTAL_UNITS = "total_units";
+	    public static final String PRESCRIPTION_TOTAL_UNITS = "total_units";
 	    
-	    private static final String PRESCRIPTION_PATIENT = "patient";
+	    public static final String PRESCRIPTION_PATIENT = "patient";
 	    
-	    private static final String PRESCRIPTION_DRUG = "drug";
+	    public static final String PRESCRIPTION_DRUG = "drug";
 	    
 	    public static final String DEFAULT_SORT_ORDER = "modified DESC";	
 	}
@@ -200,11 +202,11 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.schedule";
 		
-	    private static final String SCHEDULES_NEXT_TIME = "next_time";
+	    public static final String SCHEDULES_NEXT_TIME = "next_time";
 	    
-	    private static final String SCHEDULES_DELAY = "delay";
+	    public static final String SCHEDULES_DELAY = "delay";
 	    
-	    private static final String SCHEDULES_PRESCRIPTION = "prescription";
+	    public static final String SCHEDULES_PRESCRIPTION = "prescription";
 	    
 	    public static final String DEFAULT_SORT_ORDER = SCHEDULES_NEXT_TIME + " DESC";	
 	}
@@ -250,18 +252,29 @@ public class StorageProvider extends ContentProvider {
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		
+		// A reference to the SQLite database.
+		SQLiteDatabase db;
+		// The id of the row that was inserted.
+		long rowId;
+		
 		switch(sUriMatcher.match(uri)) {
 		case URI_TYPE_DRUGS:
 			Log.d(LOG_TAG, "Insert into the drugs table...");
-			// Get a handle to the database
-			SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-			long rowId = db.insert(DRUGS_TABLE_NAME, null, values);
+			// Open the database.
+			db = mOpenHelper.getWritableDatabase();
+			// Call for the insert into the database.
+			rowId = db.insert(DRUGS_TABLE_NAME, null, values);
 			
+			// Check to make sure that the insert was successful
 			if (rowId > 0) {
+				// Append the row ID to the content uri
 				Uri drugUri = ContentUris.withAppendedId(DrugColumns.CONTENT_URI, rowId);
+				// Notify the application that the content has changed
 				getContext().getContentResolver().notifyChange(drugUri, null);
+				// Return the uri to the caller
 	            return drugUri;
 			} else {
+				// If the row ID was -1 the insert did not happen...
 				throw new SQLException("Failed to insert row into " + uri);
 			}
 		case URI_TYPE_DRUG_ID:
@@ -269,27 +282,73 @@ public class StorageProvider extends ContentProvider {
 			throw new IllegalArgumentException("Invalid URI: " + uri);
 		case URI_TYPE_PATIENTS:
 			Log.d(LOG_TAG, "Insert into the patients table...");
-			break;
+			// Open the database.
+			db = mOpenHelper.getWritableDatabase();
+			// Call for the insert into the database.
+			rowId = db.insert(PATIENTS_TABLE_NAME, null, values);
+			
+			// Check to make sure that the insert was successful
+			if (rowId > 0) {
+				// Append the row ID to the content uri
+				Uri patientUri = ContentUris.withAppendedId(DrugColumns.CONTENT_URI, rowId);
+				// Notify the application that the content has changed
+				getContext().getContentResolver().notifyChange(patientUri, null);
+				// Return the uri to the caller
+	            return patientUri;
+			} else {
+				// If the row ID was -1 the insert did not happen...
+				throw new SQLException("Failed to insert row into " + uri);
+			}
 		case URI_TYPE_PATIENT_ID:
 			Log.d(LOG_TAG, "Use update to modify a row in the patients table...");
 			throw new IllegalArgumentException("Invalid URI: " + uri);
 		case URI_TYPE_PRESCRIPTIONS:
 			Log.d(LOG_TAG, "Insert into the prescriptions table...");
-			break;
+			// Open the database.
+			db = mOpenHelper.getWritableDatabase();
+			// Call for the insert into the database.
+			rowId = db.insert(PRESCRIPTIONS_TABLE_NAME, null, values);
+			
+			// Check to make sure that the insert was successful
+			if (rowId > 0) {
+				// Append the row ID to the content uri
+				Uri prescriptionUri = ContentUris.withAppendedId(DrugColumns.CONTENT_URI, rowId);
+				// Notify the application that the content has changed
+				getContext().getContentResolver().notifyChange(prescriptionUri, null);
+				// Return the uri to the caller
+	            return prescriptionUri;
+			} else {
+				// If the row ID was -1 the insert did not happen...
+				throw new SQLException("Failed to insert row into " + uri);
+			}
 		case URI_TYPE_PRESCRIPTION_ID:
 			Log.d(LOG_TAG, "Use update to modify a row in the prescriptions table...");
 			throw new IllegalArgumentException("Invalid URI: " + uri);
 		case URI_TYPE_SCHEDULES:
 			Log.d(LOG_TAG, "Insert into the schedules table...");
-			break;
+			// Open the database.
+			db = mOpenHelper.getWritableDatabase();
+			// Call for the insert into the database.
+			rowId = db.insert(SCHEDULES_TABLE_NAME, null, values);
+			
+			// Check to make sure that the insert was successful
+			if (rowId > 0) {
+				// Append the row ID to the content uri
+				Uri schedulesUri = ContentUris.withAppendedId(DrugColumns.CONTENT_URI, rowId);
+				// Notify the application that the content has changed
+				getContext().getContentResolver().notifyChange(schedulesUri, null);
+				// Return the uri to the caller
+	            return schedulesUri;
+			} else {
+				// If the row ID was -1 the insert did not happen...
+				throw new SQLException("Failed to insert row into " + uri);
+			}
 		case URI_TYPE_SCHEDULE_ID:
 			Log.d(LOG_TAG, "Use update to modify a row in the schedules table...");
 			throw new IllegalArgumentException("Invalid URI: " + uri);
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri); 
 		}
-
-		return null;
 	}
 
 	@Override
@@ -303,13 +362,16 @@ public class StorageProvider extends ContentProvider {
 			String[] selectionArgs, String sortOrder) {
 		
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+		Cursor c;
+		SQLiteDatabase db;
+		String orderBy;
 		
 		switch(sUriMatcher.match(uri)) {
 		case URI_TYPE_DRUGS:
+			
 			Log.d(LOG_TAG, "Query for all drugs...");
 			qb.setTables(DRUGS_TABLE_NAME);
 			
-	        String orderBy;
 	        if (TextUtils.isEmpty(sortOrder)) {
 	            orderBy = DrugColumns.DEFAULT_SORT_ORDER;
 	        } else {
@@ -317,16 +379,33 @@ public class StorageProvider extends ContentProvider {
 	        }
 	        
 	        // Get the database and run the query
-	        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-	        Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
 
 	        // Tell the cursor what uri to watch, so it knows when its source data changes
 	        c.setNotificationUri(getContext().getContentResolver(), uri);
 	        return c;
 			
 		case URI_TYPE_DRUG_ID:
+			
 			Log.d(LOG_TAG, "Query for one drug...");
-			break;
+			qb.setTables(DRUGS_TABLE_NAME);
+			qb.appendWhere(DrugColumns._ID + "=" + uri.getPathSegments().get(1));
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = DrugColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;
+	        
 		case URI_TYPE_PATIENTS:
 			Log.d(LOG_TAG, "Query for all patients...");
 			break;
