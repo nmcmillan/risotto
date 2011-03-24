@@ -99,7 +99,7 @@ public class MainService extends Service {
 		StatusBarNotificationManager sbnm = new StatusBarNotificationManager(this.getApplicationContext());
 		
 		// Create a new prescription.
-		Prescription prep = new Prescription(new Patient(),new Drug(10,null,"Name"),Prescription.DOSE_TYPE.EVERY_DAY,10,10);
+		Prescription prep = new Prescription(new Patient("Nick", "McMillan", Patient.GENDER_MALE),new Drug(10,null,"Name"),Prescription.DOSE_TYPE_EVERY_DAY,10,10);
 		
 		// Create the new status bar notification.
 		//StatusBarNotification not = new StatusBarNotification(this, prep, "Blake is an ass.", "Always", "Side of jack.");

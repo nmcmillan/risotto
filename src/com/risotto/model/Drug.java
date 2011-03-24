@@ -33,6 +33,10 @@ public class Drug {
 	 */
 	private String genericName;
 	
+	// Unique id used for storage references
+	private int _id;
+	private static final int INVALID_ID = -1;
+	
 	private FORM form;
 	
 	// Optional Fields
@@ -113,51 +117,14 @@ public class Drug {
  	 * @param genericName
  	 */
 	public Drug(int unitVolume, int[] strength, String genericName) {
+		this(INVALID_ID, unitVolume, strength, genericName);
+	}
+	
+	private Drug(int _id, int unitVolume, int[] strength, String genericName) {
+		this._id = _id;
 		//this.setUnitVolume(unitVolume);
 		this.strength = strength;
 		this.genericName = genericName;
-	}
-	
-	public ContentValues toContentValues() {
-		ContentValues cv = new ContentValues();
-		cv.put(StorageProvider.DrugColumns.DRUG_NAME, this.genericName);
-		
-		ByteBuffer byteBuffer = ByteBuffer.allocate(this.strength.length * 4);        
-        IntBuffer intBuffer = byteBuffer.asIntBuffer();
-        intBuffer.put(this.strength);
-        byte[] array = byteBuffer.array();
-        
-        cv.put(StorageProvider.DrugColumns.DRUG_STRENGTH, array);
-
-        return cv;
-	}
-	
-	public static Drug fromContentValues(ContentValues cv) {
-		// Declare a return object
-		Drug returnDrug = null;
-		
-		// Declare required fields.
-		int unitVolume = 0;
-		int[] strength = null;
-		String genericName = "";
-		
-		// Set required fields
-		if (cv.containsKey(StorageProvider.DrugColumns.DRUG_NAME)) {
-			genericName = cv.getAsString(StorageProvider.DrugColumns.DRUG_NAME);
-		} else if (cv.containsKey(StorageProvider.DrugColumns.DRUG_STRENGTH)) {
-			byte[] byteStrength = cv.getAsByteArray(StorageProvider.DrugColumns.DRUG_STRENGTH);
-			/**
-			 * Nick - Put the byte array back into an int array.
-			 */
-			
-		}
-		// Create the object with required fields
-		returnDrug = new Drug(unitVolume, strength, genericName);
-		
-		// Check/set any non-required fields.
-		
-		
-		return returnDrug;
 	}
 
 	public String getMedicalName() {
@@ -263,5 +230,55 @@ public class Drug {
 	public int getUnitVolume() {
 		return unitVolume;
 	}*/
+	
+	public int get_id() {
+		return _id;
+	}
+
+	public void set_id(int _id) {
+		this._id = _id;
+	}
+	
+	public ContentValues toContentValues() {
+		ContentValues cv = new ContentValues();
+		cv.put(StorageProvider.DrugColumns.DRUG_NAME, this.genericName);
+		
+		ByteBuffer byteBuffer = ByteBuffer.allocate(this.strength.length * 4);        
+        IntBuffer intBuffer = byteBuffer.asIntBuffer();
+        intBuffer.put(this.strength);
+        byte[] array = byteBuffer.array();
+        
+        cv.put(StorageProvider.DrugColumns.DRUG_STRENGTH, array);
+
+        return cv;
+	}
+	
+	public static Drug fromContentValues(ContentValues cv) {
+		// Declare a return object
+		Drug returnDrug = null;
+		
+		// Declare required fields.
+		int unitVolume = 0;
+		int[] strength = null;
+		String genericName = "";
+		
+		// Set required fields
+		if (cv.containsKey(StorageProvider.DrugColumns.DRUG_NAME)) {
+			genericName = cv.getAsString(StorageProvider.DrugColumns.DRUG_NAME);
+		} else if (cv.containsKey(StorageProvider.DrugColumns.DRUG_STRENGTH)) {
+			byte[] byteStrength = cv.getAsByteArray(StorageProvider.DrugColumns.DRUG_STRENGTH);
+			/**
+			 * Nick - Put the byte array back into an int array.
+			 */
+			
+		}
+		// Create the object with required fields
+		returnDrug = new Drug(unitVolume, strength, genericName);
+		
+		// Check/set any non-required fields.
+		
+		
+		return returnDrug;
+	}
 
 }

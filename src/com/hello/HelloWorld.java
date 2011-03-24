@@ -17,6 +17,7 @@ import com.risotto.model.Drug;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
 import com.risotto.storage.StorageProvider;
+import com.risotto.storage.StorageTester;
 import com.risotto.view.AlarmView;
 import com.risotto.view.DrugView;
 
@@ -30,9 +31,9 @@ public class HelloWorld extends TabActivity {
 	StatusBarNotification advil = null;
     int vicID = -1;
     int adID = -1;
-    Patient patient = new Patient();
+    Patient patient = new Patient("Bill", "Clinton", Patient.GENDER_OTHER);
     Drug drug = new Drug();
-    Prescription prep = new Prescription(patient, drug, Prescription.DOSE_TYPE.EVERY_DAY, 2, 20);
+    Prescription prep = new Prescription(patient, drug, Prescription.DOSE_TYPE_EVERY_DAY, 2, 20);
 
     /*@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -130,40 +131,41 @@ public class HelloWorld extends TabActivity {
         
         
         // START DATABASE TESTING
-        Log.d("HELLO_TAG", "Attempting to store a drug...");
-        
-        Uri drugUri = getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
-        
-        Log.d("HELLO_TAG", "Row URI: " + drugUri.toString());
-        
-        Log.d("HELLO_TAG", "Attempting a full query...");
-        Cursor c = this.managedQuery(com.risotto.storage.StorageProvider.DrugColumns.CONTENT_URI, null, null, null, null);
-        
-        if (c.moveToFirst()) {
-
-            String name; 
-            byte[] strength; 
-            int nameColumn = c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME); 
-            int strengthColumn = c.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH);
-        
-            do {
-                // Get the field values
-                name = c.getString(nameColumn);
-                strength = c.getBlob(strengthColumn);
-                
-                Log.d("HELLO_TAG", "Name: " + name);
-                Log.d("HELLO_TAG", "Strength: " + strength);
-
-            } while (c.moveToNext());
-
-        }
-        
-        Log.d("HELLO_TAG", "Attempting a partial query...");
-        Cursor newCursor = this.managedQuery(Uri.withAppendedPath(com.risotto.storage.StorageProvider.DrugColumns.CONTENT_URI, "/2"), null, null, null, null);
-        newCursor.moveToFirst();
-        Log.d("HELLO_TAG", "Return: " + newCursor.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME)));
-        
-        
+//        Log.d("HELLO_TAG", "Attempting to store a drug...");
+//        
+//        Uri drugUri = getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
+//        
+//        Log.d("HELLO_TAG", "Row URI: " + drugUri.toString());
+//        
+//        Log.d("HELLO_TAG", "Attempting a full query...");
+//        Cursor c = this.managedQuery(com.risotto.storage.StorageProvider.DrugColumns.CONTENT_URI, null, null, null, null);
+//        
+//        if (c.moveToFirst()) {
+//
+//            String name; 
+//            byte[] strength; 
+//            int nameColumn = c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME); 
+//            int strengthColumn = c.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH);
+//        
+//            do {
+//                // Get the field values
+//                name = c.getString(nameColumn);
+//                strength = c.getBlob(strengthColumn);
+//                
+//                Log.d("HELLO_TAG", "Name: " + name);
+//                Log.d("HELLO_TAG", "Strength: " + strength);
+//
+//            } while (c.moveToNext());
+//
+//        }
+//        
+//        Log.d("HELLO_TAG", "Attempting a partial query...");
+//        Cursor newCursor = this.managedQuery(Uri.withAppendedPath(com.risotto.storage.StorageProvider.DrugColumns.CONTENT_URI, "/2"), null, null, null, null);
+//        newCursor.moveToFirst();
+//        Log.d("HELLO_TAG", "Return: " + newCursor.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME)));
+//        
+//        
+        StorageTester.runTest(this.getApplicationContext());
         
         // END DATABASE TESTING
         
