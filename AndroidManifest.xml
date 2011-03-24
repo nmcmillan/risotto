@@ -41,6 +41,26 @@
         		<action android:name ="android.intent.action.USER_PRESENT"/>
         	</intent-filter>
         </receiver>
+        
+        <!-- Drug Add/Edit activity -->
+        <activity android:name="com.risotto.view.DrugEdit"
+        	android:windowSoftInputMode="stateVisible"
+        	android:label="@string/drug_edit_title"
+        	android:theme="@android:style/Theme.Dialog">
+        		<intent-filter android:label="@string/drug_resolve_title">
+        			<action android:name="com.risotto.view.action.EDIT_DRUG"/>
+        			<category android:name="android.intent.category.DEFAULT" />
+	                <!-- ALTERNATIVE: show as an alternative action when the user is
+	                     working with this type of data. -->
+	                <category android:name="android.intent.category.ALTERNATIVE" />
+	                <!-- SELECTED_ALTERNATIVE: show as an alternative action the user
+	                     can perform when selecting this type of data. -->
+	                <category android:name="android.intent.category.SELECTED_ALTERNATIVE" />
+	                <!-- This is the data type we operate on. -->
+	                <data android:mimeType="vnd.android.cursor.item/vnd.google.note" />
+        		</intent-filter>
+        	
+        </activity>
 		
 		<!-- Main Service -->
 		<service android:name="com.risotto.service.MainService"/>

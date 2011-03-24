@@ -3,6 +3,9 @@ package com.risotto.view;
 import java.util.Enumeration;
 
 import android.app.ListActivity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -19,13 +22,16 @@ import android.widget.Toast;
 import com.hello.R;
 import com.risotto.controller.StatusBarNotification;
 import com.risotto.controller.StatusBarNotificationManager;
+import com.risotto.model.Drug;
 import com.risotto.service.MainService;
 import com.risotto.storage.StorageProvider;
 
 public class DrugView extends ListActivity {
 	
-	StatusBarNotificationManager stbm = new StatusBarNotificationManager(this);
-	StorageProvider storProv = new StorageProvider();
+	private StatusBarNotificationManager stbm = new StatusBarNotificationManager(this);
+	private ContentResolver contentResolver;
+	private Drug newDrug;
+	private Uri drugUri;
 	
 	/**
 	 * Create a menu that will pop up when the user presses the Menu button.
@@ -46,9 +52,27 @@ public class DrugView extends ListActivity {
 	    switch (item.getItemId()) {
 	    case R.id.drug_menu_add:
 	    	Log.d(MainService.LOG_TAG, "You clicked add drug");
+	    	
+	    	//Hardcoded in, but will eventually be created by retrieving what user entered
+	    	
+	    	//TO DO: pop up dialog
+	    	contentResolver = this.getContentResolver();
+	    	int[] strength = {0,1,2,3};
+	    	newDrug = new Drug(10,strength,"Tylenol");
+	    	ContentValues newCv = newDrug.toContentValues();
+	    	drugUri = contentResolver.insert(StorageProvider.DrugColumns.CONTENT_URI, newCv);
+	    	System.out.println("Uri of newly inserted drug (Tylenol)" + drugUri.toString());
 	        return true;
 	    case R.id.drug_menu_remove_all:
 	        Log.d(MainService.LOG_TAG, "You clicked remove all drugs");
+	        
+	        //for now, will only remove one drug
+	        
+	        if(null != drugUri) { //at least one drug has been added, for now it just points to the last drug added
+	        	int numRowsDeleted = contentResolver.delete(drugUri, null, null);
+	        	System.out.println("Num rows: " + numRowsDeleted);
+	        }
+	        
 	        return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
@@ -86,12 +110,4 @@ public class DrugView extends ListActivity {
 	    }
 	  });
 	}
-	
-//	public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//        TextView textview = new TextView(this);
-//        textview.setText("This is the drug view class.");
-//        setContentView(textview);
-//    }
 }

@@ -11,5 +11,9 @@
 	<string name="text_reminderMessage">Time to take 2 Tylenol.</string>
 	<string name="button_snooze">Snooze</string>
 	<string name="button_taken">Taken</string>
+	
+	<!-- DrugEdit Strings -->
+	<string name="drug_edit_title">Drug Information:</string>
+	<string name="drug_resolve_title">Drug Edit</string>
 
 </resources>

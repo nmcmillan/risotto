@@ -122,14 +122,14 @@ public class HelloWorld extends TabActivity {
         
         String br = (String)cv.get(StorageProvider.DrugColumns.DRUG_NAME);
         
-        System.out.println(br);
+        System.out.println("BR:" + br);
 	    //this.startActivity(new Intent(this, DialogActivity.class));
 	    //this.startActivity(new Intent(this, HelloWorld.class));
    
         //DialogActivity.showDialog(this);
         
         
-        // START DATABASE TESTING
+        /*// START DATABASE TESTING
         Log.d("HELLO_TAG", "Attempting to store a drug...");
         
         Uri drugUri = getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
@@ -161,7 +161,7 @@ public class HelloWorld extends TabActivity {
         Log.d("HELLO_TAG", "Attempting a partial query...");
         Cursor newCursor = this.managedQuery(Uri.withAppendedPath(com.risotto.storage.StorageProvider.DrugColumns.CONTENT_URI, "/2"), null, null, null, null);
         newCursor.moveToFirst();
-        Log.d("HELLO_TAG", "Return: " + newCursor.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME)));
+        Log.d("HELLO_TAG", "Return: " + newCursor.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME)));*/
         
         
         
