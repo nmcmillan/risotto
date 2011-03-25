@@ -1,46 +1,97 @@
 package com.risotto.view;
 
-import java.util.Enumeration;
-
 import android.app.ListActivity;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.SimpleCursorAdapter;
 
 import com.hello.R;
-import com.risotto.controller.StatusBarNotification;
 import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
 import com.risotto.service.MainService;
 import com.risotto.storage.StorageProvider;
 
+
+/**
+ * Displays the list of drugs that have been added to the application.
+ * Also allows for editing, adding, and removing drugs.
+ * 
+ * @author nick
+ *
+ */
 public class DrugView extends ListActivity {
+	
+	protected final static String LOG_TAG = "DrugView";
 	
 	private StatusBarNotificationManager stbm = new StatusBarNotificationManager(this);
 	private ContentResolver contentResolver;
 	private Drug newDrug;
 	private Uri drugUri;
 	
+	private static String[] PROJECTION = {
+		StorageProvider.DrugColumns._ID,
+		StorageProvider.DrugColumns.DRUG_NAME,
+	};
+	
 	/**
-	 * Create a menu that will pop up when the user presses the Menu button.
+	 * This method is only called once and that's the first time the 
+	 * options menu is displayed.
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
+		super.onCreateOptionsMenu(menu);
+	    /*MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.layout.drug_menu_layout, menu);
-	    return true;
+	    return true;*/
+		menu.add(0,Menu.FIRST,0,R.string.drug_list_view_add)
+			.setIcon(android.R.drawable.ic_menu_add);
+		
+		
+		return true;
+	}
+	
+	/**
+	 * This method should be utilized to update the menu every time it
+	 * is displayed.  So for a view that will have it's menus change given
+	 * a certain context, this method will be called.	
+	 */
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+		
+		final boolean haveItems = this.getListAdapter().getCount() > 0;
+		
+		if(haveItems) {
+			Uri uri = ContentUris.withAppendedId(getIntent().getData(), getSelectedItemId());
+			//sending this intent, so there will have to be an
+			//activity in manifest file that will "catch" this intent
+			//but if there's more than one, in which order are the
+			//activities called?
+			Intent[] specifics = new Intent[1];
+			specifics[0] = new Intent(Intent.ACTION_EDIT, uri);
+			
+			MenuItem[] items = new MenuItem[1];
+			
+			Intent intent = new Intent(null, uri);
+            intent.addCategory(Intent.CATEGORY_ALTERNATIVE);
+            
+            menu.addIntentOptions(Menu.CATEGORY_ALTERNATIVE, 0, 0, null, specifics, intent, 0,
+                    items);	
+		} else {
+			menu.removeGroup(Menu.CATEGORY_ALTERNATIVE);
+		}
+		
+		return true;
 	}
 	
 	/**
@@ -82,21 +133,36 @@ public class DrugView extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	  super.onCreate(savedInstanceState);
-
-	  String[] nots = new String[2];
 	  
-	  Enumeration<StatusBarNotification> n = stbm.getAllNotifications();
+	  //sets default state of what happens when keys are pressed
+	  //that are not handled by the application;
+	  //multiple options here, see the javadoc
+	  setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
 	  
-	  int count = 0;
+	  //This method will display all of the drugs in the database
+	  //	- will we expect something to be passed in through the intent?
+	  Intent intent = getIntent();
 	  
-	  while(null != n && n.hasMoreElements()) {
-			nots[count] = n.nextElement().getStatusBarText();
-			count++;
+	  if(null == intent.getData()) {
+		  intent.setData(StorageProvider.DrugColumns.CONTENT_URI);
 	  }
+	
+	  getListView().setOnCreateContextMenuListener(this);
 	  
-	  setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, nots));
+	  Cursor cursor = this.getContentResolver().query(getIntent().getData(), PROJECTION, null, null, null);
+	  
+	  //Log.d(LOG_TAG,"cursor.toString(0)" + cursor.getString(0));
+	  //Log.d(LOG_TAG,"cursor column count" + cursor.getColumnCount());
+	  
+	  if(null != cursor) {  
+		  SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,android.R.layout.simple_list_item_1,cursor,
+				  new String[] {StorageProvider.DrugColumns.DRUG_NAME}, 
+				  new int[] {1});	  
+		  
+		  setListAdapter(adapter);
+	  }
 
-	  registerForContextMenu(getListView());
+	  /*registerForContextMenu(getListView());
 	  
 	  ListView lv = getListView();
 	  lv.setTextFilterEnabled(true);
@@ -108,6 +174,11 @@ public class DrugView extends ListActivity {
 	      Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
 	          Toast.LENGTH_SHORT).show();
 	    }
-	  });
+	  });*/
+	}
+	
+	@Override
+	protected void onListItemClick(ListView l,View v,int position, long id) {
+		
 	}
 }

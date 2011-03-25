@@ -1,13 +1,14 @@
 package com.risotto.view;
 
-import android.R;
 import android.app.Activity;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
+import com.hello.R;
 import com.risotto.storage.StorageProvider;
 
 /**
@@ -31,10 +32,10 @@ public class DrugEdit extends Activity implements View.OnClickListener {
 	};
 	
 	//Return type of queries
-	private Cursor mCursor;
+	private Cursor drugCursor;
 	
 	//EditText field - will probably need one of these for each drug attribute
-	private EditText drugNameText, drugStrengthText;
+	private EditText drugNameText;//, drugStrengthText;
 	
 	//Uri for accessing DB
 	private Uri drugUri;
@@ -42,8 +43,26 @@ public class DrugEdit extends Activity implements View.OnClickListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+	
+		setContentView(R.layout.drug_editor);
 		
-		//setContentView(R.layout.);
+		//get the URI of the drug we're looking to edit
+		//TO DO: the list menu must have to package this before
+		//it sends off the intent
+		drugUri = getIntent().getData();
+		
+		drugCursor = managedQuery(drugUri,PROJECTION,null,null,null);
+		
+		//find the objects that we want to display and set it to be run
+		//when it is clicked, which will call the onClick()
+		drugNameText = (EditText) this.findViewById(R.id.drug_edit_title);
+		drugNameText.setOnClickListener(this);
+		
+		//drugStrengthText = (EditText) this.findViewById(R.id.)
+		
+		Button b = (Button) this.findViewById(R.id.button_drug_edit_ok);
+		b.setOnClickListener(this);
+		
 	}
 	
 	@Override
@@ -52,6 +71,6 @@ public class DrugEdit extends Activity implements View.OnClickListener {
 	}
 	
 	public void onClick(View v) {
-		
+		finish();
 	}
 }
