@@ -38,6 +38,10 @@ public class DrugView extends ListActivity {
 	private Drug newDrug;
 	private Uri drugUri;
 	
+	//define location of buttons:
+	public static final int MENU_ITEM_ADD = Menu.FIRST;
+	public static final int MENU_ITEM_REMOVE_ALL = Menu.FIRST + 1;
+	
 	private static String[] PROJECTION = {
 		StorageProvider.DrugColumns._ID,
 		StorageProvider.DrugColumns.DRUG_NAME,
@@ -53,9 +57,14 @@ public class DrugView extends ListActivity {
 	    /*MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.layout.drug_menu_layout, menu);
 	    return true;*/
-		menu.add(0,Menu.FIRST,0,R.string.drug_list_view_add)
-			.setIcon(android.R.drawable.ic_menu_add);
-		
+		Log.d(LOG_TAG,"onCreateOptionsMenu before menu.add");
+		menu.add(
+				Menu.NONE, //group id for doing batch changes
+				this.MENU_ITEM_ADD, //position
+				Menu.NONE, //order, see getOrder()
+				R.string.drug_list_view_add) //resource id - link to XML
+				.setIcon(android.R.drawable.ic_menu_add);
+		Log.d(LOG_TAG,"onCreateOptionsMenu after menu.add");
 		
 		return true;
 	}
@@ -70,6 +79,8 @@ public class DrugView extends ListActivity {
 		super.onPrepareOptionsMenu(menu);
 		
 		final boolean haveItems = this.getListAdapter().getCount() > 0;
+		
+		Log.d(LOG_TAG, "haveItems: " + haveItems);
 		
 		if(haveItems) {
 			Uri uri = ContentUris.withAppendedId(getIntent().getData(), getSelectedItemId());
@@ -101,20 +112,20 @@ public class DrugView extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.drug_menu_add:
-	    	Log.d(MainService.LOG_TAG, "You clicked add drug");
-	    	
-	    	//Hardcoded in, but will eventually be created by retrieving what user entered
+	    case MENU_ITEM_ADD:
+	    	Log.d(LOG_TAG, "MENU_ITEM_ADD clicked");
 	    	
 	    	//TO DO: pop up dialog
-	    	contentResolver = this.getContentResolver();
+	    	startActivity(new Intent(Intent.ACTION_INSERT, getIntent().getData()));
+	    	return true;
+	    	/*contentResolver = this.getContentResolver();
 	    	int[] strength = {0,1,2,3};
 	    	newDrug = new Drug(10,strength,"Tylenol");
 	    	ContentValues newCv = newDrug.toContentValues();
 	    	drugUri = contentResolver.insert(StorageProvider.DrugColumns.CONTENT_URI, newCv);
 	    	System.out.println("Uri of newly inserted drug (Tylenol)" + drugUri.toString());
-	        return true;
-	    case R.id.drug_menu_remove_all:
+	        return true;*/
+	    case MENU_ITEM_REMOVE_ALL:
 	        Log.d(MainService.LOG_TAG, "You clicked remove all drugs");
 	        
 	        //for now, will only remove one drug
@@ -151,13 +162,23 @@ public class DrugView extends ListActivity {
 	  
 	  Cursor cursor = this.getContentResolver().query(getIntent().getData(), PROJECTION, null, null, null);
 	  
-	  //Log.d(LOG_TAG,"cursor.toString(0)" + cursor.getString(0));
-	  //Log.d(LOG_TAG,"cursor column count" + cursor.getColumnCount());
+	  startManagingCursor(cursor);
+	  
+	  Log.d(LOG_TAG,"count: " + cursor.getCount());
+	  Log.d(LOG_TAG,"cursor column count: " + cursor.getColumnCount());
+	  
+	  //note: the cursor originally points to a null row, needs to move before trying to print data
+	  cursor.moveToFirst();
+	  
+	  Log.d(LOG_TAG,"cursor.toString(0)" + cursor.getString(1));
 	  
 	  if(null != cursor) {  
-		  SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,android.R.layout.simple_list_item_1,cursor,
-				  new String[] {StorageProvider.DrugColumns.DRUG_NAME}, 
-				  new int[] {1});	  
+		  SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+				  this,						//context
+				  R.layout.drug_list_item,	//layout
+				  cursor,					//cursor
+				  new String[] {StorageProvider.DrugColumns.DRUG_NAME},	//column name 
+				  new int[] {android.R.id.text1});	  //mapping
 		  
 		  setListAdapter(adapter);
 	  }

@@ -122,12 +122,15 @@ public class Drug {
 		ContentValues cv = new ContentValues();
 		cv.put(StorageProvider.DrugColumns.DRUG_NAME, this.genericName);
 		
-		ByteBuffer byteBuffer = ByteBuffer.allocate(this.strength.length * 4);        
+		/*ByteBuffer byteBuffer = ByteBuffer.allocate(this.strength.length * 4);        
         IntBuffer intBuffer = byteBuffer.asIntBuffer();
         intBuffer.put(this.strength);
-        byte[] array = byteBuffer.array();
+        byte[] array = byteBuffer.array();*/
+		
+		//just storing one value for strength right now, let's just build a string
+		//with the strengths rather than converting to byte array
         
-        cv.put(StorageProvider.DrugColumns.DRUG_STRENGTH, array);
+        cv.put(StorageProvider.DrugColumns.DRUG_STRENGTH, this.strength[0]);
 
         return cv;
 	}
@@ -137,7 +140,7 @@ public class Drug {
 		Drug returnDrug = null;
 		
 		// Declare required fields.
-		int unitVolume = 0;
+		//int unitVolume = 0;
 		int[] strength = null;
 		String genericName = "";
 		
@@ -145,14 +148,15 @@ public class Drug {
 		if (cv.containsKey(StorageProvider.DrugColumns.DRUG_NAME)) {
 			genericName = cv.getAsString(StorageProvider.DrugColumns.DRUG_NAME);
 		} else if (cv.containsKey(StorageProvider.DrugColumns.DRUG_STRENGTH)) {
-			byte[] byteStrength = cv.getAsByteArray(StorageProvider.DrugColumns.DRUG_STRENGTH);
+			strength[0] = cv.getAsInteger(StorageProvider.DrugColumns.DRUG_STRENGTH);
 			/**
 			 * Nick - Put the byte array back into an int array.
+			 * Blake - see comment in toContentValues().
 			 */
 			
 		}
 		// Create the object with required fields
-		returnDrug = new Drug(unitVolume, strength, genericName);
+		returnDrug = new Drug(0, strength, genericName);
 		
 		// Check/set any non-required fields.
 		

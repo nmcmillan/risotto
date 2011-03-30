@@ -129,12 +129,12 @@ public class HelloWorld extends TabActivity {
         //DialogActivity.showDialog(this);
         
         
-        /*// START DATABASE TESTING
-        Log.d("HELLO_TAG", "Attempting to store a drug...");
+        // START DATABASE TESTING
+        //Log.d("HELLO_TAG", "Attempting to store a drug...");
         
-        Uri drugUri = getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
+        //Uri drugUri = getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
         
-        Log.d("HELLO_TAG", "Row URI: " + drugUri.toString());
+        /*Log.d("HELLO_TAG", "Row URI: " + drugUri.toString());
         
         Log.d("HELLO_TAG", "Attempting a full query...");
         Cursor c = this.managedQuery(com.risotto.storage.StorageProvider.DrugColumns.CONTENT_URI, null, null, null, null);

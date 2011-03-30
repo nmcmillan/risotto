@@ -43,10 +43,16 @@
         </receiver>
         
         <!-- Drug Add/Edit activity -->
-        <activity android:name="com.risotto.view.DrugEdit"
+        <activity android:name="com.risotto.view.DrugAdd"
         	android:windowSoftInputMode="stateVisible"
-        	android:label="@string/drug_edit_title"
+        	android:label="@string/drug_editor_title"
         	android:theme="@android:style/Theme.Dialog">
+        		<intent-filter>
+	                <action android:name="android.intent.action.INSERT" />
+	                <category android:name="android.intent.category.DEFAULT" />
+	                <data android:mimeType="vnd.android.cursor.dir/vnd.risotto.drug"/>
+           		</intent-filter>
+           		
         		<intent-filter android:label="@string/drug_resolve_title">
         			<action android:name="com.risotto.action.EDIT_DRUG"/>
         			<category android:name="android.intent.category.DEFAULT" />
@@ -59,7 +65,6 @@
 	                <!-- This is the data type we operate on. -->
 	                <data android:mimeType="vnd.android.cursor.item/vnd.google.note" />
         		</intent-filter>
-        	
         </activity>
 		
 		<!-- Main Service -->

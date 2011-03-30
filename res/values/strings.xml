@@ -13,7 +13,9 @@
 	<string name="button_taken">Taken</string>
 	
 	<!-- DrugEdit Strings -->
-	<string name="drug_edit_title">Drug Edit</string>
+	<string name="drug_add_strength">Strength...</string>
+	<string name="drug_add_name">Name...</string>
+	<string name="drug_editor_title">New drug info:</string>
 	<string name="drug_resolve_title">Drug Information:</string>
 	<string name="button_drug_edit_ok">OK</string>
 	<string name="drug_list_view_add">Add Drug</string>
