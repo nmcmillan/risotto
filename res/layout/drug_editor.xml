@@ -12,8 +12,9 @@
       <!-- Add text to the box that tells the user what to enter in the field.
     	 Display text grayed out or ghosted and select it all when the user 
     	 clicks the field.  That way it won't disappear until the user starts
-    	 typing, similar to websites. -->
-    <EditText android:id="@+id/drug_add_name" 
+    	 typing, similar to web sites. -->
+    	 
+    <EditText android:id="@+id/drug_add_field_name" 
     	android:selectAllOnFocus="true"
         android:singleLine="true"
         android:layout_marginTop="2dip"
@@ -23,9 +24,9 @@
         android:autoText="true"
         android:capitalize="sentences"
         android:scrollHorizontally="true" />
-   					  
-    <EditText android:id="@+id/drug_add_strength"
-    	android:selectAllOnFocus="true" 
+        
+    <EditText android:id="@+id/drug_add_field_strength" 
+    	android:selectAllOnFocus="true"
         android:singleLine="true"
         android:layout_marginTop="2dip"
         android:layout_width="wrap_content"

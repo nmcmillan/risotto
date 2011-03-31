@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import com.hello.R;
 import com.risotto.model.Drug;
@@ -42,8 +43,8 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 	private Cursor drugCursor;
 	
 	//EditText field - will probably need one of these for each drug attribute
-	private EditText drugNameText;     
-	private EditText drugStrengthText; 
+	private EditText drugNameEditText;
+	private EditText drugStrengthEditText;
 	
 	//Uri for accessing DB
 	private Uri drugUri;
@@ -53,9 +54,9 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 		super.onCreate(savedInstanceState);
 		
 		Log.d(LOG_TAG,"onCreate called");
-	
-		setContentView(R.layout.drug_editor);
 		
+		setContentView(R.layout.drug_editor);
+	
 		//get the URI of the drug we're looking to edit
 		//TO DO: the list menu must have to package this before
 		//it sends off the intent
@@ -65,16 +66,23 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 		//find the objects that we want to display and set it to be run
 		//when it is clicked, which will call the onClick()
 		
-		drugNameText = (EditText) this.findViewById(R.id.drug_add_name);
-		drugNameText.setHint("Drug name...");
+		//do we need to dynamically add EditText boxes as needed?
+		
+		drugNameEditText = (EditText) this.findViewById(R.id.drug_add_field_name);
+		if(null == this.drugNameEditText)
+			Log.d(LOG_TAG,"drugNameEditText is null");
+		else
+			drugNameEditText.setHint("Drug name...");
 		//drugNameText.setOnClickListener(this);
 		
-		drugStrengthText = (EditText) this.findViewById(R.id.drug_add_strength);
-		drugStrengthText.setHint("Drug strength...");
+		drugStrengthEditText = (EditText) this.findViewById(R.id.drug_add_field_strength);
+		drugStrengthEditText.setHint("Drug strength...");
 		//drugStrengthText.setOnClickListener(this);
 		
 		Button b = (Button) this.findViewById(R.id.button_drug_edit_ok);
 		b.setOnClickListener(this);
+		
+		
 		
 	}
 	
@@ -99,14 +107,14 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 		boolean validName = true;
 		int[] drugStrength = new int[1];
 		
-		String enteredName = drugNameText.getText().toString();
+		String enteredName = drugNameEditText.getText().toString();
 		
 		if(0 == enteredName.length()) {
 			validName = false;
 		}
 		
 		try {
-			int enteredStrength = Integer.parseInt(drugStrengthText.getEditableText().toString());
+			int enteredStrength = Integer.parseInt(drugStrengthEditText.getEditableText().toString());
 			drugStrength[0] = enteredStrength;		
 		} catch (NumberFormatException e) {
 			validStrength = false;
@@ -133,7 +141,7 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 				public void onClick(DialogInterface dialog, int which) {}
 			})
 		    .show();
-			this.drugNameText.requestFocus();
+			this.drugNameEditText.requestFocus();
 		}
 		else if(!validStrength) {
 			//just strength is incorrect
@@ -145,7 +153,7 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 				public void onClick(DialogInterface dialog, int which) {}
 			})
 		    .show();
-			this.drugStrengthText.requestFocus();
+			this.drugStrengthEditText.requestFocus();
 		}
 		else {
 			//successful entry, add to database
