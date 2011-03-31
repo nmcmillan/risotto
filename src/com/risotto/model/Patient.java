@@ -21,6 +21,8 @@ public class Patient {
 		SON,
 		GRANDFATHER,
 		GRANDMOTHER,
+		GRANDSON,
+		GRANDDAUGHTER,
 		AUNT,
 		UNCLE,
 		COUSIN,
