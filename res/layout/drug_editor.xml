@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+  	android:layout_width="wrap_content" 
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <!-- commenting out padding for now 
+    android:paddingLeft="6dip"
+    android:paddingRight="6dip"
+    android:paddingBottom="3dip"> -->
+    
+      <!-- Add text to the box that tells the user what to enter in the field.
+    	 Display text grayed out or ghosted and select it all when the user 
+    	 clicks the field.  That way it won't disappear until the user starts
+    	 typing, similar to web sites. -->
+    	 
+    <EditText android:id="@+id/drug_add_field_name" 
+    	android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:layout_marginTop="2dip"
+        android:layout_width="wrap_content"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:autoText="true"
+        android:capitalize="sentences"
+        android:scrollHorizontally="true" />
+        
+    <EditText android:id="@+id/drug_add_field_strength" 
+    	android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:layout_marginTop="2dip"
+        android:layout_width="wrap_content"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:autoText="true"
+        android:capitalize="sentences"
+        android:scrollHorizontally="true" />
+        	
+    <Button android:id="@+id/button_drug_edit_ok"
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="right"
+        android:text="@string/button_drug_edit_ok" />
+   		
+</LinearLayout>

@@ -4,13 +4,9 @@ import android.app.TabActivity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
-
 import com.risotto.controller.StatusBarNotification;
 import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
@@ -34,58 +30,6 @@ public class HelloWorld extends TabActivity {
     Patient patient = new Patient("Bill", "Clinton", Patient.GENDER_OTHER);
     Drug drug = new Drug();
     Prescription prep = new Prescription(patient, drug, Prescription.DOSE_TYPE_EVERY_DAY, 2, 20);
-
-    /*@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        
-        StatusBarNotificationManager notMgr = new StatusBarNotificationManager(this.getApplicationContext());
-        
-        vicodin = new StatusBarNotification(this.getApplicationContext(), prep, "Vicodin", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
-        advil = new StatusBarNotification(this.getApplicationContext(), prep, "Advil", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
-        
-        
-         * TO DO (what happens if we want to add vibrate to the notification, but we call the setVibrate method after adding
-         * it to the manager?
-         *  - still works because it's only a reference to the object, so when the object gets updated, there's no updating needed
-         
-        
-        vicID = notMgr.add(vicodin);
-        adID = notMgr.add(advil);
-        
-        vicodin.setVibrate();
-        
-        System.out.println("vicID: " + vicID);
-        System.out.println("adID: " + adID);
-        
-        notMgr.printAllNotifications();
-        
-        try {
-			notMgr.sendMessage(vicID);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-        System.out.println("vicID = " + vicID);
-        
-	    //this.startActivity(new Intent(this, DialogActivity.class));
-	    //this.startActivity(new Intent(this, HelloWorld.class));
-   
-        //DialogActivity.showDialog(this);
-        
-<<<<<<< HEAD
-        //this.startActivity(new Intent(this, AlarmView.class));
-        
-        StorageProvider sp = new StorageProvider(this.getApplicationContext());
-        SQLiteDatabase db = sp.getDatabase();
-        db.close();
-=======
-        this.startActivity(new Intent(this, AlarmView.class));
->>>>>>> branch 'refs/heads/master' of git+ssh://git@github.com/tobias2143/risotto.git
-
-    }*/
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -123,50 +67,10 @@ public class HelloWorld extends TabActivity {
         
         String br = (String)cv.get(StorageProvider.DrugColumns.DRUG_NAME);
         
-        System.out.println(br);
-	    //this.startActivity(new Intent(this, DialogActivity.class));
-	    //this.startActivity(new Intent(this, HelloWorld.class));
-   
-        //DialogActivity.showDialog(this);
-        
-        
-        // START DATABASE TESTING
-//        Log.d("HELLO_TAG", "Attempting to store a drug...");
-//        
-//        Uri drugUri = getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
-//        
-//        Log.d("HELLO_TAG", "Row URI: " + drugUri.toString());
-//        
-//        Log.d("HELLO_TAG", "Attempting a full query...");
-//        Cursor c = this.managedQuery(com.risotto.storage.StorageProvider.DrugColumns.CONTENT_URI, null, null, null, null);
-//        
-//        if (c.moveToFirst()) {
-//
-//            String name; 
-//            byte[] strength; 
-//            int nameColumn = c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME); 
-//            int strengthColumn = c.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH);
-//        
-//            do {
-//                // Get the field values
-//                name = c.getString(nameColumn);
-//                strength = c.getBlob(strengthColumn);
-//                
-//                Log.d("HELLO_TAG", "Name: " + name);
-//                Log.d("HELLO_TAG", "Strength: " + strength);
-//
-//            } while (c.moveToNext());
-//
-//        }
-//        
-//        Log.d("HELLO_TAG", "Attempting a partial query...");
-//        Cursor newCursor = this.managedQuery(Uri.withAppendedPath(com.risotto.storage.StorageProvider.DrugColumns.CONTENT_URI, "/2"), null, null, null, null);
-//        newCursor.moveToFirst();
-//        Log.d("HELLO_TAG", "Return: " + newCursor.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME)));
-//        
-//        
-        StorageTester.runTest(this.getApplicationContext());
-        
+        System.out.println("BR:" + br);
+
+        // START DATABASE TESTING      
+        //StorageTester.runTest(this.getApplicationContext());
         // END DATABASE TESTING
         
         Resources res = getResources(); // Resource object to get Drawables
