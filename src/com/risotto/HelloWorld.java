@@ -1,4 +1,4 @@
-package com.hello;
+package com.risotto;
 
 import android.app.TabActivity;
 import android.content.ContentValues;
@@ -13,7 +13,6 @@ import com.risotto.model.Drug;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
 import com.risotto.storage.StorageProvider;
-import com.risotto.storage.StorageTester;
 import com.risotto.view.AlarmView;
 import com.risotto.view.DrugView;
 

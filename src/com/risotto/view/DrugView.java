@@ -11,12 +11,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-
-import com.hello.R;
+import com.risotto.R;
 import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
 import com.risotto.service.MainService;

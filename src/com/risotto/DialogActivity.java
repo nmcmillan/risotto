@@ -1,10 +1,11 @@
-package com.hello;
+package com.risotto;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Window;
+import com.risotto.R;
 
 public class DialogActivity extends Activity {
 

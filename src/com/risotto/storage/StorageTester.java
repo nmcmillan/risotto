@@ -2,7 +2,6 @@ package com.risotto.storage;
 
 import android.content.Context;
 import android.util.Log;
-
 import com.risotto.model.Drug;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
