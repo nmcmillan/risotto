@@ -14,6 +14,7 @@ import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
 import com.risotto.storage.StorageProvider;
 import com.risotto.storage.StorageTester;
+import com.risotto.testing.DrugTest;
 import com.risotto.view.AlarmView;
 import com.risotto.view.DrugView;
 
@@ -60,7 +61,8 @@ public class HelloWorld extends TabActivity {
         
         System.out.println("vicID = " + vicID);
         
-        int[] ar = {3,4,5,6};
+        String[] ar = {"3","4","5"};
+       
         Drug test = new Drug(20,ar,"Tylenol");
         
         ContentValues cv = test.toContentValues();
@@ -72,6 +74,10 @@ public class HelloWorld extends TabActivity {
         // START DATABASE TESTING      
         //StorageTester.runTest(this.getApplicationContext());
         // END DATABASE TESTING
+        
+        //START DRUG TESTING
+        DrugTest.testToContentValues();
+        //END DRUG TESTING
         
         Resources res = getResources(); // Resource object to get Drawables
         TabHost tabHost = getTabHost();  // The activity TabHost
@@ -93,7 +99,7 @@ public class HelloWorld extends TabActivity {
         tabHost.addTab(spec);
        
 
-        tabHost.setCurrentTab(1);
+        tabHost.setCurrentTab(0);
     }
     
 

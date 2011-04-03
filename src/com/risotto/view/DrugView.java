@@ -61,7 +61,7 @@ public class DrugView extends ListActivity {
 	    return true;*/
 		menu.add(
 				Menu.NONE, //group id for doing batch changes
-				this.MENU_ITEM_ADD_POSITION, //position
+				MENU_ITEM_ADD_POSITION, //position
 				Menu.NONE, //order, see getOrder()
 				R.string.drug_list_view_add) //resource id - link to XML
 				.setIcon(android.R.drawable.ic_menu_add);
@@ -174,7 +174,7 @@ public class DrugView extends ListActivity {
 		  
 		  //Log.d(LOG_TAG,"cursor.toString(0)" + cursor.getString(1));
 		  
-		  TextView drugListItem = (TextView)this.findViewById(R.layout.drug_list_item);
+		  //TextView drugListItem = (TextView)this.findViewById(R.layout.drug_list_item);
 		  
 		  SimpleCursorAdapter adapter = new SimpleCursorAdapter(
 				  this,						//context

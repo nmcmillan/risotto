@@ -21,7 +21,7 @@ public class StorageTester {
 	private static void insertTest(Context context) {
 		log("Starting the instert test...");
 		
-		int[] strengths = { 100, 200, 400 };
+		String[] strengths = { "100", "200", "400" };
 		Drug newDrug = new Drug(0, strengths, "Crazy Pills");
 		
 		Patient newPatient = new Patient("George", "Bush", Patient.GENDER_MALE);

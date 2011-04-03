@@ -1,8 +1,12 @@
 package com.risotto.model;
 
+import java.util.StringTokenizer;
 import java.util.Vector;
+
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.graphics.Color;
+
 import com.risotto.storage.StorageProvider;
 
 public class Drug {
@@ -19,7 +23,7 @@ public class Drug {
 	 * can have multiple strengths, but we don't want to have duplicate drug entries in the database; all strenths for a given drug
 	 * will be captured in this array
 	 */
-	private int[] strength;	
+	private String[] strength;	
 	
 	/**
 	 * 
@@ -109,11 +113,11 @@ public class Drug {
  	 * @param strength
  	 * @param genericName
  	 */
-	public Drug(int unitVolume, int[] strength, String genericName) {
+	public Drug(int unitVolume, String[] strength, String genericName) {
 		this(INVALID_ID, unitVolume, strength, genericName);
 	}
 	
-	private Drug(int _id, int unitVolume, int[] strength, String genericName) {
+	private Drug(int _id, int unitVolume, String[] strength, String genericName) {
 		this._id = _id;
 		//this.setUnitVolume(unitVolume);
 		this.strength = strength;
@@ -152,11 +156,11 @@ public class Drug {
 		this.interactions = interactions;
 	}
 
-	public int[] getStrength() {
+	public String[] getStrength() {
 		return strength;
 	}
 
-	public void setStrength(int[] strength) {
+	public void setStrength(String[] strength) {
 		this.strength = strength;
 	}
 
@@ -243,38 +247,62 @@ public class Drug {
 		
 		//just storing one value for strength right now, let's just build a string
 		//with the strengths rather than converting to byte array
-        
-        cv.put(StorageProvider.DrugColumns.DRUG_STRENGTH, this.strength[0]);
+		
+		//cv.put(StorageProvider.DrugColumns.DRUG_STRENGTH, this.strength[0]);
+		
+		cv.put(StorageProvider.DrugColumns.DRUG_STRENGTH,convertStrengthToString(strength));
 
         return cv;
 	}
 	
-	public static Drug fromContentValues(ContentValues cv) {
+	/**
+	 * Creates a new drug object from a row in the cursor object.  This method assumes that the cursor object is already pointing
+	 * to the row that will be used for creating the drug object - no cursor position changes will be done by this object.
+	 * 
+	 * @param c - cursor object pointing to the row to be used to create the drug object
+	 * @return a new drug object created from a given row in the content provider
+	 */
+	public static Drug fromCursor(Cursor c) {
 		// Declare a return object
 		Drug returnDrug = null;
 		
 		// Declare required fields.
 		//int unitVolume = 0;
-		int[] strength = null;
+		String[] strength = null;
 		String genericName = "";
+		String strenString = "";
 		
 		// Set required fields
-		if (cv.containsKey(StorageProvider.DrugColumns.DRUG_NAME)) {
-			genericName = cv.getAsString(StorageProvider.DrugColumns.DRUG_NAME);
-		} else if (cv.containsKey(StorageProvider.DrugColumns.DRUG_STRENGTH)) {
-			strength[0] = cv.getAsInteger(StorageProvider.DrugColumns.DRUG_STRENGTH);
-			/**
-			 * Nick - Put the byte array back into an int array.
-			 * Blake - see comment in toContentValues().
-			 */
-			
-		}
+		genericName = c.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME));
+		strenString = c.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH));
+		strength = convertStringToStrength(strenString);
+		
 		// Create the object with required fields
 		returnDrug = new Drug(0, strength, genericName);
 		
 		// Check/set any non-required fields.
 		
 		return returnDrug;
+	}
+	
+	protected static String convertStrengthToString(String[] stren) {
+		String strengthString = "";
+		
+		for(int x = 0;x < stren.length;x++) {
+			strengthString += stren[x] + ",";
+		}
+		return strengthString;
+	}
+	
+	protected static String[] convertStringToStrength(String strenString) {
+		Vector<String> stren = new Vector<String>();
+		StringTokenizer st = new StringTokenizer(strenString,",");
+		
+		while(st.hasMoreElements()) {
+			stren.add(st.nextToken());
+		}
+		String[] x = {};
+		return stren.toArray(x);
 	}
 
 }

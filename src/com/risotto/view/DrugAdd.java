@@ -105,7 +105,7 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 		
 		boolean validStrength = true;
 		boolean validName = true;
-		int[] drugStrength = new int[1];
+		String[] drugStrength = new String[1];
 		
 		String enteredName = drugNameEditText.getText().toString();
 		
@@ -114,12 +114,11 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 		}
 		
 		try {
-			int enteredStrength = Integer.parseInt(drugStrengthEditText.getEditableText().toString());
-			drugStrength[0] = enteredStrength;		
+			int x = Integer.parseInt(drugStrengthEditText.getEditableText().toString());
+			drugStrength[0] = drugStrengthEditText.getEditableText().toString(); 		
 		} catch (NumberFormatException e) {
 			validStrength = false;
 		}
-		
 		if(!validStrength && !validName) {
 			//both are incorrect, display appropriate message
 			new AlertDialog.Builder(this)
@@ -156,9 +155,15 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 			this.drugStrengthEditText.requestFocus();
 		}
 		else {
-			//successful entry, add to database
-			Drug newDrug = new Drug(0,drugStrength,enteredName);
+			//Basic info checks done, now search for drug to see if it's in database
+			Cursor storedDrugs = this.getContentResolver().query(StorageProvider.DrugColumns.CONTENT_URI, PROJECTION, null, null, null);
 			
+			while(storedDrugs.moveToNext()) {
+				Drug d = Drug.fromCursor(storedDrugs);
+				Log.d(LOG_TAG,d.getMedicalName());
+			}
+			Drug newDrug = new Drug(0,drugStrength,enteredName);
+
 			ContentValues cv = newDrug.toContentValues();
 			
 			Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
