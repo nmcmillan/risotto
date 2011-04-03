@@ -1,4 +1,4 @@
-package com.hello;
+package com.risotto;
 
 import android.app.TabActivity;
 import android.content.ContentValues;
@@ -7,13 +7,13 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
+
 import com.risotto.controller.StatusBarNotification;
 import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
 import com.risotto.storage.StorageProvider;
-import com.risotto.storage.StorageTester;
 import com.risotto.testing.DrugTest;
 import com.risotto.view.AlarmView;
 import com.risotto.view.DrugView;

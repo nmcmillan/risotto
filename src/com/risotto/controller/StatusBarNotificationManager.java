@@ -1,12 +1,8 @@
 package com.risotto.controller;
 
-//import java.util.Hashtable;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
-
 import com.risotto.controller.StatusBarNotification.Content;
-
 import android.app.NotificationManager;
 import android.content.Context;
 

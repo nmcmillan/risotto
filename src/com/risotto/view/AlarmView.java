@@ -1,7 +1,6 @@
 package com.risotto.view;
 
 import java.util.Enumeration;
-
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,8 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.hello.R;
+import com.risotto.R;
 import com.risotto.controller.StatusBarNotification;
 import com.risotto.controller.StatusBarNotification.Content;
 import com.risotto.controller.StatusBarNotificationManager;

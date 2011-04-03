@@ -11,9 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-
-import com.hello.R;
+import com.risotto.R;
 import com.risotto.model.Drug;
 import com.risotto.storage.StorageProvider;
 
