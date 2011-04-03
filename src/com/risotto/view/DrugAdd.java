@@ -154,10 +154,24 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 		}
 		else {
 			//Basic info checks done, now search for drug to see if it's in database
-			Cursor storedDrugs = this.getContentResolver().query(StorageProvider.DrugColumns.CONTENT_URI, PROJECTION, null, null, null);
+			//Cursor storedDrugs = this.getContentResolver().query(StorageProvider.DrugColumns.CONTENT_URI, PROJECTION, null, null, null);
+			String whereClause = StorageProvider.DrugColumns.DRUG_NAME + "=" + "'" + enteredName + "'";
 			
-			while(storedDrugs.moveToNext()) {
-				Drug d = Drug.fromCursor(storedDrugs);
+			//Log.d(LOG_TAG,whereClause);
+			
+			Cursor drugExisting = this.getContentResolver().query(
+						StorageProvider.DrugColumns.CONTENT_URI, 
+						PROJECTION, 
+						whereClause, 
+						null, 
+						null);
+			
+			if(drugExisting.getCount() > 0) {
+				Log.d(LOG_TAG,"drug exists in db");
+			}
+			
+			while(drugExisting.moveToNext()) {
+				Drug d = Drug.fromCursor(drugExisting);
 				Log.d(LOG_TAG,d.getMedicalName());
 			}
 			Drug newDrug = new Drug(0,drugStrength,enteredName);
