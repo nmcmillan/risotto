@@ -1,5 +1,7 @@
 package com.risotto;
 
+import java.util.Vector;
+
 import android.app.TabActivity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -61,9 +63,12 @@ public class HelloWorld extends TabActivity {
         
         System.out.println("vicID = " + vicID);
         
-        String[] ar = {"3","4","5"};
+        Vector<String> strengths = new Vector<String>();
+        strengths.add("100");
+        strengths.add("200");
+        strengths.add("300");
        
-        Drug test = new Drug(20,ar,"Tylenol");
+        Drug test = new Drug(20,strengths,"Tylenol");
         
         ContentValues cv = test.toContentValues();
         

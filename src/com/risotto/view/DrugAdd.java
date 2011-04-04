@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
 import com.risotto.R;
 import com.risotto.model.Drug;
 import com.risotto.storage.StorageProvider;
@@ -33,6 +34,7 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 	//Declare a PROJECTION - a 'filter' to the content provider to only
 	//return specific fields during a query
 	private static String[] PROJECTION = { 
+		StorageProvider.DrugColumns._ID,
 		StorageProvider.DrugColumns.DRUG_NAME,
 		StorageProvider.DrugColumns.DRUG_STRENGTH,
 	};
@@ -103,17 +105,16 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 		
 		boolean validStrength = true;
 		boolean validName = true;
-		String[] drugStrength = new String[1];
+		String enteredStrength = "";
 		
-		String enteredName = drugNameEditText.getText().toString();
+		String enteredName = drugNameEditText.getText().toString().trim();
 		
 		if(0 == enteredName.length()) {
 			validName = false;
 		}
-		
 		try {
 			int x = Integer.parseInt(drugStrengthEditText.getEditableText().toString());
-			drugStrength[0] = drugStrengthEditText.getEditableText().toString(); 		
+			enteredStrength = drugStrengthEditText.getEditableText().toString(); 		
 		} catch (NumberFormatException e) {
 			validStrength = false;
 		}
@@ -156,31 +157,36 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 			//Basic info checks done, now search for drug to see if it's in database
 			//Cursor storedDrugs = this.getContentResolver().query(StorageProvider.DrugColumns.CONTENT_URI, PROJECTION, null, null, null);
 			String whereClause = StorageProvider.DrugColumns.DRUG_NAME + "=" + "'" + enteredName + "'";
-			
-			//Log.d(LOG_TAG,whereClause);
-			
-			Cursor drugExisting = this.getContentResolver().query(
+		
+			//First run a query to see if the drug is already in the database.
+			Cursor dCursor = this.getContentResolver().query(
 						StorageProvider.DrugColumns.CONTENT_URI, 
 						PROJECTION, 
 						whereClause, 
 						null, 
 						null);
 			
-			if(drugExisting.getCount() > 0) {
-				Log.d(LOG_TAG,"drug exists in db");
+			if(dCursor.getCount() > 0) {
+				dCursor.moveToFirst();
+				Drug existingDrug = Drug.fromCursor(dCursor);
+				existingDrug.addStrength(enteredStrength);
+				int id = existingDrug.get_id();
+				Uri uri = StorageProvider.DrugColumns.CONTENT_URI.buildUpon().appendPath(String.valueOf(id)).build();
+				ContentValues cv = existingDrug.toContentValues();
+				this.getContentResolver().update(uri, cv, null, null);
+			}
+			else {
+				Drug newDrug = new Drug(0,enteredStrength,enteredName);
+				ContentValues cv = newDrug.toContentValues();
+				Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
+				Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
 			}
 			
-			while(drugExisting.moveToNext()) {
-				Drug d = Drug.fromCursor(drugExisting);
+			/*Code for iterating over cursor
+			while(dCursor.moveToNext()) {
+				Drug d = Drug.fromCursor(dCursor);
 				Log.d(LOG_TAG,d.getMedicalName());
-			}
-			Drug newDrug = new Drug(0,drugStrength,enteredName);
-
-			ContentValues cv = newDrug.toContentValues();
-			
-			Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
-			
-			Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
+			}*/
 			
 			finish();
 		}

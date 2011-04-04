@@ -1,7 +1,10 @@
 package com.risotto.storage;
 
+import java.util.Vector;
+
 import android.content.Context;
 import android.util.Log;
+
 import com.risotto.model.Drug;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
@@ -20,7 +23,11 @@ public class StorageTester {
 	private static void insertTest(Context context) {
 		log("Starting the instert test...");
 		
-		String[] strengths = { "100", "200", "400" };
+		//String[] strengths = { "100", "200", "400" };
+		Vector<String> strengths = new Vector<String>();
+		strengths.add("100");
+		strengths.add("200");
+		strengths.add("400");
 		Drug newDrug = new Drug(0, strengths, "Crazy Pills");
 		
 		Patient newPatient = new Patient("George", "Bush", Patient.GENDER_MALE);

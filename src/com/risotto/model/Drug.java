@@ -1,15 +1,19 @@
 package com.risotto.model;
 
+import java.util.ListIterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.util.Log;
 
 import com.risotto.storage.StorageProvider;
 
 public class Drug {
+	
+	public static final String LOG_TAG = "Drug";
 	
 	// Required Fields
 	
@@ -23,7 +27,7 @@ public class Drug {
 	 * can have multiple strengths, but we don't want to have duplicate drug entries in the database; all strenths for a given drug
 	 * will be captured in this array
 	 */
-	private String[] strength;	
+	private Vector<String> strength;	
 	
 	/**
 	 * 
@@ -98,11 +102,11 @@ public class Drug {
  	/**
  	 * Generates an empty Drug object where:
  	 *  - unitVolume = 0
- 	 *  - strength[] = null
+ 	 *  - strength= null
  	 *  - genericName = ""
  	 */
  	public Drug() {
- 		this(0,null,"");
+ 		this(0,"","");
  	}
 	
  	/**
@@ -113,11 +117,20 @@ public class Drug {
  	 * @param strength
  	 * @param genericName
  	 */
-	public Drug(int unitVolume, String[] strength, String genericName) {
+	public Drug(int unitVolume, Vector<String> strength, String genericName) {
 		this(INVALID_ID, unitVolume, strength, genericName);
 	}
 	
-	private Drug(int _id, int unitVolume, String[] strength, String genericName) {
+	public Drug(int unitVolume, String strength, String genericName) {
+		Vector<String> s = new Vector<String>();
+		s.add(strength);
+		this._id = INVALID_ID;
+		this.strength = s;
+		this.genericName = genericName;
+		
+	}
+	
+	private Drug(int _id, int unitVolume, Vector<String>strength, String genericName) {
 		this._id = _id;
 		//this.setUnitVolume(unitVolume);
 		this.strength = strength;
@@ -156,11 +169,11 @@ public class Drug {
 		this.interactions = interactions;
 	}
 
-	public String[] getStrength() {
+	public Vector<String> getStrength() {
 		return strength;
 	}
 
-	public void setStrength(String[] strength) {
+	public void setStrength(Vector<String> strength) {
 		this.strength = strength;
 	}
 
@@ -236,6 +249,10 @@ public class Drug {
 		this._id = _id;
 	}
 	
+	public void addStrength(String newStrength) {
+		this.strength.add(newStrength);
+	}
+	
 	public ContentValues toContentValues() {
 		ContentValues cv = new ContentValues();
 		cv.put(StorageProvider.DrugColumns.DRUG_NAME, this.genericName);
@@ -268,33 +285,44 @@ public class Drug {
 		
 		// Declare required fields.
 		//int unitVolume = 0;
-		String[] strength = null;
+		Vector<String> strength = null;
 		String genericName = "";
 		String strenString = "";
 		
 		// Set required fields
 		genericName = c.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME));
 		strenString = c.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH));
-		strength = convertStringToStrength(strenString);
+		strength = convertStrengthToVector(strenString);
 		
 		// Create the object with required fields
 		returnDrug = new Drug(0, strength, genericName);
+		
+		Log.d(LOG_TAG,"column index of _id : " + c.getColumnIndex(StorageProvider.DrugColumns._ID));
+		
+		returnDrug._id = Integer.parseInt(c.getString(c.getColumnIndex(StorageProvider.DrugColumns._ID)));
 		
 		// Check/set any non-required fields.
 		
 		return returnDrug;
 	}
 	
-	protected static String convertStrengthToString(String[] stren) {
+	protected static String convertStrengthToString(Vector<String> stren) {
 		String strengthString = "";
 		
-		for(int x = 0;x < stren.length;x++) {
-			strengthString += stren[x] + ",";
+		ListIterator<String> li = stren.listIterator();
+		
+		while(li.hasNext()) {
+			strengthString += li.next() + ",";
 		}
 		return strengthString;
 	}
 	
-	protected static String[] convertStringToStrength(String strenString) {
+	/**
+	 * 
+	 * @param strenString
+	 * @return
+	 */
+	protected static Vector<String> convertStrengthToVector(String strenString) {
 		Vector<String> stren = new Vector<String>();
 		StringTokenizer st = new StringTokenizer(strenString,",");
 		
@@ -302,7 +330,7 @@ public class Drug {
 			stren.add(st.nextToken());
 		}
 		String[] x = {};
-		return stren.toArray(x);
+		return stren;
 	}
 
 }

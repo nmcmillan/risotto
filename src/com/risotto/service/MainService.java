@@ -73,9 +73,9 @@ public class MainService extends Service {
 			// Create an intent that will launch when the trigger is done.
 			Intent newIntent = new Intent(ACTION_ALARM_TRIGGER);
 			
-			newIntent.putExtra("TOP_TEXT", "Blake is an ass.");
-			newIntent.putExtra("TITLE_TEXT", "Always");
-			newIntent.putExtra("BODY_TEXT", "Side of jack.");
+			newIntent.putExtra("TOP_TEXT", "Tylenol");
+			newIntent.putExtra("TITLE_TEXT", "Time to take 3 tylenol.");
+			newIntent.putExtra("BODY_TEXT", "Drink a full glass of water.");
 			
 			newIntent.setClass(this, MainService.class);
 			
@@ -99,10 +99,9 @@ public class MainService extends Service {
 		StatusBarNotificationManager sbnm = new StatusBarNotificationManager(this.getApplicationContext());
 		
 		// Create a new prescription.
-		Prescription prep = new Prescription(new Patient("Nick", "McMillan", Patient.GENDER_MALE),new Drug(10,null,"Name"),Prescription.DOSE_TYPE_EVERY_DAY,10,10);
+		Prescription prep = new Prescription(new Patient("Nick", "McMillan", Patient.GENDER_MALE),new Drug(10,"","Name"),Prescription.DOSE_TYPE_EVERY_DAY,10,10);
 		
 		// Create the new status bar notification.
-		//StatusBarNotification not = new StatusBarNotification(this, prep, "Blake is an ass.", "Always", "Side of jack.");
 		StatusBarNotification not = new StatusBarNotification(this, prep, intent.getStringExtra("TOP_TEXT"), intent.getStringExtra("TITLE_TEXT"), intent.getStringExtra("BODY_TEXT"));
 		
 		// Get the index of this notification
