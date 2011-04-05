@@ -28,7 +28,7 @@ import com.risotto.storage.StorageProvider;
  * @author nick
  *
  */
-public class DrugView extends ListActivity {
+public class DrugView extends ListActivity implements SimpleCursorAdapter.CursorToStringConverter {
 	
 	protected final static String LOG_TAG = "DrugView";
 	
@@ -179,7 +179,7 @@ public class DrugView extends ListActivity {
 				  R.layout.drug_list_item,	//layout
 				  cursor,					//cursor
 				  new String[] {StorageProvider.DrugColumns.DRUG_NAME, StorageProvider.DrugColumns.DRUG_STRENGTH},	//column name 
-				  new int[] {android.R.id.text1});	  //mapping
+				  new int[] {R.id.drug_list_view_name,R.id.drug_list_view_strength});	  //mapping
 		  
 		  
 		  setListAdapter(adapter);
@@ -214,6 +214,14 @@ public class DrugView extends ListActivity {
 		
 		
 		//this.getContentResolver().delete(url, "", "");
+	}
+	
+	/**
+	 * Method to convert the data returned by a cursor object and convert it to the appropriate string
+	 * 
+	 */
+	public CharSequence convertToString(Cursor c) {
+		return null;
 	}
 	
 	
