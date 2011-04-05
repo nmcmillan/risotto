@@ -1,22 +1,16 @@
 package com.risotto;
 
-import java.util.Vector;
-
 import android.app.TabActivity;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
-
 import com.risotto.controller.StatusBarNotification;
-import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
-import com.risotto.storage.StorageProvider;
-import com.risotto.testing.DrugTest;
+import com.risotto.storage.StorageTester;
 import com.risotto.view.AlarmView;
 import com.risotto.view.DrugView;
 
@@ -26,62 +20,62 @@ public class HelloWorld extends TabActivity {
 	 * When the device is rotated, Android runs through the full lifecycle of your application.  It calls pause, stop, destroy
 	 * and then create, start, resume every time the phone's orientation is changed.
 	 */
-	StatusBarNotification vicodin = null;
-	StatusBarNotification advil = null;
-    int vicID = -1;
-    int adID = -1;
-    Patient patient = new Patient("Bill", "Clinton", Patient.GENDER_OTHER);
-    Drug drug = new Drug();
-    Prescription prep = new Prescription(patient, drug, Prescription.DOSE_TYPE_EVERY_DAY, 2, 20);
+//	StatusBarNotification vicodin = null;
+//	StatusBarNotification advil = null;
+//    int vicID = -1;
+//    int adID = -1;
+//    Patient patient = new Patient("Bill", "Clinton", Patient.GENDER_OTHER);
+//    Drug drug = new Drug();
+//    Prescription prep = new Prescription(patient, drug, Prescription.DOSE_TYPE_EVERY_DAY, 2, 20);
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        StatusBarNotificationManager notMgr = new StatusBarNotificationManager(this.getApplicationContext());
-        
-        vicodin = new StatusBarNotification(this.getApplicationContext(), prep, "Vicodin", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
-        advil = new StatusBarNotification(this.getApplicationContext(), prep, "Advil", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
-        
-        vicID = notMgr.add(vicodin);
-        adID = notMgr.add(advil);
-        
-        vicodin.setVibrate();
-        
-        System.out.println("vicID: " + vicID);
-        System.out.println("adID: " + adID);
-        
-        notMgr.printAllNotifications();
-        
-        try {
-			notMgr.sendMessage(vicID);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-        System.out.println("vicID = " + vicID);
-        
-        Vector<String> strengths = new Vector<String>();
-        strengths.add("100");
-        strengths.add("200");
-        strengths.add("300");
-       
-        Drug test = new Drug(20,strengths,"Tylenol");
-        
-        ContentValues cv = test.toContentValues();
-        
-        String br = (String)cv.get(StorageProvider.DrugColumns.DRUG_NAME);
-        
-        System.out.println("BR:" + br);
+//        StatusBarNotificationManager notMgr = new StatusBarNotificationManager(this.getApplicationContext());
+//        
+//        vicodin = new StatusBarNotification(this.getApplicationContext(), prep, "Vicodin", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
+//        advil = new StatusBarNotification(this.getApplicationContext(), prep, "Advil", "Remember to take 2 pills of vicodin", "Be sure to eat something first.");
+//        
+//        vicID = notMgr.add(vicodin);
+//        adID = notMgr.add(advil);
+//        
+//        vicodin.setVibrate();
+//        
+//        System.out.println("vicID: " + vicID);
+//        System.out.println("adID: " + adID);
+//        
+//        notMgr.printAllNotifications();
+//        
+//        try {
+//			notMgr.sendMessage(vicID);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//        
+//        System.out.println("vicID = " + vicID);
+//        
+//        Vector<String> strengths = new Vector<String>();
+//        strengths.add("100");
+//        strengths.add("200");
+//        strengths.add("300");
+//       
+//        Drug test = new Drug(20,strengths,"Tylenol");
+//        
+//        ContentValues cv = test.toContentValues();
+//        
+//        String br = (String)cv.get(StorageProvider.DrugColumns.DRUG_NAME);
+//        
+//        System.out.println("BR:" + br);
 
         // START DATABASE TESTING      
-        //StorageTester.runTest(this.getApplicationContext());
+        StorageTester.runTest(this.getApplicationContext());
         // END DATABASE TESTING
         
         //START DRUG TESTING
-        DrugTest.testToContentValues();
+        //DrugTest.testToContentValues();
         //END DRUG TESTING
         
         Resources res = getResources(); // Resource object to get Drawables

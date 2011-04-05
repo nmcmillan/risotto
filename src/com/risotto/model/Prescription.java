@@ -1,6 +1,10 @@
 package com.risotto.model;
 
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -29,11 +33,16 @@ public class Prescription {
 	private int numDaysSupplied;
 	private int numRefills;
 	private Date expiration;
+	private Vector<Integer> daysOfWeek;
 
 	// Possible dosage types.
+	// Ex: ONCE on any given day/days (M,W,F or T,Th)
 	public static final int DOSE_TYPE_EVERY_DAY_OF_WEEK = 0;
+	// Ex: Twice a day -or- every 12 hours
 	public static final int DOSE_TYPE_EVERY_HOUR = 1;
+	// Ex: Twice a day T,Th -or- Every 12hrs T,Th
 	public static final int DOSE_TYPE_EVERY_HOUR_DAY_OF_WEEK = 2;
+	// Ex: ONCE a day EVERY day
 	public static final int DOSE_TYPE_EVERY_DAY = 3;
 	
 	@Deprecated
@@ -55,6 +64,7 @@ public class Prescription {
 		this.doseType = doseType;
 		this.doseSize = doseSize;
 		this.totalUnits = totalUnits;
+		this.daysOfWeek = new Vector<Integer>();
 	}
 
 	public Dosage getDose() {
@@ -169,6 +179,41 @@ public class Prescription {
 		this._id = _id;
 	}
 	
+	public void addDay(int dayOfWeek) {
+		if (!this.daysOfWeek.contains((Integer)dayOfWeek)) {
+			this.daysOfWeek.add((Integer)dayOfWeek);
+		}
+	}
+	
+	public void removeDay(int dayOfWeek) {
+		this.daysOfWeek.remove((Integer)dayOfWeek);
+	}
+	
+	public Vector<Integer> getAllDays() {
+		return this.daysOfWeek;
+	}
+	
+	private static String dayToColumnName(int dayOfWeek) {
+		switch(dayOfWeek) {
+		case Calendar.SUNDAY:
+			return StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY;
+		case Calendar.MONDAY:
+			return StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY;
+		case Calendar.TUESDAY:
+			return StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY;
+		case Calendar.WEDNESDAY:
+			return StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY;
+		case Calendar.THURSDAY:
+			return StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY;
+		case Calendar.FRIDAY:
+			return StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY;
+		case Calendar.SATURDAY:
+			return StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY;
+		default:
+			return null;	
+		}
+	}
+	
 	public ContentValues toContentValues(Context context) {
 		ContentValues cv = new ContentValues();
 		
@@ -211,6 +256,27 @@ public class Prescription {
 		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS, this.getTotalUnits());
 		
 		// Store any optional fields that may be present
+		
+		// Store the days of the week that this prescription is needed
+		if(!this.daysOfWeek.isEmpty()) {
+			// Sort the vector in ascending order.
+			Collections.sort(this.daysOfWeek);
+			// Trim the vector
+			this.daysOfWeek.trimToSize();
+			// Get an enumeration
+			Enumeration<Integer> daysEnum = this.daysOfWeek.elements();
+			
+			while(daysEnum.hasMoreElements()) {
+				// Get the value from the enum (integer representation of the day of the week)
+				Integer value = daysEnum.nextElement();
+				/**
+				 * For the time being, just store a boolean flag to the days.
+				 * Eventually the scheduled "times" will be stored in the columns.
+				 */
+				cv.put(dayToColumnName(value), 1);
+			}
+		}
+		
 		
 		// Return the 'ContentValues' to the caller
 		return cv;

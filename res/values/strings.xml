@@ -3,7 +3,7 @@
 	
 	<!-- Application Strings -->
 	<string name="hello">Hello World, HelloWorld!</string>
-	<string name="app_name">HelloWorld</string>
+	<string name="app_name">Risotto</string>
 
 	<!-- DialogActivity Strings -->
 	<string name="text_patientName">Patient Name</string>
