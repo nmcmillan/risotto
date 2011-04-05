@@ -318,6 +318,8 @@ public class Drug {
 	}
 	
 	/**
+	 * Method to convert the string stored in the database of strengths back into a vector
+	 * 
 	 * 
 	 * @param strenString
 	 * @return

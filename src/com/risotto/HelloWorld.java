@@ -71,7 +71,7 @@ public class HelloWorld extends TabActivity {
 //        System.out.println("BR:" + br);
 
         // START DATABASE TESTING      
-        StorageTester.runTest(this.getApplicationContext());
+        //StorageTester.runTest(this.getApplicationContext());
         // END DATABASE TESTING
         
         //START DRUG TESTING

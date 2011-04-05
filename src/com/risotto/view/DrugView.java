@@ -1,10 +1,15 @@
 package com.risotto.view;
 
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+import java.util.Vector;
+
 import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +19,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+
 import com.risotto.R;
 import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
@@ -28,7 +34,7 @@ import com.risotto.storage.StorageProvider;
  * @author nick
  *
  */
-public class DrugView extends ListActivity implements SimpleCursorAdapter.CursorToStringConverter {
+public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBinder {
 	
 	protected final static String LOG_TAG = "DrugView";
 	
@@ -181,7 +187,7 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.Cursor
 				  new String[] {StorageProvider.DrugColumns.DRUG_NAME, StorageProvider.DrugColumns.DRUG_STRENGTH},	//column name 
 				  new int[] {R.id.drug_list_view_name,R.id.drug_list_view_strength});	  //mapping
 		  
-		  
+		  adapter.setViewBinder(this);
 		  setListAdapter(adapter);
 	  }
 
@@ -207,7 +213,7 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.Cursor
 		Log.d(LOG_TAG,"position: " + position);
 		Log.d(LOG_TAG,"id: " + id);
 		
-		Drug drugToDelete = (Drug) l.getItemAtPosition(position);
+		Drug drugToDelete = (Drug)l.getItemAtPosition(position);
 		
 		//Uri drugUri = this.getContentResolver().query(StorageProvider.DrugColumns.CONTENT_URI, PROJECTION, null, null, null);
 		
@@ -221,7 +227,43 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.Cursor
 	 * 
 	 */
 	public CharSequence convertToString(Cursor c) {
-		return null;
+		Drug printDrug = Drug.fromCursor(c);
+		CharSequence drugAsString = "Testing";
+		//drugAsString
+		
+		return drugAsString;
+	}
+
+	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+		Drug drug = Drug.fromCursor(cursor);
+		TextView v;
+		if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME)) {
+			//convert drug name to correct string (drugName maps to TextView
+			v = (TextView) view;
+			v.setText(drug.getMedicalName());
+		}
+		else if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH)) {
+			v = (TextView) view;
+			Vector<String> strength = drug.getStrength();
+			ListIterator<String> li = strength.listIterator();
+			//can do this because for a drug to be in the DB, it must have at least one strength
+			try {
+				String strenString = li.next() + " mg ";
+				while(li.hasNext()) {
+					strenString += ", " + li.next() + " mg ";
+				}
+				v.setText(strenString);
+				v.setTypeface(Typeface.create("null", Typeface.ITALIC));
+			} catch(NoSuchElementException e) {
+				return false;
+			}
+			
+		}
+		else {
+			return false;
+		}
+		
+		return true;
 	}
 	
 	
