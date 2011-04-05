@@ -1,8 +1,10 @@
 package com.risotto.storage;
 
+import java.util.Calendar;
 import java.util.Vector;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.util.Log;
 
 import com.risotto.model.Drug;
@@ -23,24 +25,37 @@ public class StorageTester {
 	private static void insertTest(Context context) {
 		log("Starting the instert test...");
 		
-		//String[] strengths = { "100", "200", "400" };
-		Vector<String> strengths = new Vector<String>();
-		strengths.add("100");
-		strengths.add("200");
-		strengths.add("400");
-		Drug newDrug = new Drug(0, strengths, "Crazy Pills");
+		Cursor myCursor = context.getContentResolver().query(StorageProvider.PrescriptionColumns.CONTENT_URI, null, null, null, null);
 		
-		Patient newPatient = new Patient("George", "Bush", Patient.GENDER_MALE);
+		// If there are no entries in the prescription table...
+		if (!myCursor.moveToFirst()) {
+			//...fill some out.
+			
+			log("Adding some static data to the database...");
+			
+			Vector<String> strengths = new Vector<String>();
+			strengths.add("100");
+			strengths.add("200");
+			strengths.add("400");
+			Drug newDrug = new Drug(0, strengths, "Tylenol");
+			
+			Patient newPatient = new Patient("George", "Bush", Patient.GENDER_MALE);
+			
+			Prescription newPrescription = new Prescription(newPatient, newDrug, 1, 2, 3);
+			newPrescription.addDay(Calendar.MONDAY);
+			newPrescription.addDay(Calendar.SATURDAY);
+			
+			//log("Attempting to store the drug...");
+			//context.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, newDrug.toContentValues());
+			//log("Attempting to store the patient...");
+			//context.getContentResolver().insert(StorageProvider.PatientColumns.CONTENT_URI, newPatient.toContentValues());
+			log("Attempting to store the prescription...");
+			context.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, newPrescription.toContentValues(context));
+			
+			log("Added some entries to the databases.");
+		}
 		
-		Prescription newPrescription = new Prescription(newPatient, newDrug, 1, 2, 3);
-		
-		log("Attempting to store the drug...");
-		context.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, newDrug.toContentValues());
-		log("Attempting to store the patient...");
-		context.getContentResolver().insert(StorageProvider.PatientColumns.CONTENT_URI, newPatient.toContentValues());
-		log("Attempting to store the prescription...");
-		context.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, newPrescription.toContentValues(context));
-		
+		myCursor.close();
 		
 		log("Insert test complete.");
 	}

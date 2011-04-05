@@ -118,6 +118,15 @@ public class StorageProvider extends ContentProvider {
 					+ PrescriptionColumns.PRESCRIPTION_DOSE_TYPE + " INTEGER,"
 					+ PrescriptionColumns.PRESCRIPTION_DOSE_SIZE + " INTEGER,"
 					+ PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_SCHEDULED + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_DAY_MONDAY + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY + " INTEGER,"
+					
 					// FOREIGN KEY(patient) REFERENCES patients(_id), 
 					+ "FOREIGN KEY(" + PrescriptionColumns.PRESCRIPTION_PATIENT + ") REFERENCES " + PATIENTS_TABLE_NAME + "(" + PatientColumns._ID + "),"
 					// FOREIGN KEY(drug) REFERENCES drugs(_id),
@@ -196,11 +205,27 @@ public class StorageProvider extends ContentProvider {
 	    
 	    public static final String PRESCRIPTION_TOTAL_UNITS = "total_units";
 	    
+	    public static final String PRESCRIPTION_SCHEDULED = "scheduled";
+	    
+	    public static final String PRESCRIPTION_DAY_SUNDAY = "day_sunday";
+	    
+	    public static final String PRESCRIPTION_DAY_MONDAY = "day_monday";
+	    
+	    public static final String PRESCRIPTION_DAY_TUESDAY = "day_tuesday";
+	    
+	    public static final String PRESCRIPTION_DAY_WEDNESDAY = "day_wednesday";
+	    
+	    public static final String PRESCRIPTION_DAY_THURSDAY = "day_thursday";
+	    
+	    public static final String PRESCRIPTION_DAY_FRIDAY = "day_friday";
+	    
+	    public static final String PRESCRIPTION_DAY_SATURDAY = "day_saturday";
+	    
 	    public static final String PRESCRIPTION_PATIENT = "patient";
 	    
 	    public static final String PRESCRIPTION_DRUG = "drug";
 	    
-	    public static final String DEFAULT_SORT_ORDER = "modified DESC";	
+	    public static final String DEFAULT_SORT_ORDER = PrescriptionColumns._ID + " DESC";	
 	}
 	
 	public static final class ScheduleColumns implements BaseColumns {
