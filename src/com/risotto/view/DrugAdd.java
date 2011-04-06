@@ -166,6 +166,8 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 						null, 
 						null);
 			
+			//if the count is greater than 0, that means the drug was already in the database
+			//update the row
 			if(dCursor.getCount() > 0) {
 				dCursor.moveToFirst();
 				Drug existingDrug = Drug.fromCursor(dCursor);
@@ -174,6 +176,8 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 				Uri uri = StorageProvider.DrugColumns.CONTENT_URI.buildUpon().appendPath(String.valueOf(id)).build();
 				ContentValues cv = existingDrug.toContentValues();
 				this.getContentResolver().update(uri, cv, null, null);
+				this.getContentResolver().notifyChange(uri, null);
+				
 			}
 			else {
 				Drug newDrug = new Drug(0,enteredStrength,enteredName);
@@ -181,7 +185,6 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 				Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
 				Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
 			}
-			
 			/*Code for iterating over cursor
 			while(dCursor.moveToNext()) {
 				Drug d = Drug.fromCursor(dCursor);

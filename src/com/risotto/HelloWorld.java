@@ -91,11 +91,11 @@ public class HelloWorld extends TabActivity {
         tabHost.addTab(spec);
 
         // Do the same for the other tabs
-        intent = new Intent().setClass(this, AlarmView.class);
+        /*intent = new Intent().setClass(this, AlarmView.class);
         spec = tabHost.newTabSpec("alarms").setIndicator("Alarms",
                           res.getDrawable(R.drawable.micro_white))
                       .setContent(intent);
-        tabHost.addTab(spec);
+        tabHost.addTab(spec);*/
        
 
         tabHost.setCurrentTab(0);

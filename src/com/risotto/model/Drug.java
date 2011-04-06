@@ -306,7 +306,7 @@ public class Drug {
 		return returnDrug;
 	}
 	
-	protected static String convertStrengthToString(Vector<String> stren) {
+	public static String convertStrengthToString(Vector<String> stren) {
 		String strengthString = "";
 		
 		ListIterator<String> li = stren.listIterator();
@@ -324,7 +324,7 @@ public class Drug {
 	 * @param strenString
 	 * @return
 	 */
-	protected static Vector<String> convertStrengthToVector(String strenString) {
+	public static Vector<String> convertStrengthToVector(String strenString) {
 		Vector<String> stren = new Vector<String>();
 		StringTokenizer st = new StringTokenizer(strenString,",");
 		
