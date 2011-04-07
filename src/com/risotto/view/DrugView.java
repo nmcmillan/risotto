@@ -38,6 +38,8 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	
 	protected final static String LOG_TAG = "DrugView";
 	
+	public static final String ACTION_VIEW_DRUG_DETAILS = "com.risotto.service.START_SERVICE";
+	
 	private StatusBarNotificationManager stbm = new StatusBarNotificationManager(this);
 	private ContentResolver contentResolver;
 	private Drug newDrug;
@@ -123,13 +125,6 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	    	//TO DO: pop up dialog
 	    	startActivity(new Intent(Intent.ACTION_INSERT, getIntent().getData()));
 	    	return true;
-	    	/*contentResolver = this.getContentResolver();
-	    	int[] strength = {0,1,2,3};
-	    	newDrug = new Drug(10,strength,"Tylenol");
-	    	ContentValues newCv = newDrug.toContentValues();
-	    	drugUri = contentResolver.insert(StorageProvider.DrugColumns.CONTENT_URI, newCv);
-	    	System.out.println("Uri of newly inserted drug (Tylenol)" + drugUri.toString());
-	        return true;*/
 	    case MENU_ITEM_REMOVE_ALL_POSITION:
 	        Log.d(MainService.LOG_TAG, "You clicked remove all drugs");
 	        
@@ -185,7 +180,7 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 				  R.layout.drug_list_item,	//layout
 				  cursor,					//cursor
 				  new String[] {StorageProvider.DrugColumns.DRUG_NAME, StorageProvider.DrugColumns.DRUG_STRENGTH},	//column name 
-				  new int[] {R.id.drug_list_view_name,R.id.drug_list_view_strength});	  //mapping
+				  new int[] {R.id.drug_list_view_name,R.id.drug_list_view_strength}); //mapping
 		  
 		  adapter.setViewBinder(this);
 		  setListAdapter(adapter);
@@ -208,30 +203,22 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	
 	@Override
 	protected void onListItemClick(ListView l,View v,int position, long id) {
+		Log.d(LOG_TAG,"position: " + position); // position in list
+		Log.d(LOG_TAG,"id: " + id); //id in database ?
 		
-		Log.d(LOG_TAG,"inside onlistitemclick");
-		Log.d(LOG_TAG,"position: " + position);
-		Log.d(LOG_TAG,"id: " + id);
+		Cursor dCursor = null;
 		
-		Drug drugToDelete = (Drug)l.getItemAtPosition(position);
+		try {
+			dCursor = (Cursor)l.getItemAtPosition(position);
+		} catch (ClassCastException e) {
+			Log.d(LOG_TAG,"Wrong class cast.");
+		}
 		
-		//Uri drugUri = this.getContentResolver().query(StorageProvider.DrugColumns.CONTENT_URI, PROJECTION, null, null, null);
+		Intent editIntent = new Intent();
+		editIntent.setAction(DrugView.ACTION_VIEW_DRUG_DETAILS);
+		//Log.d(LOG_TAG,drug.getMedicalName());
 		
 		
-		
-		//this.getContentResolver().delete(url, "", "");
-	}
-	
-	/**
-	 * Method to convert the data returned by a cursor object and convert it to the appropriate string
-	 * 
-	 */
-	public CharSequence convertToString(Cursor c) {
-		Drug printDrug = Drug.fromCursor(c);
-		CharSequence drugAsString = "Testing";
-		//drugAsString
-		
-		return drugAsString;
 	}
 
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
@@ -262,7 +249,6 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 		else {
 			return false;
 		}
-		
 		return true;
 	}
 	
