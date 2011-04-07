@@ -1,10 +1,14 @@
 package com.risotto.service;
 
+import java.util.Enumeration;
+import java.util.Vector;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -13,6 +17,7 @@ import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
+import com.risotto.storage.StorageProvider;
 
 public class MainService extends Service {
 	
@@ -137,11 +142,58 @@ public class MainService extends Service {
 			notifyAlarmDone(intent);
 		} else if ( intentAction.equals(ACTION_ALARM_SCHEDULE) ) {
 			// Schedule the alarm...
-			this.scheduleAlarm();
+			//this.scheduleAlarm();
+			this.scheduleTests();
 		} else {
 			// How did we get this action? What is this!?
 			Log.d(LOG_TAG, "handleCommand() - Unknown intent: " + intentAction);
 		}	
+		
+	}
+	
+	private void scheduleTests() {
+		// Create a where clause to only get the prescriptions that are scheduled
+		String whereClause = StorageProvider.PrescriptionColumns.PRESCRIPTION_SCHEDULED + "=" + "'" + Prescription.SCHEDULED + "'";
+		
+		Log.d(LOG_TAG, "Getting a cursor on the scheduled prescriptions...");
+		
+		// Get all of the prescriptions that are scheduled
+		Cursor prescCursor = this.getApplicationContext().getContentResolver().query(StorageProvider.PrescriptionColumns.CONTENT_URI, null, whereClause, null, null);
+		
+		Log.d(LOG_TAG, "Got a cursor!");
+		
+		// Let's schedule some things...
+		
+		// Are there any prescription objects?
+		if (prescCursor.moveToFirst()) {
+			do {
+				Log.d(LOG_TAG, "DOING!");
+				
+				// Get the list of valid day columns for this prescription
+				Vector<String> validDayColumns = Prescription.getScheduledDays(prescCursor);
+				
+				Enumeration<String> daysEnum = validDayColumns.elements();
+				
+				while(daysEnum.hasMoreElements()) {
+					// Get the valid column name
+					String dayColumnName = daysEnum.nextElement();
+					Log.d(LOG_TAG, "Getting the data at the column: " + dayColumnName);
+					Log.d(LOG_TAG, "For Patient: " + prescCursor.getString(prescCursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_PATIENT)));
+					Log.d(LOG_TAG, "For Drug: " + prescCursor.getString(prescCursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DRUG)));
+
+					// Schedule a timer based on the data in the day column
+					String dataValue = prescCursor.getString(prescCursor.getColumnIndex(dayColumnName));
+					
+					Log.d(LOG_TAG, "Data @ " + dayColumnName + " : " + dataValue);
+					
+				}
+				
+				
+			} while (prescCursor.moveToNext());
+			
+			// Close and release the cursor.
+			prescCursor.close();
+		}
 		
 	}
 

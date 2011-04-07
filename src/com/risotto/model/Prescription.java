@@ -8,7 +8,9 @@ import java.util.Vector;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
 import com.risotto.storage.StorageProvider;
 
@@ -34,6 +36,10 @@ public class Prescription {
 	private int numRefills;
 	private Date expiration;
 	private Vector<Integer> daysOfWeek;
+	private boolean scheduled = false;
+	
+	public static final int SCHEDULED = 1;
+	public static final int NOT_SCHEDULED = 0;
 
 	// Possible dosage types.
 	// Ex: ONCE on any given day/days (M,W,F or T,Th)
@@ -44,6 +50,8 @@ public class Prescription {
 	public static final int DOSE_TYPE_EVERY_HOUR_DAY_OF_WEEK = 2;
 	// Ex: ONCE a day EVERY day
 	public static final int DOSE_TYPE_EVERY_DAY = 3;
+	
+	private static final String LOG_TAG = "RISOTTO_PRESCRIPTION";
 	
 	@Deprecated
 	public enum DOSE_TYPE {
@@ -179,6 +187,20 @@ public class Prescription {
 		this._id = _id;
 	}
 	
+	/**
+	 * @param scheduled the scheduled to set
+	 */
+	public void setScheduled(boolean scheduled) {
+		this.scheduled = scheduled;
+	}
+
+	/**
+	 * @return the scheduled
+	 */
+	public boolean isScheduled() {
+		return scheduled;
+	}
+
 	public void addDay(int dayOfWeek) {
 		if (!this.daysOfWeek.contains((Integer)dayOfWeek)) {
 			this.daysOfWeek.add((Integer)dayOfWeek);
@@ -212,6 +234,51 @@ public class Prescription {
 		default:
 			return null;	
 		}
+	}
+	
+	public static Vector<String> getScheduledDays(Cursor cursor) {
+		Vector<String> returnVector = new Vector<String>();
+		
+		if (!cursor.isNull( cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY) ) ) {
+			Log.d(LOG_TAG, "Found data on Sunday.");
+			returnVector.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY);
+		} 
+
+		if (!cursor.isNull( cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY) )) {
+			Log.d(LOG_TAG, "Found data on Monday.");
+			returnVector.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY);
+		} 
+
+		if (!cursor.isNull( cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY) )) {
+			Log.d(LOG_TAG, "Found data on Tuesday.");
+			returnVector.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY);
+		} 
+
+		if (!cursor.isNull( cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY) )) {
+			Log.d(LOG_TAG, "Found data on Wednesday.");
+			returnVector.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY);
+		} 
+
+		if (!cursor.isNull( cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY) )) {
+			Log.d(LOG_TAG, "Found data on Thursday.");
+			returnVector.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY);
+		} 
+
+		if (!cursor.isNull( cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY) )) {
+			Log.d(LOG_TAG, "Found data on Friday.");
+			returnVector.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY);
+		} 
+
+		if (!cursor.isNull( cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY) )) {
+			Log.d(LOG_TAG, "Found data on Saturday.");
+			returnVector.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY);
+		}
+		
+		// Trim the vector
+		returnVector.trimToSize();
+		
+		// Return the array of string columns that contain valid times.
+		return returnVector;
 	}
 	
 	public ContentValues toContentValues(Context context) {
@@ -248,15 +315,18 @@ public class Prescription {
 			cv.put(StorageProvider.PrescriptionColumns._ID, "" + this.get_id());
 		}
 		
-		// Store all the required fields
+		/**
+		 * STORE REQUIRED FIELDS
+		 */
 		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_PATIENT, this.getPatient().get_id());
 		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DRUG, this.getDrug().get_id());
 		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_TYPE, this.getDoseType());
 		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_SIZE, this.getDoseSize());
 		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS, this.getTotalUnits());
 		
-		// Store any optional fields that may be present
-		
+		/**
+		 * STORE OPTIONAL FIELDS
+		 */
 		// Store the days of the week that this prescription is needed
 		if(!this.daysOfWeek.isEmpty()) {
 			// Sort the vector in ascending order.
@@ -277,6 +347,12 @@ public class Prescription {
 			}
 		}
 		
+		// Store the scheduled flag
+		if (this.isScheduled()) {
+			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_SCHEDULED, SCHEDULED);
+		} else {
+			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_SCHEDULED, NOT_SCHEDULED);
+		}
 		
 		// Return the 'ContentValues' to the caller
 		return cv;

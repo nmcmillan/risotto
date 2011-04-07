@@ -37,13 +37,27 @@ public class StorageTester {
 			strengths.add("100");
 			strengths.add("200");
 			strengths.add("400");
-			Drug newDrug = new Drug(0, strengths, "Tylenol");
+			Drug tylenol = new Drug(0, strengths, "Tylenol");
 			
-			Patient newPatient = new Patient("George", "Bush", Patient.GENDER_MALE);
+			Drug vicadin = new Drug(0, strengths, "Vicadin");
 			
-			Prescription newPrescription = new Prescription(newPatient, newDrug, 1, 2, 3);
+			Drug crazyPills = new Drug(0, strengths, "Crazy Pills");
+			
+			Patient georgeBush = new Patient("George", "Bush", Patient.GENDER_MALE);
+			Patient billClinton = new Patient("Bill", "Clinton", Patient.GENDER_MALE);
+			Patient bObama = new Patient("Barak", "Obama", Patient.GENDER_MALE);
+			
+			Prescription newPrescription = new Prescription(georgeBush, tylenol, 1, 2, 3);
 			newPrescription.addDay(Calendar.MONDAY);
 			newPrescription.addDay(Calendar.SATURDAY);
+			newPrescription.setScheduled(true);
+			
+			Prescription anotherPrescription = new Prescription(billClinton, vicadin, 1, 2, 3);
+			anotherPrescription.addDay(Calendar.TUESDAY);
+			anotherPrescription.addDay(Calendar.THURSDAY);
+			anotherPrescription.setScheduled(true);
+			
+			Prescription morePrescription = new Prescription(bObama, crazyPills, 1, 2, 3);
 			
 			//log("Attempting to store the drug...");
 			//context.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, newDrug.toContentValues());
@@ -51,6 +65,10 @@ public class StorageTester {
 			//context.getContentResolver().insert(StorageProvider.PatientColumns.CONTENT_URI, newPatient.toContentValues());
 			log("Attempting to store the prescription...");
 			context.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, newPrescription.toContentValues(context));
+			context.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, anotherPrescription.toContentValues(context));
+			context.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, morePrescription.toContentValues(context));
+			
+			
 			
 			log("Added some entries to the databases.");
 		}
