@@ -91,7 +91,7 @@ public class StorageProvider extends ContentProvider {
 			Log.d(LOG_TAG, "Creating the " + DRUGS_TABLE_NAME + " table...");
 			db.execSQL("CREATE TABLE " + DRUGS_TABLE_NAME + " ("
 					+ DrugColumns._ID + " INTEGER PRIMARY KEY,"
-					+ DrugColumns.DRUG_NAME + " TEXT,"
+					+ DrugColumns.DRUG_BRAND_NAME + " TEXT,"
 					+ DrugColumns.DRUG_UNIT_VOLUME + " INTEGER,"
 					+ DrugColumns.DRUG_UNIT_VOLUME_LABEL + " TEXT,"
 					+ DrugColumns.DRUG_STRENGTH + " INTEGER,"
@@ -103,9 +103,10 @@ public class StorageProvider extends ContentProvider {
 			Log.d(LOG_TAG, "Creating the " + PATIENTS_TABLE_NAME + " table...");
 			db.execSQL("CREATE TABLE " + PATIENTS_TABLE_NAME + " ("
 					+ PatientColumns._ID + " INTEGER PRIMARY KEY,"
-					+ PatientColumns.PATIENT_FIRST_NAME + " TEXT,"
-					+ PatientColumns.PATIENT_LAST_NAME + " TEXT,"
-					+ PatientColumns.PATIENT_GENDER + " TEXT"
+					+ PatientColumns.PATIENT_FIRST_NAME + " TEXT NOT NULL,"
+					+ PatientColumns.PATIENT_LAST_NAME + " TEXT NOT NULL,"
+					+ PatientColumns.PATIENT_GENDER + " INTEGER NOT NULL,"
+					+ PatientColumns.PATIENT_RELATIONS + " BLOB"
 					+ ");");
 		}
 		
@@ -113,12 +114,20 @@ public class StorageProvider extends ContentProvider {
 			Log.d(LOG_TAG, "Creating the " + PRESCRIPTIONS_TABLE_NAME + " table...");
 			db.execSQL("CREATE TABLE " + PRESCRIPTIONS_TABLE_NAME + " ("
 					+ PrescriptionColumns._ID + " INTEGER PRIMARY KEY,"
-					+ PrescriptionColumns.PRESCRIPTION_PATIENT + " INTEGER,"
-					+ PrescriptionColumns.PRESCRIPTION_DRUG + " INTEGER,"
-					+ PrescriptionColumns.PRESCRIPTION_DOSE_TYPE + " INTEGER,"
-					+ PrescriptionColumns.PRESCRIPTION_DOSE_SIZE + " INTEGER,"
-					+ PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS + " INTEGER,"
-					+ PrescriptionColumns.PRESCRIPTION_SCHEDULED + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_PATIENT + " INTEGER NOT NULL,"
+					+ PrescriptionColumns.PRESCRIPTION_DRUG + " INTEGER NOT NULL,"
+					+ PrescriptionColumns.PRESCRIPTION_DOSE_TYPE + " INTEGER NOT NULL,"
+					+ PrescriptionColumns.PRESCRIPTION_DOSE_SIZE + " INTEGER NOT NULL,"
+					+ PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS + " INTEGER NOT NULL,"
+					+ PrescriptionColumns.PRESCRIPTION_DATE_FILLED + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_DR_NAME + " TEXT,"
+					+ PrescriptionColumns.PRESCRIPTION_UNIQUE_ID + " TEXT,"
+					+ PrescriptionColumns.PRESCRIPTION_COST + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_NUM_REFILLS + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_NUM_DAYS_SUPPLIED + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_DATE_EXPIRATION + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_SCHEDULE_TYPE + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_SCHEDULED + " INTEGER NOT NULL,"
 					+ PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY + " INTEGER,"
 					+ PrescriptionColumns.PRESCRIPTION_DAY_MONDAY + " INTEGER,"
 					+ PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY + " INTEGER,"
@@ -138,9 +147,11 @@ public class StorageProvider extends ContentProvider {
 			Log.d(LOG_TAG, "Creating the " + SCHEDULES_TABLE_NAME + " table...");
 			db.execSQL("CREATE TABLE " + SCHEDULES_TABLE_NAME + " ("
 					+ ScheduleColumns._ID + " INTEGER PRIMARY KEY,"
+					+ ScheduleColumns.SCHEDULES_PRESCRIPTION + " INTEGER NOT NULL,"
+					+ ScheduleColumns.SCHEDULES_START_TIME + " INTEGER NOT NULL,"
+					+ ScheduleColumns.SCHEDULES_INTERVAL + " INTEGER,"
 					+ ScheduleColumns.SCHEDULES_NEXT_TIME + " INTEGER,"
-					+ ScheduleColumns.SCHEDULES_DELAY + " INTEGER,"
-					+ ScheduleColumns.SCHEDULES_PRESCRIPTION + " INTEGER,"
+					+ ScheduleColumns.SCHEDULES_COUNT_REMAIN + " INTEGER,"
 					// FOREIGN KEY(prescription) REFERENCES prescriptions(_id)
 					+ "FOREIGN KEY(" + ScheduleColumns.SCHEDULES_PRESCRIPTION + ") REFERENCES " + PRESCRIPTIONS_TABLE_NAME + "(" + PrescriptionColumns._ID + ")"
 					+ ");");
@@ -157,7 +168,15 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.drug";
 		
-		public static final String DRUG_NAME = "name";
+		public static final String DRUG_BRAND_NAME = "brand_name";
+		
+		public static final String DRUG_GENERIC_NAME = "generic_name";	
+		
+		public static final String DRUG_NICK_NAME = "nick_name";
+		
+		public static final String DRUG_MANUFACTURER = "manufacturer";
+		
+		//public static final String DRUG_F
 		
 	    public static final String DRUG_UNIT_VOLUME = "unit_volume";
 	    
@@ -167,7 +186,7 @@ public class StorageProvider extends ContentProvider {
 	    
 	    public static final String DRUG_STRENGTH_LABEL = "strength_label";
 	    
-	    public static final String DEFAULT_SORT_ORDER = DRUG_NAME + " DESC";	
+	    public static final String DEFAULT_SORT_ORDER = DRUG_BRAND_NAME + " DESC";	
 	}
 	
 	public static final class PatientColumns implements BaseColumns {
@@ -186,6 +205,8 @@ public class StorageProvider extends ContentProvider {
 	    
 	    public static final String PATIENT_GENDER = "gender";
 	    
+	    public static final String PATIENT_RELATIONS = "relations";
+	    
 	    public static final String DEFAULT_SORT_ORDER = PATIENT_LAST_NAME + " DESC";	
 	}
 	
@@ -199,11 +220,31 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.prescription";
 		
+		public static final String PRESCRIPTION_PATIENT = "patient";
+	    
+	    public static final String PRESCRIPTION_DRUG = "drug";
+		
 	    public static final String PRESCRIPTION_DOSE_TYPE = "dose_type";
 	    
 	    public static final String PRESCRIPTION_DOSE_SIZE = "dose_size";
 	    
 	    public static final String PRESCRIPTION_TOTAL_UNITS = "total_units";
+	    
+	    public static final String PRESCRIPTION_DATE_FILLED = "date_filled";
+	    
+	    public static final String PRESCRIPTION_DR_NAME = "dr_name";
+	    
+	    public static final String PRESCRIPTION_UNIQUE_ID = "prescription_id";
+	    
+	    public static final String PRESCRIPTION_COST = "cost";
+	    
+	    public static final String PRESCRIPTION_NUM_REFILLS = "num_refills";
+	    
+	    public static final String PRESCRIPTION_NUM_DAYS_SUPPLIED = "num_days_supplied";
+	    
+	    public static final String PRESCRIPTION_DATE_EXPIRATION ="date_expiration";
+	    
+	    public static final String PRESCRIPTION_SCHEDULE_TYPE = "schedule_type";
 	    
 	    public static final String PRESCRIPTION_SCHEDULED = "scheduled";
 	    
@@ -221,10 +262,6 @@ public class StorageProvider extends ContentProvider {
 	    
 	    public static final String PRESCRIPTION_DAY_SATURDAY = "day_saturday";
 	    
-	    public static final String PRESCRIPTION_PATIENT = "patient";
-	    
-	    public static final String PRESCRIPTION_DRUG = "drug";
-	    
 	    public static final String DEFAULT_SORT_ORDER = PrescriptionColumns._ID + " DESC";	
 	}
 	
@@ -238,11 +275,15 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.schedule";
 		
+		public static final String SCHEDULES_PRESCRIPTION = "prescription";
+		
+	    public static final String SCHEDULES_START_TIME = "start_time";
+	    
+	    public static final String SCHEDULES_INTERVAL = "interval";
+	    
 	    public static final String SCHEDULES_NEXT_TIME = "next_time";
 	    
-	    public static final String SCHEDULES_DELAY = "delay";
-	    
-	    public static final String SCHEDULES_PRESCRIPTION = "prescription";
+	    public static final String SCHEDULES_COUNT_REMAIN = "count_remain";
 	    
 	    public static final String DEFAULT_SORT_ORDER = SCHEDULES_NEXT_TIME + " DESC";	
 	}
@@ -667,6 +708,5 @@ public class StorageProvider extends ContentProvider {
 		
 		return count;
 	}
-	
 	
 }
