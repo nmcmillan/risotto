@@ -14,7 +14,7 @@ import com.risotto.storage.StorageProvider;
 
 public class Drug {
 	
-	public static final String LOG_TAG = "Drug";
+	public static final String LOG_TAG = "RISOTTO_DRUG";
 	
 	// Required Fields
 	
@@ -256,7 +256,7 @@ public class Drug {
 	
 	public ContentValues toContentValues() {
 		ContentValues cv = new ContentValues();
-		cv.put(StorageProvider.DrugColumns.DRUG_NAME, this.genericName);
+		cv.put(StorageProvider.DrugColumns.DRUG_BRAND_NAME, this.genericName);
 		
 		/*ByteBuffer byteBuffer = ByteBuffer.allocate(this.strength.length * 4);        
         IntBuffer intBuffer = byteBuffer.asIntBuffer();
@@ -289,9 +289,7 @@ public class Drug {
 		String genericName = "";
 		String strenString = "";
 		
-		// Set required fields
-		try {
-			genericName = c.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME));
+			genericName = c.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME));
 			strenString = c.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH));
 			strength = convertStrengthToVector(strenString);
 			
@@ -303,13 +301,7 @@ public class Drug {
 			returnDrug._id = Integer.parseInt(c.getString(c.getColumnIndex(StorageProvider.DrugColumns._ID)));
 			
 			return returnDrug;
-		} catch(CursorIndexOutOfBoundsException cursorException) {
-			throw cursorException;
-		}
-		
-		// Check/set any non-required fields.
-		
-		
+
 	}
 	
 	public static String convertStrengthToString(Vector<String> stren) {

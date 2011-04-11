@@ -17,15 +17,12 @@ import com.risotto.storage.StorageProvider;
 public class Prescription {
 	
 	// Required fields
-	private Dosage dose;
 	private Patient patient;
 	private Drug drug;
 	private int doseType;
 	private int doseSize;
 	private int totalUnits;
-	// Unique ID for storage references
-	private int _id;
-	private static final int INVALID_ID = -1;
+	private boolean scheduled = false;
 	
 	// Optional Fields
 	private Date filled;
@@ -36,8 +33,8 @@ public class Prescription {
 	private int numRefills;
 	private Date expiration;
 	private Vector<Integer> daysOfWeek;
-	private boolean scheduled = false;
 	
+	// Scheduling constants
 	public static final int SCHEDULED = 1;
 	public static final int NOT_SCHEDULED = 0;
 
@@ -51,15 +48,12 @@ public class Prescription {
 	// Ex: ONCE a day EVERY day
 	public static final int DOSE_TYPE_EVERY_DAY = 3;
 	
-	private static final String LOG_TAG = "RISOTTO_PRESCRIPTION";
+	// Unique ID for storage references
+	private int _id;
+	private static final int INVALID_ID = -1;
 	
-	@Deprecated
-	public enum DOSE_TYPE {
-		EVERY_DAY_OF_WEEK,
-		EVERY_HOUR,
-		EVERY_HOUR_DAY_OF_WEEK,
-		EVERY_DAY
-	}
+	// DEBUG: LOG_TAG
+	private static final String LOG_TAG = "RISOTTO_PRESCRIPTION";
 	
 	public Prescription(Patient patient, Drug drug, int doseType, int doseSize, int totalUnits) {
 		this(INVALID_ID, patient, drug, doseType, doseSize, totalUnits);
@@ -73,14 +67,6 @@ public class Prescription {
 		this.doseSize = doseSize;
 		this.totalUnits = totalUnits;
 		this.daysOfWeek = new Vector<Integer>();
-	}
-
-	public Dosage getDose() {
-		return dose;
-	}
-
-	public void setDose(Dosage dose) {
-		this.dose = dose;
 	}
 
 	public Patient getPatient() {

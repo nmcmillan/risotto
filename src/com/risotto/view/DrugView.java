@@ -55,7 +55,7 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	
 	private static String[] PROJECTION = {
 		StorageProvider.DrugColumns._ID,
-		StorageProvider.DrugColumns.DRUG_NAME,
+		StorageProvider.DrugColumns.DRUG_BRAND_NAME,
 		StorageProvider.DrugColumns.DRUG_STRENGTH,
 	};
 	
@@ -182,7 +182,7 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 				  this,						//context
 				  R.layout.drug_list_item,	//layout
 				  cursor,					//cursor
-				  new String[] {StorageProvider.DrugColumns.DRUG_NAME, StorageProvider.DrugColumns.DRUG_STRENGTH},	//column name 
+				  new String[] {StorageProvider.DrugColumns.DRUG_BRAND_NAME, StorageProvider.DrugColumns.DRUG_STRENGTH},	//column name 
 				  new int[] {R.id.drug_list_view_name,R.id.drug_list_view_strength}); //mapping
 		  
 		  adapter.setViewBinder(this);
@@ -217,7 +217,7 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		Drug drug = Drug.fromCursor(cursor);
 		TextView v;
-		if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME)) {
+		if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)) {
 			//convert drug name to correct string (drugName maps to TextView
 			v = (TextView) view;
 			v.setText(drug.getMedicalName());

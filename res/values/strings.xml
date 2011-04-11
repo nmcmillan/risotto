@@ -21,6 +21,6 @@
 	<string name="drug_list_view_add">Add Drug</string>
 	
 	<!-- Drug Details Strings -->
-	<string name="drug_details_title">Drug Details...</string>
+	<string name="drug_details_title">Drug Details:</string>
 
 </resources>

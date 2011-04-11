@@ -31,7 +31,7 @@ public class DrugDetailsView extends Activity {
 	
 	private static String[] PROJECTION = {
 		StorageProvider.DrugColumns._ID,
-		StorageProvider.DrugColumns.DRUG_NAME,
+		StorageProvider.DrugColumns.DRUG_BRAND_NAME,
 		StorageProvider.DrugColumns.DRUG_STRENGTH,
 	};
 

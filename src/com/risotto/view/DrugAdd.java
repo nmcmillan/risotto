@@ -35,7 +35,7 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 	//return specific fields during a query
 	private static String[] PROJECTION = { 
 		StorageProvider.DrugColumns._ID,
-		StorageProvider.DrugColumns.DRUG_NAME,
+		StorageProvider.DrugColumns.DRUG_BRAND_NAME,
 		StorageProvider.DrugColumns.DRUG_STRENGTH,
 	};
 	
@@ -156,7 +156,7 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 		else {
 			//Basic info checks done, now search for drug to see if it's in database
 			//Cursor storedDrugs = this.getContentResolver().query(StorageProvider.DrugColumns.CONTENT_URI, PROJECTION, null, null, null);
-			String whereClause = StorageProvider.DrugColumns.DRUG_NAME + "=" + "'" + enteredName + "'";
+			String whereClause = StorageProvider.DrugColumns.DRUG_BRAND_NAME + "=" + "'" + enteredName + "'";
 		
 			//First run a query to see if the drug is already in the database.
 			Cursor dCursor = this.getContentResolver().query(
