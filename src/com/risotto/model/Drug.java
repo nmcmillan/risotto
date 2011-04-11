@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.graphics.Color;
 import android.util.Log;
 
@@ -279,8 +280,7 @@ public class Drug {
 	 * @param c - cursor object pointing to the row to be used to create the drug object
 	 * @return a new drug object created from a given row in the content provider
 	 */
-	public static Drug fromCursor(Cursor c) {
-		// Declare a return object
+	public static Drug fromCursor(Cursor c) throws CursorIndexOutOfBoundsException {
 		Drug returnDrug = null;
 		
 		// Declare required fields.
@@ -290,20 +290,26 @@ public class Drug {
 		String strenString = "";
 		
 		// Set required fields
-		genericName = c.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME));
-		strenString = c.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH));
-		strength = convertStrengthToVector(strenString);
-		
-		// Create the object with required fields
-		returnDrug = new Drug(0, strength, genericName);
-		
-		Log.d(LOG_TAG,"column index of _id : " + c.getColumnIndex(StorageProvider.DrugColumns._ID));
-		
-		returnDrug._id = Integer.parseInt(c.getString(c.getColumnIndex(StorageProvider.DrugColumns._ID)));
+		try {
+			genericName = c.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_NAME));
+			strenString = c.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH));
+			strength = convertStrengthToVector(strenString);
+			
+			// Create the object with required fields
+			returnDrug = new Drug(0, strength, genericName);
+			
+			Log.d(LOG_TAG,"column index of _id : " + c.getColumnIndex(StorageProvider.DrugColumns._ID));
+			
+			returnDrug._id = Integer.parseInt(c.getString(c.getColumnIndex(StorageProvider.DrugColumns._ID)));
+			
+			return returnDrug;
+		} catch(CursorIndexOutOfBoundsException cursorException) {
+			throw cursorException;
+		}
 		
 		// Check/set any non-required fields.
 		
-		return returnDrug;
+		
 	}
 	
 	public static String convertStrengthToString(Vector<String> stren) {

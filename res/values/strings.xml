@@ -5,19 +5,22 @@
 	<string name="hello">Hello World, HelloWorld!</string>
 	<string name="app_name">Risotto</string>
 
-	<!-- DialogActivity Strings -->
+	<!-- Dialog Activity Strings -->
 	<string name="text_patientName">Patient Name</string>
 	<string name="text_reminderTime">3:00pm</string>
 	<string name="text_reminderMessage">Time to take 2 Tylenol.</string>
 	<string name="button_snooze">Snooze</string>
 	<string name="button_taken">Taken</string>
 	
-	<!-- DrugEdit Strings -->
+	<!-- Drug Edit Strings -->
 	<string name="drug_add_strength">Strength...</string>
 	<string name="drug_add_name">Name...</string>
 	<string name="drug_editor_title">New drug info:</string>
 	<string name="drug_resolve_title">Drug Information:</string>
 	<string name="button_drug_edit_ok">OK</string>
 	<string name="drug_list_view_add">Add Drug</string>
+	
+	<!-- Drug Details Strings -->
+	<string name="drug_details_title">Drug Details...</string>
 
 </resources>

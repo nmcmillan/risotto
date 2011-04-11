@@ -55,7 +55,7 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 		
 		Log.d(LOG_TAG,"onCreate called");
 		
-		setContentView(R.layout.drug_editor);
+		setContentView(R.layout.drug_add_layout);
 	
 		//get the URI of the drug we're looking to edit
 		//TO DO: the list menu must have to package this before
@@ -94,7 +94,7 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 	public void onClick(View v) {
 		//question, if we attach more than one item to the click listener, how do we distinguish?
 		
-		//this will only be called when 'ok' is called because it's the only view attached to a clicklistener
+		//will only be called when 'ok' is called because it's the only view attached to a clicklistener
 		
 		//called when button is clicked & when text field is clicked b/c setOnClickListener attached to it
 		//NOTE: if an activity overtakes this one (phone call, user presses home button) any saving will need
@@ -170,13 +170,18 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 			//update the row
 			if(dCursor.getCount() > 0) {
 				dCursor.moveToFirst();
-				Drug existingDrug = Drug.fromCursor(dCursor);
-				existingDrug.addStrength(enteredStrength);
-				int id = existingDrug.get_id();
-				Uri uri = StorageProvider.DrugColumns.CONTENT_URI.buildUpon().appendPath(String.valueOf(id)).build();
-				ContentValues cv = existingDrug.toContentValues();
-				this.getContentResolver().update(uri, cv, null, null);
-				this.getContentResolver().notifyChange(uri, null);
+				try {
+					Drug existingDrug = Drug.fromCursor(dCursor);
+					existingDrug.addStrength(enteredStrength);
+					int id = existingDrug.get_id();
+					Uri uri = StorageProvider.DrugColumns.CONTENT_URI.buildUpon().appendPath(String.valueOf(id)).build();
+					ContentValues cv = existingDrug.toContentValues();
+					this.getContentResolver().update(uri, cv, null, null);
+					this.getContentResolver().notifyChange(uri, null);
+				} catch (Exception e) {
+					Log.d(LOG_TAG,"Exception thrown");
+					e.printStackTrace();
+				}
 				
 			}
 			else {

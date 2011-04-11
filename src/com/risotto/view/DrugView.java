@@ -9,6 +9,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,7 +39,10 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	
 	protected final static String LOG_TAG = "DrugView";
 	
-	public static final String ACTION_VIEW_DRUG_DETAILS = "com.risotto.service.START_SERVICE";
+	public static final String ACTION_VIEW_DRUG_DETAILS = "com.risotto.view.DrugDetailsViewStart";
+	
+	//String to define the name of the extra data being sent in intent to DrugDetailsView
+	public static final String DRUG_DETAILS_DB_ID = "com.risotto.view.DrugView.DrugDetailsURI";
 	
 	private StatusBarNotificationManager stbm = new StatusBarNotificationManager(this);
 	private ContentResolver contentResolver;
@@ -69,7 +73,7 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 				Menu.NONE, //group id for doing batch changes
 				MENU_ITEM_ADD_POSITION, //position
 				Menu.NONE, //order, see getOrder()
-				R.string.drug_list_view_add) //resource id - link to XML
+				R.string.drug_list_view_add) //name ofr button - link to XML
 				.setIcon(android.R.drawable.ic_menu_add);
 		
 		return true;
@@ -103,8 +107,7 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 			Intent intent = new Intent(null, uri);
             intent.addCategory(Intent.CATEGORY_ALTERNATIVE);
             
-            menu.addIntentOptions(Menu.CATEGORY_ALTERNATIVE, 0, 0, null, specifics, intent, 0,
-                    items);	
+            menu.addIntentOptions(Menu.CATEGORY_ALTERNATIVE, 0, 0, null, specifics, intent, 0, items);	
 		} else {
 			menu.removeGroup(Menu.CATEGORY_ALTERNATIVE);
 		}
@@ -201,24 +204,14 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	  });*/
 	}
 	
+	
 	@Override
-	protected void onListItemClick(ListView l,View v,int position, long id) {
-		Log.d(LOG_TAG,"position: " + position); // position in list
-		Log.d(LOG_TAG,"id: " + id); //id in database ?
-		
-		Cursor dCursor = null;
-		
-		try {
-			dCursor = (Cursor)l.getItemAtPosition(position);
-		} catch (ClassCastException e) {
-			Log.d(LOG_TAG,"Wrong class cast.");
-		}
-		
-		Intent editIntent = new Intent();
-		editIntent.setAction(DrugView.ACTION_VIEW_DRUG_DETAILS);
-		//Log.d(LOG_TAG,drug.getMedicalName());
-		
-		
+	protected void onListItemClick(ListView l,View v,int position, long id) {		
+			Intent editIntent = new Intent();
+			editIntent.setAction(DrugView.ACTION_VIEW_DRUG_DETAILS);
+			editIntent.setClass(getApplicationContext(), DrugDetailsView.class);
+			editIntent.putExtra(DrugView.DRUG_DETAILS_DB_ID,  String.valueOf(id));
+			startActivity(editIntent);
 	}
 
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {

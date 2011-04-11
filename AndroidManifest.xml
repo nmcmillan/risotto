@@ -29,7 +29,11 @@
 		<!-- Drug View Activity -->
 		<activity android:name="com.risotto.view.DrugView"/>
 		
+		<!-- Alarm View Activity -->
 		<activity android:name="com.risotto.view.AlarmView"/>
+		
+		<!-- Drug Details View Activity -->
+		<activity android:name="com.risotto.view.DrugDetailsView"/>
 		
 		<!-- Dialog Activity -->
 		<activity android:name="com.risotto.DialogActivity" android:theme="@android:style/Theme.Dialog" android:excludeFromRecents="true"/>
