@@ -20,11 +20,11 @@ public class DrugTest {
 		strengths.add("100");
 		strengths.add("150");
 		strengths.add("200");		
-		Drug drug = new Drug(100,strengths,"Tylenol");
-		ContentValues cv = drug.toContentValues();
+		Drug drug = new Drug("Tylenol");
+		//ContentValues cv = drug.toContentValues();
 		//Drug newDrug = Drug.fromContentValues(cv);
 		
-		Log.d(LOG_TAG,"oldDrug : " + Arrays.toString(drug.getStrength().toArray(new String[1])));
+		//Log.d(LOG_TAG,"oldDrug : " + Arrays.toString(drug.getStrength().toArray(new String[1])));
 		//Log.d(LOG_TAG,"newDrug : " + Arrays.toString(newDrug.getStrength()));
 		
 		

@@ -24,6 +24,7 @@ public class StorageProvider extends ContentProvider {
     private static final String DATABASE_NAME = "risotto.db";
     private static final int DATABASE_VERSION = 2;
     private static final String DRUGS_TABLE_NAME = "drugs";
+    private static final String DRUG_DETAILS_TABLE_NAME = "drugs";
     private static final String PATIENTS_TABLE_NAME = "patients";
     private static final String PRESCRIPTIONS_TABLE_NAME = "prescriptions";
     private static final String SCHEDULES_TABLE_NAME = "schedules";
@@ -31,18 +32,22 @@ public class StorageProvider extends ContentProvider {
     // URI Matching ID's
     private static final int URI_TYPE_DRUGS = 0;
     private static final int URI_TYPE_DRUG_ID = 1;
-    private static final int URI_TYPE_PATIENTS = 2;
-    private static final int URI_TYPE_PATIENT_ID = 3;
-    private static final int URI_TYPE_PRESCRIPTIONS = 4;
-    private static final int URI_TYPE_PRESCRIPTION_ID = 5;
-    private static final int URI_TYPE_SCHEDULES = 6;
-    private static final int URI_TYPE_SCHEDULE_ID  = 7;
+    private static final int URI_TYPE_DRUG_DETAILS = 2;
+    private static final int URI_TYPE_DRUG_DETAIL_ID = 3;
+    private static final int URI_TYPE_PATIENTS = 4;
+    private static final int URI_TYPE_PATIENT_ID = 5;
+    private static final int URI_TYPE_PRESCRIPTIONS = 6;
+    private static final int URI_TYPE_PRESCRIPTION_ID = 7;
+    private static final int URI_TYPE_SCHEDULES = 8;
+    private static final int URI_TYPE_SCHEDULE_ID  = 9;
     
 	// Set up the URI matcher
 	private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	static {
 		sUriMatcher.addURI(AUTHORITY, "drugs", URI_TYPE_DRUGS);
 		sUriMatcher.addURI(AUTHORITY, "drugs/#", URI_TYPE_DRUG_ID);
+		sUriMatcher.addURI(AUTHORITY, "drug_details", URI_TYPE_DRUG_DETAILS);
+		sUriMatcher.addURI(AUTHORITY, "drug_details/#", URI_TYPE_DRUG_DETAIL_ID);
 		sUriMatcher.addURI(AUTHORITY, "patients", URI_TYPE_PATIENTS);
 		sUriMatcher.addURI(AUTHORITY, "patients/#", URI_TYPE_PATIENT_ID);
 		sUriMatcher.addURI(AUTHORITY, "prescriptions", URI_TYPE_PRESCRIPTIONS);
@@ -72,6 +77,7 @@ public class StorageProvider extends ContentProvider {
 		public void onCreate(SQLiteDatabase db) {
 			Log.d(LOG_TAG, "Creating the SQLite DB...");
 			this.createDrugsTable(db);
+			this.createDrugDetailsTable(db);
 			this.createPatientsTable(db);
 			this.createPrescriptionsTable(db);
 			this.createSchedulesTable(db);
@@ -81,6 +87,7 @@ public class StorageProvider extends ContentProvider {
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.d(LOG_TAG, "Dropping all tables from version " + oldVersion + " to migrate to version " + newVersion);
 			db.execSQL("DROP TABLE IF EXISTS " + DRUGS_TABLE_NAME);
+			db.execSQL("DROP TABLE IF EXISTS " + DRUG_DETAILS_TABLE_NAME);
 			db.execSQL("DROP TABLE IF EXISTS " + PATIENTS_TABLE_NAME);
 			db.execSQL("DROP TABLE IF EXISTS " + PRESCRIPTIONS_TABLE_NAME);
 			db.execSQL("DROP TABLE IF EXISTS " + SCHEDULES_TABLE_NAME);
@@ -91,13 +98,32 @@ public class StorageProvider extends ContentProvider {
 			Log.d(LOG_TAG, "Creating the " + DRUGS_TABLE_NAME + " table...");
 			db.execSQL("CREATE TABLE " + DRUGS_TABLE_NAME + " ("
 					+ DrugColumns._ID + " INTEGER PRIMARY KEY,"
-					+ DrugColumns.DRUG_BRAND_NAME + " TEXT,"
-					+ DrugColumns.DRUG_UNIT_VOLUME + " INTEGER,"
-					+ DrugColumns.DRUG_UNIT_VOLUME_LABEL + " TEXT,"
-					+ DrugColumns.DRUG_STRENGTH + " INTEGER,"
-					+ DrugColumns.DRUG_STRENGTH_LABEL + " TEXT"
+					+ DrugColumns.DRUG_BRAND_NAME + " TEXT NOT NULL,"
+					+ DrugColumns.DRUG_GENERIC_NAME + " TEXT,"
+					+ DrugColumns.DRUG_MANUFACTURER + " TEXT,"
+					+ DrugColumns.DRUG_INTERACTIONS + " BLOB"
 					+ ");");	
 		}
+		
+		private void createDrugDetailsTable(SQLiteDatabase db) {		
+			Log.d(LOG_TAG, "Creating the " + DRUG_DETAILS_TABLE_NAME + " table...");
+			db.execSQL("CREATE TABLE " + DRUG_DETAILS_TABLE_NAME + " ("
+					+ DrugDetailColumns._ID + " INTEGER PRIMARY KEY,"
+					+ DrugDetailColumns.DRUG_DETAILS_DRUG + " INTEGER NOT NULL,"
+					+ DrugDetailColumns.DRUG_DETAILS_DRUG_TYPE + " INTEGER NOT NULL,"
+					+ DrugDetailColumns.DRUG_DETAILS_DRUG_STRENGTH + " INTEGER NOT NULL,"
+					+ DrugDetailColumns.DRUG_DETAILS_DRUG_STRENGTH_LABEL + " TEXT NOT NULL,"
+					+ DrugDetailColumns.DRUG_DETAILS_DRUG_NICK_NAME + " TEXT,"
+					+ DrugDetailColumns.DRUG_DETAILS_DRUG_FORM + " INTEGER,"
+					+ DrugDetailColumns.DRUG_DETAILS_DRUG_COLOR + " INTEGER,"
+					+ DrugDetailColumns.DRUG_DETAILS_DRUG_SHAPE + " INTEGER,"
+					+ DrugDetailColumns.DRUG_DETAILS_DRUG_SIZE + " INTEGER,"
+					
+					// FOREIGN KEY(drug) REFERENCES drugs(_id), 
+					+ "FOREIGN KEY(" + DrugDetailColumns.DRUG_DETAILS_DRUG + ") REFERENCES " + DRUGS_TABLE_NAME + "(" + DrugColumns._ID + ")"
+					+ ");");	
+		}
+		
 		
 		private void createPatientsTable(SQLiteDatabase db) {
 			Log.d(LOG_TAG, "Creating the " + PATIENTS_TABLE_NAME + " table...");
@@ -152,6 +178,7 @@ public class StorageProvider extends ContentProvider {
 					+ ScheduleColumns.SCHEDULES_INTERVAL + " INTEGER,"
 					+ ScheduleColumns.SCHEDULES_NEXT_TIME + " INTEGER,"
 					+ ScheduleColumns.SCHEDULES_COUNT_REMAIN + " INTEGER,"
+					
 					// FOREIGN KEY(prescription) REFERENCES prescriptions(_id)
 					+ "FOREIGN KEY(" + ScheduleColumns.SCHEDULES_PRESCRIPTION + ") REFERENCES " + PRESCRIPTIONS_TABLE_NAME + "(" + PrescriptionColumns._ID + ")"
 					+ ");");
@@ -172,21 +199,42 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final String DRUG_GENERIC_NAME = "generic_name";	
 		
-		public static final String DRUG_NICK_NAME = "nick_name";
-		
 		public static final String DRUG_MANUFACTURER = "manufacturer";
 		
-		//public static final String DRUG_F
-		
-	    public static final String DRUG_UNIT_VOLUME = "unit_volume";
-	    
-	    public static final String DRUG_UNIT_VOLUME_LABEL = "unit_volume_label";
-	    
-	    public static final String DRUG_STRENGTH = "strength";
-	    
-	    public static final String DRUG_STRENGTH_LABEL = "strength_label";
+		public static final String DRUG_INTERACTIONS = "interactions";
 	    
 	    public static final String DEFAULT_SORT_ORDER = DRUG_BRAND_NAME + " DESC";	
+	}
+	
+	public static final class DrugDetailColumns implements BaseColumns {
+		// This class cannot be instantiated
+		private DrugDetailColumns() {}
+		
+		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/drug_details");
+		
+		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.risotto.drug_details";
+		
+		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.drug_details";
+		
+		public static final String DRUG_DETAILS_DRUG = "drug";
+		
+		public static final String DRUG_DETAILS_DRUG_NICK_NAME = "nick_name";
+		
+		public static final String DRUG_DETAILS_DRUG_TYPE = "type";
+		
+		public static final String DRUG_DETAILS_DRUG_STRENGTH = "strength";
+		
+		public static final String DRUG_DETAILS_DRUG_STRENGTH_LABEL = "strength_label";
+		
+		public static final String DRUG_DETAILS_DRUG_FORM = "form";
+		
+		public static final String DRUG_DETAILS_DRUG_COLOR = "color";
+		
+		public static final String DRUG_DETAILS_DRUG_SHAPE = "shape";
+		
+		public static final String DRUG_DETAILS_DRUG_SIZE = "size";
+		
+		public static final String DEFAULT_SORT_ORDER = DRUG_DETAILS_DRUG + " DESC";
 	}
 	
 	public static final class PatientColumns implements BaseColumns {
@@ -309,6 +357,10 @@ public class StorageProvider extends ContentProvider {
 			return DrugColumns.CONTENT_TYPE;
 		case URI_TYPE_DRUG_ID:
 			return DrugColumns.CONTENT_ITEM_TYPE;
+		case URI_TYPE_DRUG_DETAILS:
+			return DrugDetailColumns.CONTENT_TYPE;
+		case URI_TYPE_DRUG_DETAIL_ID:
+			return DrugDetailColumns.CONTENT_ITEM_TYPE;	
 		case URI_TYPE_PATIENTS:
 			return PatientColumns.CONTENT_TYPE;
 		case URI_TYPE_PATIENT_ID:
@@ -356,7 +408,29 @@ public class StorageProvider extends ContentProvider {
 			}
 		case URI_TYPE_DRUG_ID:
 			Log.d(LOG_TAG, "Use update to modify a row in the drug table...");
-			throw new IllegalArgumentException("Invalid URI: " + uri);
+			throw new IllegalArgumentException("Invalid URI: " + uri);			
+		case URI_TYPE_DRUG_DETAILS:
+			Log.d(LOG_TAG, "Insert into the drug details table...");
+			// Open the database.
+			db = mOpenHelper.getWritableDatabase();
+			// Call for the insert into the database.
+			rowId = db.insert(DRUG_DETAILS_TABLE_NAME, null, values);
+			
+			// Check to make sure that the insert was successful
+			if (rowId > 0) {
+				// Append the row ID to the content uri
+				Uri drugDetailUri = ContentUris.withAppendedId(DrugDetailColumns.CONTENT_URI, rowId);
+				// Notify the application that the content has changed
+				getContext().getContentResolver().notifyChange(drugDetailUri, null);
+				// Return the uri to the caller
+	            return drugDetailUri;
+			} else {
+				// If the row ID was -1 the insert did not happen...
+				throw new SQLException("Failed to insert row into " + uri);
+			}
+		case URI_TYPE_DRUG_DETAIL_ID:
+			Log.d(LOG_TAG, "Use update to modify a row in the drug details table...");
+			throw new IllegalArgumentException("Invalid URI: " + uri);		
 		case URI_TYPE_PATIENTS:
 			Log.d(LOG_TAG, "Insert into the patients table...");
 			// Open the database.
@@ -444,7 +518,17 @@ public class StorageProvider extends ContentProvider {
 			String drugId = uri.getPathSegments().get(1);
             count = db.delete(DRUGS_TABLE_NAME, DrugColumns._ID + "=" + drugId
                     + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+			break;			
+		case URI_TYPE_DRUG_DETAILS:
+			Log.d(LOG_TAG, "Deleting the drug details table...");
+			count = db.delete(DRUG_DETAILS_TABLE_NAME, where, whereArgs);
 			break;
+		case URI_TYPE_DRUG_DETAIL_ID:
+			Log.d(LOG_TAG, "Deleting one drug detail entry...");
+			String drugDetailId = uri.getPathSegments().get(1);
+            count = db.delete(DRUG_DETAILS_TABLE_NAME, DrugDetailColumns._ID + "=" + drugDetailId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+			break;		
 		case URI_TYPE_PATIENTS:
 			Log.d(LOG_TAG, "Deleting the patients table...");
 			count = db.delete(PATIENTS_TABLE_NAME, where, whereArgs);
@@ -531,7 +615,46 @@ public class StorageProvider extends ContentProvider {
 	        // Tell the cursor what uri to watch, so it knows when its source data changes
 	        c.setNotificationUri(getContext().getContentResolver(), uri);
 	        return c;
+	               
+		case URI_TYPE_DRUG_DETAILS:
+			
+			Log.d(LOG_TAG, "Query for all drug details...");
+			qb.setTables(DRUG_DETAILS_TABLE_NAME);
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = DrugDetailColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
 	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;
+			
+		case URI_TYPE_DRUG_DETAIL_ID:
+			
+			Log.d(LOG_TAG, "Query for one drug detail...");
+			qb.setTables(DRUG_DETAILS_TABLE_NAME);
+			qb.appendWhere(DrugDetailColumns._ID + "=" + uri.getPathSegments().get(1));
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = DrugDetailColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c; 
+	                
 		case URI_TYPE_PATIENTS:
 			
 			Log.d(LOG_TAG, "Query for all patients...");
@@ -671,7 +794,17 @@ public class StorageProvider extends ContentProvider {
 			String drugId = uri.getPathSegments().get(1);
             count = db.update(DRUGS_TABLE_NAME, values, DrugColumns._ID + "=" + drugId
                     + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+            break;        
+		case URI_TYPE_DRUG_DETAILS:
+			Log.d(LOG_TAG, "Update called on drug details table...");
+			count = db.update(DRUG_DETAILS_TABLE_NAME, values, where, whereArgs);
             break;
+		case URI_TYPE_DRUG_DETAIL_ID:
+			Log.d(LOG_TAG, "Update called for one drug detail...");
+			String drugDetailId = uri.getPathSegments().get(1);
+            count = db.update(DRUG_DETAILS_TABLE_NAME, values, DrugDetailColumns._ID + "=" + drugDetailId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+            break;           
 		case URI_TYPE_PATIENTS:
 			Log.d(LOG_TAG, "Update called on patients table...");
 			count = db.update(PATIENTS_TABLE_NAME, values, where, whereArgs);

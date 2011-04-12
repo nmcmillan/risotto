@@ -5,13 +5,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
-
 import com.risotto.storage.StorageProvider;
 
 public class Prescription {
@@ -173,16 +171,10 @@ public class Prescription {
 		this._id = _id;
 	}
 	
-	/**
-	 * @param scheduled the scheduled to set
-	 */
 	public void setScheduled(boolean scheduled) {
 		this.scheduled = scheduled;
 	}
 
-	/**
-	 * @return the scheduled
-	 */
 	public boolean isScheduled() {
 		return scheduled;
 	}
@@ -282,9 +274,9 @@ public class Prescription {
 		// If the drug is new, we need to store the drug
 		if (newDrug) {
 			// Store the drug
-			Uri drugUri = context.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, this.getDrug().toContentValues());
+			int drugId = this.getDrug().storeDrugAndDetails(context);
 			// Store the new _id back to the drug object in memory.
-			this.getDrug().set_id(Integer.parseInt(drugUri.getPathSegments().get(1)));	
+			this.getDrug().set_id(drugId);	
 		}
 		
 		// If the patient is new, we need to store the patient
@@ -349,6 +341,8 @@ public class Prescription {
 		Prescription newPrescription = null;
 		Patient newPatient;
 		Drug newDrug;
+		
+		// TODO Implement
 		
 		return newPrescription;
 	}
