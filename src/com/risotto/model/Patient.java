@@ -24,6 +24,7 @@ public class Patient {
 	
 	// Optional Fields
 	private Hashtable<Integer, Integer> relations;
+	private int age = -1;
 	
 	// Relation constants
 	public static final int RELATION_MOTHER = 0;
@@ -41,8 +42,8 @@ public class Patient {
 	
 	// Gender constants
 	public static final int GENDER_MALE = 0;
-	public static final int GENDER_FEMALE = 0;
-	public static final int GENDER_OTHER = 0;
+	public static final int GENDER_FEMALE = 1;
+	public static final int GENDER_OTHER = 2;
 	
 	// Unique id used for storage references
 	private int _id;
@@ -57,6 +58,14 @@ public class Patient {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.gender = gender;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
 	}
 
 	public int getGender() {
@@ -155,6 +164,11 @@ public class Patient {
 		/**
 		 * STORE ANY OPTIONAL FIELDS.
 		 */
+		// Store the age
+		if ( this.getAge() != -1) {
+			patientValues.put(StorageProvider.PatientColumns.PATIENT_AGE, this.getAge());
+		}
+		
 		// Store the relations
 		if (this.relations != null) {
 			try {
@@ -201,6 +215,10 @@ public class Patient {
 			/**
 			 * GET THE OPTIONAL FIELDS.
 			 */
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_AGE))) {
+				newPatient.setAge(cursor.getInt(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_AGE)));
+			}
+			
 			if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_RELATIONS))) {
 				byte[] byteRelations = cursor.getBlob(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_RELATIONS));
 				

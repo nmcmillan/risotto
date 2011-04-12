@@ -10,6 +10,7 @@ import android.database.CursorIndexOutOfBoundsException;
 import android.graphics.Color;
 import android.util.Log;
 import android.net.Uri;
+import android.util.Log;
 
 import com.risotto.storage.StorageProvider;
 
@@ -110,7 +111,6 @@ public class Drug {
 		return this.drugDetails;
 	}
 	
-	
 	public int storeDrugAndDetails(Context context) {
 		// Create a new 'ContentValues' to store our values
 		ContentValues drugValues = new ContentValues();
@@ -124,15 +124,15 @@ public class Drug {
 		 * STORE ANY OPTIONAL FIELDS.
 		 */
 		// Store the generic name if not empty
-		if( !this.getGenericName().equalsIgnoreCase("") ){
+		if( this.getGenericName() != null && !this.getGenericName().equalsIgnoreCase("") ){
 			drugValues.put(StorageProvider.DrugColumns.DRUG_GENERIC_NAME, this.getGenericName());
 		}
 		// Store the manufacturer if not empty
-		if ( !this.getManufacturer().equalsIgnoreCase("") ) {
+		if ( this.getManufacturer() != null && !this.getManufacturer().equalsIgnoreCase("") ) {
 			drugValues.put(StorageProvider.DrugColumns.DRUG_MANUFACTURER, this.getManufacturer());
 		}
 		
-		// TODO Store any of the other drug interactions here.
+		// TODO Store drug interactions.
 			
 		/**
 		 * STORE THE DRUG.
@@ -141,19 +141,21 @@ public class Drug {
 		Uri drugUri = context.getApplicationContext().getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, drugValues);
 		int drugId = Integer.parseInt(drugUri.getPathSegments().get(1));
 		
-		// Get an iterator on the drug details
-		ListIterator<DrugDetails> detailList = this.getDrugDetails().listIterator();
-		
-		/**
-		 * For each of the drug details, set the drug id and store the details.
-		 */
-		while (detailList.hasNext()) {
-			// Get the next DrugDetails object
-			DrugDetails currDetails = detailList.next();
-			// Store the Drug object reference.
-			currDetails.setDrugId(drugId);
-			// Convert the DrugDetails to ContentValues and store them
-			context.getApplicationContext().getContentResolver().insert(StorageProvider.DrugDetailColumns.CONTENT_URI, currDetails.toContentValues());
+		if ( this.getDrugDetails() != null) {
+			// Get an iterator on the drug details
+			ListIterator<DrugDetails> detailList = this.getDrugDetails().listIterator();
+			
+			/**
+			 * For each of the drug details, set the drug id and store the details.
+			 */
+			while (detailList.hasNext()) {
+				// Get the next DrugDetails object
+				DrugDetails currDetails = detailList.next();
+				// Store the Drug object reference.
+				currDetails.setDrugId(drugId);
+				// Convert the DrugDetails to ContentValues and store them
+				context.getApplicationContext().getContentResolver().insert(StorageProvider.DrugDetailColumns.CONTENT_URI, currDetails.toContentValues());
+			}
 		}
 		
 		return drugId;
@@ -161,6 +163,8 @@ public class Drug {
 	
 	public static Drug fromCursor(Cursor cursor, Context context) throws CursorIndexOutOfBoundsException {
 
+		Log.d(LOG_TAG, "Entering from cursor...");
+		
 		try {
 			// Create the drug object
 			Drug newDrug = null;
@@ -171,31 +175,58 @@ public class Drug {
 			int _id = cursor.getInt(cursor.getColumnIndex(StorageProvider.DrugColumns._ID));
 			String brandName = cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME));
 
+			Log.d(LOG_TAG, "Got required fields: " + _id + " " + brandName);
+			
 			// Inst. the drug
 			newDrug = new Drug(_id, brandName);
 			
 			/**
 			 * GET THE OPTIONAL FIELDS.
 			 */
-			// TODO GET ALL OF THE DRUG DETAILS FOR THIS DRUG (CRAP)
+			// Get the generic name.
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_GENERIC_NAME))) {
+				newDrug.setGenericName(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_GENERIC_NAME)));
+			}
+		
+			// Get the manufacturer
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_MANUFACTURER))) {
+				newDrug.setManufacturer(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_MANUFACTURER)));
+			}
 			
+			// Get any interactions
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_INTERACTIONS))) {
+				// TODO Get all interactions.
+			}
+			
+			Log.d(LOG_TAG, "About to look for any drug details...");
 			// Get all of the DrugDetails associated with this drug
 			String whereClause = StorageProvider.DrugDetailColumns.DRUG_DETAILS_DRUG + "=" + "'" + newDrug.get_id() + "'";
 			Cursor detailsCursor = context.getApplicationContext().getContentResolver().query(StorageProvider.DrugDetailColumns.CONTENT_URI, null, whereClause, null, null);
+			Log.d(LOG_TAG, "Completed the search for drug details...");
 			
-			detailsCursor.moveToFirst();
+			if ( detailsCursor != null && detailsCursor.getCount() != 0 ) {
+				Log.d(LOG_TAG, "There are drug details for this drug!");
+				Log.d(LOG_TAG, "Number of entries in the details cursor: " + detailsCursor.getCount());
+				
+				// Move the cursor to the start
+				detailsCursor.moveToFirst();
+				
+				do {
+					// Add the drug details object to the drug class.
+					newDrug.addDrugDetails(DrugDetails.fromCursor(detailsCursor));
+				}  while (detailsCursor.moveToNext());
+				
+				// Close and release the cursor.
+				detailsCursor.close();	
+			}
+					
+			Log.d(LOG_TAG, "Returning the new drug.");
 			
-			do {
-				newDrug.addDrugDetails(DrugDetails.fromCursor(detailsCursor));
-			}  while (detailsCursor.moveToNext());
-			
-			// Close and release the cursor.
-			detailsCursor.close();	
-						
 			// Return the new drug!
 			return newDrug;
 			
 		} catch (CursorIndexOutOfBoundsException cioobe) {
+			cioobe.printStackTrace();
 			throw cioobe;
 		}
 	}

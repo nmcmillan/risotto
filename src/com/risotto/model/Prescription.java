@@ -5,15 +5,17 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
+
 import com.risotto.storage.StorageProvider;
 
 public class Prescription {
-	
+
 	// Required fields
 	private Patient patient;
 	private Drug drug;
@@ -21,17 +23,17 @@ public class Prescription {
 	private int doseSize;
 	private int totalUnits;
 	private boolean scheduled = false;
-	
+
 	// Optional Fields
 	private Date filled;
 	private String drName;
-	private int prescripID;
-	private int cost;
-	private int numDaysSupplied;
-	private int numRefills;
+	private int prescripID = -1;
+	private int cost = -1;
+	private int numDaysSupplied = -1;
+	private int numRefills = -1;
 	private Date expiration;
 	private Vector<Integer> daysOfWeek;
-	
+
 	// Scheduling constants
 	public static final int SCHEDULED = 1;
 	public static final int NOT_SCHEDULED = 0;
@@ -45,19 +47,21 @@ public class Prescription {
 	public static final int DOSE_TYPE_EVERY_HOUR_DAY_OF_WEEK = 2;
 	// Ex: ONCE a day EVERY day
 	public static final int DOSE_TYPE_EVERY_DAY = 3;
-	
+
 	// Unique ID for storage references
 	private int _id;
 	private static final int INVALID_ID = -1;
-	
+
 	// DEBUG: LOG_TAG
 	private static final String LOG_TAG = "RISOTTO_PRESCRIPTION";
-	
-	public Prescription(Patient patient, Drug drug, int doseType, int doseSize, int totalUnits) {
+
+	public Prescription(Patient patient, Drug drug, int doseType, int doseSize,
+			int totalUnits) {
 		this(INVALID_ID, patient, drug, doseType, doseSize, totalUnits);
 	}
-	
-	private Prescription(int _id, Patient patient, Drug drug, int doseType, int doseSize, int totalUnits) {
+
+	private Prescription(int _id, Patient patient, Drug drug, int doseType,
+			int doseSize, int totalUnits) {
 		this._id = _id;
 		this.patient = patient;
 		this.drug = drug;
@@ -162,7 +166,7 @@ public class Prescription {
 	public void setExpiration(Date expiration) {
 		this.expiration = expiration;
 	}
-	
+
 	public int get_id() {
 		return _id;
 	}
@@ -170,7 +174,7 @@ public class Prescription {
 	public void set_id(int _id) {
 		this._id = _id;
 	}
-	
+
 	public void setScheduled(boolean scheduled) {
 		this.scheduled = scheduled;
 	}
@@ -180,21 +184,21 @@ public class Prescription {
 	}
 
 	public void addDay(int dayOfWeek) {
-		if (!this.daysOfWeek.contains((Integer)dayOfWeek)) {
-			this.daysOfWeek.add((Integer)dayOfWeek);
+		if (!this.daysOfWeek.contains((Integer) dayOfWeek)) {
+			this.daysOfWeek.add((Integer) dayOfWeek);
 		}
 	}
-	
+
 	public void removeDay(int dayOfWeek) {
-		this.daysOfWeek.remove((Integer)dayOfWeek);
+		this.daysOfWeek.remove((Integer) dayOfWeek);
 	}
-	
+
 	public Vector<Integer> getAllDays() {
 		return this.daysOfWeek;
 	}
-	
+
 	private static String dayToColumnName(int dayOfWeek) {
-		switch(dayOfWeek) {
+		switch (dayOfWeek) {
 		case Calendar.SUNDAY:
 			return StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY;
 		case Calendar.MONDAY:
@@ -210,141 +214,317 @@ public class Prescription {
 		case Calendar.SATURDAY:
 			return StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY;
 		default:
-			return null;	
+			return null;
 		}
 	}
 	
+	private static int columnNameToDay(String columnName) {
+		int returnDate = -1;
+		if (columnName.equals(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY)) {
+			returnDate = Calendar.SUNDAY;
+		} else if (columnName.equals(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY)) {
+			returnDate = Calendar.MONDAY;
+		} else if (columnName.equals(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY)) {
+			returnDate = Calendar.TUESDAY;
+		} else if (columnName.equals(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY)) {
+			returnDate = Calendar.WEDNESDAY;
+		} else if (columnName.equals(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY)) {
+			returnDate = Calendar.THURSDAY;
+		} else if (columnName.equals(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY)) {
+			returnDate = Calendar.FRIDAY;
+		} else if (columnName.equals(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY)) {
+			returnDate = Calendar.SATURDAY;
+		}	
+		return returnDate;
+	}
+	
+
 	public static Vector<String> getScheduledDays(Cursor cursor) {
 		Vector<String> returnVector = new Vector<String>();
-		
-		if (!cursor.isNull( cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY) ) ) {
+
+		if (!cursor
+				.isNull(cursor
+						.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY))) {
 			Log.d(LOG_TAG, "Found data on Sunday.");
-			returnVector.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY);
-		} 
-
-		if (!cursor.isNull( cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY) )) {
-			Log.d(LOG_TAG, "Found data on Monday.");
-			returnVector.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY);
-		} 
-
-		if (!cursor.isNull( cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY) )) {
-			Log.d(LOG_TAG, "Found data on Tuesday.");
-			returnVector.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY);
-		} 
-
-		if (!cursor.isNull( cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY) )) {
-			Log.d(LOG_TAG, "Found data on Wednesday.");
-			returnVector.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY);
-		} 
-
-		if (!cursor.isNull( cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY) )) {
-			Log.d(LOG_TAG, "Found data on Thursday.");
-			returnVector.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY);
-		} 
-
-		if (!cursor.isNull( cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY) )) {
-			Log.d(LOG_TAG, "Found data on Friday.");
-			returnVector.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY);
-		} 
-
-		if (!cursor.isNull( cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY) )) {
-			Log.d(LOG_TAG, "Found data on Saturday.");
-			returnVector.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY);
+			returnVector
+					.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY);
 		}
-		
+
+		if (!cursor
+				.isNull(cursor
+						.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY))) {
+			Log.d(LOG_TAG, "Found data on Monday.");
+			returnVector
+					.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY);
+		}
+
+		if (!cursor
+				.isNull(cursor
+						.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY))) {
+			Log.d(LOG_TAG, "Found data on Tuesday.");
+			returnVector
+					.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY);
+		}
+
+		if (!cursor
+				.isNull(cursor
+						.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY))) {
+			Log.d(LOG_TAG, "Found data on Wednesday.");
+			returnVector
+					.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY);
+		}
+
+		if (!cursor
+				.isNull(cursor
+						.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY))) {
+			Log.d(LOG_TAG, "Found data on Thursday.");
+			returnVector
+					.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY);
+		}
+
+		if (!cursor
+				.isNull(cursor
+						.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY))) {
+			Log.d(LOG_TAG, "Found data on Friday.");
+			returnVector
+					.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY);
+		}
+
+		if (!cursor
+				.isNull(cursor
+						.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY))) {
+			Log.d(LOG_TAG, "Found data on Saturday.");
+			returnVector
+					.add(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY);
+		}
+
 		// Trim the vector
 		returnVector.trimToSize();
-		
+
 		// Return the array of string columns that contain valid times.
 		return returnVector;
 	}
-	
+
 	public ContentValues toContentValues(Context context) {
 		ContentValues cv = new ContentValues();
-		
+
 		// Is this a new prescription? (check _id)
-		boolean newPrescription = ( this._id == INVALID_ID ? true : false );
-		
+		boolean newPrescription = (this._id == INVALID_ID ? true : false);
+
 		// Is this a new drug?
-		boolean newDrug = ( drug.get_id() == INVALID_ID ? true : false );
-		
+		boolean newDrug = (drug.get_id() == INVALID_ID ? true : false);
+
 		// Is this a new patient?
-		boolean newPatient = ( patient.get_id() == INVALID_ID ? true : false );
-		
+		boolean newPatient = (patient.get_id() == INVALID_ID ? true : false);
+
 		// If the drug is new, we need to store the drug
 		if (newDrug) {
 			// Store the drug
 			int drugId = this.getDrug().storeDrugAndDetails(context);
 			// Store the new _id back to the drug object in memory.
-			this.getDrug().set_id(drugId);	
+			this.getDrug().set_id(drugId);
 		}
-		
+
 		// If the patient is new, we need to store the patient
 		if (newPatient) {
 			// Store the patient.
-			Uri patientUri = context.getContentResolver().insert(StorageProvider.PatientColumns.CONTENT_URI, this.getPatient().toContentValues());
+			Uri patientUri = context.getContentResolver().insert(
+					StorageProvider.PatientColumns.CONTENT_URI,
+					this.getPatient().toContentValues());
 			// Store the new _id back the patient object in memory.
-			this.getPatient().set_id(Integer.parseInt(patientUri.getPathSegments().get(1)));
+			this.getPatient().set_id(
+					Integer.parseInt(patientUri.getPathSegments().get(1)));
 		}
-		
+
 		// If the prescription is not new, we need to provide the _id
 		if (!newPrescription) {
 			// Give the previous _id to the caller
 			cv.put(StorageProvider.PrescriptionColumns._ID, "" + this.get_id());
 		}
-		
+
 		/**
 		 * STORE REQUIRED FIELDS
 		 */
-		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_PATIENT, this.getPatient().get_id());
-		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DRUG, this.getDrug().get_id());
-		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_TYPE, this.getDoseType());
-		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_SIZE, this.getDoseSize());
-		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS, this.getTotalUnits());
+		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_PATIENT, this
+				.getPatient().get_id());
+		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DRUG, this
+				.getDrug().get_id());
+		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_TYPE,
+				this.getDoseType());
+		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_SIZE,
+				this.getDoseSize());
+		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS,
+				this.getTotalUnits());
 		
+		// Store the scheduled flag
+		if (this.isScheduled()) {
+			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_SCHEDULED,
+					SCHEDULED);
+		} else {
+			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_SCHEDULED,
+					NOT_SCHEDULED);
+		}
+
 		/**
 		 * STORE OPTIONAL FIELDS
 		 */
+		// Store the date filled.
+		if (this.getFilled() != null) {
+			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DATE_FILLED, this.getFilled().getTime());
+		}
+		// Store the Dr's name.
+		if ( this.getDrName() != null && !this.getDrName().equalsIgnoreCase("") ) {
+			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DR_NAME, this.getDrName());
+		}
+		// Store the prescription id.
+		if ( this.getPrescripID() != -1) {
+			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_UNIQUE_ID, this.getPrescripID());
+		}
+		// Store the prescription cost.
+		if ( this.getCost() != -1) {
+			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_COST, this.getCost());
+		}
+		// Store the number of days supplied.
+		if ( this.getNumDaysSupplied() != -1 ) {
+			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_NUM_DAYS_SUPPLIED, this.getNumDaysSupplied());
+		}
+		// Store the number of refills.
+		if ( this.getNumRefills() != -1 ) {
+			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_NUM_REFILLS, this.getNumRefills());
+		}
+		// Store the expiration date.
+		if ( this.getExpiration() != null) {
+			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DATE_EXPIRATION, this.getExpiration().getTime());
+		}
+		
 		// Store the days of the week that this prescription is needed
-		if(!this.daysOfWeek.isEmpty()) {
+		if (!this.daysOfWeek.isEmpty()) {
 			// Sort the vector in ascending order.
 			Collections.sort(this.daysOfWeek);
 			// Trim the vector
 			this.daysOfWeek.trimToSize();
 			// Get an enumeration
 			Enumeration<Integer> daysEnum = this.daysOfWeek.elements();
-			
-			while(daysEnum.hasMoreElements()) {
-				// Get the value from the enum (integer representation of the day of the week)
+
+			while (daysEnum.hasMoreElements()) {
+				// Get the value from the enum (integer representation of the
+				// day of the week)
 				Integer value = daysEnum.nextElement();
 				/**
 				 * For the time being, just store a boolean flag to the days.
-				 * Eventually the scheduled "times" will be stored in the columns.
+				 * Eventually the scheduled "times" will be stored in the
+				 * columns.
 				 */
+				// TODO Figure out what we want to store in this structure.
 				cv.put(dayToColumnName(value), 1);
 			}
 		}
-		
-		// Store the scheduled flag
-		if (this.isScheduled()) {
-			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_SCHEDULED, SCHEDULED);
-		} else {
-			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_SCHEDULED, NOT_SCHEDULED);
-		}
-		
+
 		// Return the 'ContentValues' to the caller
 		return cv;
-		
-	}
-	
-	public static Prescription fromContentValues(ContentValues cv, Context context) {
-		Prescription newPrescription = null;
-		Patient newPatient;
-		Drug newDrug;
-		
-		// TODO Implement
-		
-		return newPrescription;
+
 	}
 
+	public static Prescription fromCursor(Cursor cursor, Context context) {
+		// Create the new objects.
+		Prescription newPrescription = null;
+		Patient newPatient = null;
+		Drug newDrug = null;
+		
+		/**
+		 * GET THE REQUIRED FIELDS.
+		 */
+		int _id = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns._ID));
+		
+		int patientId = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_PATIENT));
+		// Get the Patient object from the id
+		Uri myPatient = ContentUris.withAppendedId(StorageProvider.PatientColumns.CONTENT_URI, patientId);
+		Cursor patientCursor = context.getApplicationContext().getContentResolver().query(myPatient, null, null, null, null);
+		newPatient = Patient.fromCursor(patientCursor);
+		
+		int drugId = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DRUG));
+		// Get the drug object from the id
+		Uri myDrug = ContentUris.withAppendedId(StorageProvider.DrugColumns.CONTENT_URI, drugId);
+		Cursor drugCursor = context.getApplicationContext().getContentResolver().query(myDrug, null, null, null, null);
+		newDrug = Drug.fromCursor(drugCursor, context);
+		
+		int doseType = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_TYPE));
+		int doseSize = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_SIZE));
+		int totalUnits = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS));
+		int scheduledBoolean = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_SCHEDULED));
+		boolean scheduled = false;
+		if (scheduledBoolean == Prescription.SCHEDULED) {
+			scheduled = true;
+		}
+		
+		// Int. the prescription object.
+		newPrescription = new Prescription(_id, newPatient, newDrug, doseType, doseSize, totalUnits);
+		newPrescription.setScheduled(scheduled);
+		
+		/**
+		 * GET THE OPTIONAL FIELDS.
+		 */
+		// Get the date filled.
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DATE_FILLED))) {
+			int dateFilledInt = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DATE_FILLED));
+			newPrescription.setFilled(new Date((long)dateFilledInt));
+		}
+		// Get the Dr's name.
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DR_NAME))) {
+			newPrescription.setDrName(cursor.getString(cursor.getColumnIndex((StorageProvider.PrescriptionColumns.PRESCRIPTION_DR_NAME))));
+		}
+		// Get the prescription id.
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_UNIQUE_ID))) {
+			newPrescription.setPrescripID(cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_UNIQUE_ID)));
+		}
+		// Get the prescription cost.
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_COST))) {
+			newPrescription.setCost(cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_COST)));
+		}
+		// Get the number of days supplied.
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_NUM_DAYS_SUPPLIED))) {
+			newPrescription.setNumDaysSupplied(cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_NUM_DAYS_SUPPLIED)));
+		}
+		// Get the number of refills.
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_NUM_REFILLS))) {
+			newPrescription.setNumRefills(cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_NUM_REFILLS)));
+		}
+		// Get the expiration.
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DATE_EXPIRATION))) {
+			int dateExpiredInt = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DATE_EXPIRATION));
+			newPrescription.setExpiration(new Date((long)dateExpiredInt));
+		}
+		// Get the scheduled days of the week.
+		// TODO Figure out what data we want to store in this data structure...
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY))) {
+			int sundayData = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY));
+			newPrescription.addDay(columnNameToDay(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY));
+		}
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY))) {
+			int mondayData = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY));
+			newPrescription.addDay(columnNameToDay(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY));
+		}
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY))) {
+			int tuesdayData = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY));
+			newPrescription.addDay(columnNameToDay(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY));
+		}
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY))) {
+			int wednesdayData = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY));
+			newPrescription.addDay(columnNameToDay(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY));
+		}
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY))) {
+			int thursdayData = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY));
+			newPrescription.addDay(columnNameToDay(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY));
+		}
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY))) {
+			int fridayData = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY));
+			newPrescription.addDay(columnNameToDay(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY));
+		}
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY))) {
+			int saturdayData = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY));
+			newPrescription.addDay(columnNameToDay(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY));
+		}
+
+		return newPrescription;
+	}
 }

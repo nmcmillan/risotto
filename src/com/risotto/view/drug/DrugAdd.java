@@ -36,7 +36,6 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 	private static String[] PROJECTION = { 
 		StorageProvider.DrugColumns._ID,
 		StorageProvider.DrugColumns.DRUG_BRAND_NAME,
-		StorageProvider.DrugColumns.DRUG_STRENGTH,
 	};
 	
 	//Return type of queries
@@ -154,42 +153,37 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 			this.drugStrengthEditText.requestFocus();
 		}
 		else {
-			//Basic info checks done, now search for drug to see if it's in database
-			//Cursor storedDrugs = this.getContentResolver().query(StorageProvider.DrugColumns.CONTENT_URI, PROJECTION, null, null, null);
-			String whereClause = StorageProvider.DrugColumns.DRUG_BRAND_NAME + "=" + "'" + enteredName + "'";
-		
-			//First run a query to see if the drug is already in the database.
-			Cursor dCursor = this.getContentResolver().query(
-						StorageProvider.DrugColumns.CONTENT_URI, 
-						PROJECTION, 
-						whereClause, 
-						null, 
-						null);
-			
-			//if the count is greater than 0, that means the drug was already in the database
-			//update the row
-			if(dCursor.getCount() > 0) {
-				dCursor.moveToFirst();
-				try {
-					Drug existingDrug = Drug.fromCursor(dCursor);
-					existingDrug.addStrength(enteredStrength);
-					int id = existingDrug.get_id();
-					Uri uri = StorageProvider.DrugColumns.CONTENT_URI.buildUpon().appendPath(String.valueOf(id)).build();
-					ContentValues cv = existingDrug.toContentValues();
-					this.getContentResolver().update(uri, cv, null, null);
-					this.getContentResolver().notifyChange(uri, null);
-				} catch (Exception e) {
-					Log.d(LOG_TAG,"Exception thrown");
-					e.printStackTrace();
-				}
-				
-			}
-			else {
-				Drug newDrug = new Drug(0,enteredStrength,enteredName);
-				ContentValues cv = newDrug.toContentValues();
-				Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
-				Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
-			}
+//			//Basic info checks done, now search for drug to see if it's in database
+//			//Cursor storedDrugs = this.getContentResolver().query(StorageProvider.DrugColumns.CONTENT_URI, PROJECTION, null, null, null);
+//			String whereClause = StorageProvider.DrugColumns.DRUG_BRAND_NAME + "=" + "'" + enteredName + "'";
+//		
+//			//First run a query to see if the drug is already in the database.
+//			Cursor dCursor = this.getContentResolver().query(
+//						StorageProvider.DrugColumns.CONTENT_URI, 
+//						PROJECTION, 
+//						whereClause, 
+//						null, 
+//						null);
+//			
+//			//if the count is greater than 0, that means the drug was already in the database
+//			//update the row
+//			if(dCursor.getCount() > 0) {
+//				dCursor.moveToFirst();
+//				Drug existingDrug = Drug.fromCursor(dCursor, this);
+//				//existingDrug.addStrength(enteredStrength);
+//				int id = existingDrug.get_id();
+//				Uri uri = StorageProvider.DrugColumns.CONTENT_URI.buildUpon().appendPath(String.valueOf(id)).build();
+//				ContentValues cv = existingDrug.toContentValues();
+//				this.getContentResolver().update(uri, cv, null, null);
+//				this.getContentResolver().notifyChange(uri, null);
+//				
+//			}
+//			else {
+//				Drug newDrug = new Drug(0,enteredStrength,enteredName);
+//				ContentValues cv = newDrug.toContentValues();
+//				Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
+//				Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
+//			}
 			/*Code for iterating over cursor
 			while(dCursor.moveToNext()) {
 				Drug d = Drug.fromCursor(dCursor);

@@ -24,7 +24,7 @@ public class StorageProvider extends ContentProvider {
     private static final String DATABASE_NAME = "risotto.db";
     private static final int DATABASE_VERSION = 2;
     private static final String DRUGS_TABLE_NAME = "drugs";
-    private static final String DRUG_DETAILS_TABLE_NAME = "drugs";
+    private static final String DRUG_DETAILS_TABLE_NAME = "drug_details";
     private static final String PATIENTS_TABLE_NAME = "patients";
     private static final String PRESCRIPTIONS_TABLE_NAME = "prescriptions";
     private static final String SCHEDULES_TABLE_NAME = "schedules";
@@ -132,6 +132,7 @@ public class StorageProvider extends ContentProvider {
 					+ PatientColumns.PATIENT_FIRST_NAME + " TEXT NOT NULL,"
 					+ PatientColumns.PATIENT_LAST_NAME + " TEXT NOT NULL,"
 					+ PatientColumns.PATIENT_GENDER + " INTEGER NOT NULL,"
+					+ PatientColumns.PATIENT_AGE + " INTEGER,"
 					+ PatientColumns.PATIENT_RELATIONS + " BLOB"
 					+ ");");
 		}
@@ -252,6 +253,8 @@ public class StorageProvider extends ContentProvider {
 	    public static final String PATIENT_LAST_NAME = "last_name";
 	    
 	    public static final String PATIENT_GENDER = "gender";
+	    
+	    public static final String PATIENT_AGE = "age";
 	    
 	    public static final String PATIENT_RELATIONS = "relations";
 	    
