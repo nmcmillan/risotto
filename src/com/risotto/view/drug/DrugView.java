@@ -9,7 +9,6 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,6 +23,7 @@ import android.widget.TextView;
 import com.risotto.R;
 import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
+import com.risotto.model.DrugDetails;
 import com.risotto.service.MainService;
 import com.risotto.storage.StorageProvider;
 
@@ -56,7 +56,6 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	private static String[] PROJECTION = {
 		StorageProvider.DrugColumns._ID,
 		StorageProvider.DrugColumns.DRUG_BRAND_NAME,
-		StorageProvider.DrugColumns.DRUG_STRENGTH,
 	};
 	
 	/**
@@ -182,7 +181,7 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 				  this,						//context
 				  R.layout.drug_list_item,	//layout
 				  cursor,					//cursor
-				  new String[] {StorageProvider.DrugColumns.DRUG_BRAND_NAME, StorageProvider.DrugColumns.DRUG_STRENGTH},	//column name 
+				  new String[] {StorageProvider.DrugColumns.DRUG_BRAND_NAME, StorageProvider.DrugDetailColumns.DRUG_DETAILS_DRUG_STRENGTH},	//column name 
 				  new int[] {R.id.drug_list_view_name,R.id.drug_list_view_strength}); //mapping
 		  
 		  adapter.setViewBinder(this);
@@ -215,20 +214,20 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	}
 
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-		Drug drug = Drug.fromCursor(cursor);
+		Drug drug = Drug.fromCursor(cursor, getApplicationContext());
 		TextView v;
 		if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)) {
-			//convert drug name to correct string (drugName maps to TextView
+			//convert drug name to correct string (drugName maps to TextView)
 			v = (TextView) view;
-			v.setText(drug.getMedicalName());
+			v.setText(drug.getBrandName());
 		}
-		else if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH)) {
+		else if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugDetailColumns.DRUG_DETAILS_DRUG_STRENGTH) {
 			v = (TextView) view;
-			Vector<String> strength = drug.getStrength();
-			ListIterator<String> li = strength.listIterator();
+			Vector<DrugDetails> drugDetails = drug.getDrugDetails();
+			ListIterator<DrugDetails> li = drugDetails.listIterator();
 			//can do this because for a drug to be in the DB, it must have at least one strength
 			try {
-				String strenString = li.next() + " mg ";
+				int strenString = li.next().getStrength() + " mg ";
 				while(li.hasNext()) {
 					strenString += ", " + li.next() + " mg ";
 				}
