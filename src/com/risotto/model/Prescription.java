@@ -373,7 +373,7 @@ public class Prescription {
 			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DATE_FILLED, this.getFilled().getTime());
 		}
 		// Store the Dr's name.
-		if ( ! this.getDrName().equalsIgnoreCase("") ) {
+		if ( this.getDrName() != null && !this.getDrName().equalsIgnoreCase("") ) {
 			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DR_NAME, this.getDrName());
 		}
 		// Store the prescription id.

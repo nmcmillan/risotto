@@ -52,7 +52,6 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	private static String[] PROJECTION = {
 		StorageProvider.DrugColumns._ID,
 		StorageProvider.DrugColumns.DRUG_BRAND_NAME,
-		StorageProvider.DrugColumns.DRUG_STRENGTH,
 	};
 	
 	/**
@@ -179,8 +178,9 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 				  this,						//context
 				  R.layout.drug_list_item,	//layout
 				  cursor,					//cursor
-				  new String[] {StorageProvider.DrugColumns.DRUG_BRAND_NAME, StorageProvider.DrugColumns.DRUG_STRENGTH},	//column name 
-				  new int[] {R.id.drug_list_view_name,R.id.drug_list_view_strength}); //mapping
+				  new String[] {StorageProvider.DrugColumns.DRUG_BRAND_NAME},	//column name 
+				  //new int[] {R.id.drug_list_view_name,R.id.drug_list_view_strength}); //mapping
+				  new int[] {R.id.drug_list_view_name}); //mapping
 		  
 		  adapter.setViewBinder(this);
 		  setListAdapter(adapter);
@@ -222,30 +222,31 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	}
 
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-		Drug drug = Drug.fromCursor(cursor);
+		Log.d(LOG_TAG,"In set view value...");
+		Drug drug = Drug.fromCursor(cursor, this);
 		TextView v;
 		if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)) {
 			//convert drug name to correct string (drugName maps to TextView
 			v = (TextView) view;
-			v.setText(drug.getMedicalName());
+			v.setText(drug.getBrandName());
 		}
-		else if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH)) {
-			v = (TextView) view;
-			Vector<String> strength = drug.getStrength();
-			ListIterator<String> li = strength.listIterator();
-			//can do this because for a drug to be in the DB, it must have at least one strength
-			try {
-				String strenString = li.next() + " mg ";
-				while(li.hasNext()) {
-					strenString += ", " + li.next() + " mg ";
-				}
-				v.setText(strenString);
-				v.setTypeface(Typeface.create("null", Typeface.ITALIC));
-			} catch(NoSuchElementException e) {
-				return false;
-			}
-			
-		}
+//		else if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH)) {
+//			v = (TextView) view;
+//			Vector<String> strength = drug.getStrength();
+//			ListIterator<String> li = strength.listIterator();
+//			//can do this because for a drug to be in the DB, it must have at least one strength
+//			try {
+//				String strenString = li.next() + " mg ";
+//				while(li.hasNext()) {
+//					strenString += ", " + li.next() + " mg ";
+//				}
+//				v.setText(strenString);
+//				v.setTypeface(Typeface.create("null", Typeface.ITALIC));
+//			} catch(NoSuchElementException e) {
+//				return false;
+//			}
+//			
+//		}
 		else {
 			return false;
 		}
