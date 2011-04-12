@@ -22,7 +22,7 @@ public class Patient {
 	private String firstName;
 	private String lastName;
 	
-	//Optional Fields
+	// Optional Fields
 	private Hashtable<Integer, Integer> relations;
 	
 	// Relation constants
@@ -184,7 +184,7 @@ public class Patient {
 	public static Patient fromCursor(Cursor cursor) throws CursorIndexOutOfBoundsException {
 		
 		try {
-			// Create the patient object
+			// Create the Patient object
 			Patient newPatient = null;
 			
 			/**
@@ -218,7 +218,7 @@ public class Patient {
 				}
 			}
 			
-			// Return the new patient!
+			// Return the new Patient object.
 			return newPatient;
 		} catch (CursorIndexOutOfBoundsException cioobe) {
 			throw cioobe;

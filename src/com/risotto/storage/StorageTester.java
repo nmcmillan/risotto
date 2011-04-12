@@ -37,11 +37,12 @@ public class StorageTester {
 			strengths.add("100");
 			strengths.add("200");
 			strengths.add("400");
-			Drug tylenol = new Drug(0, strengths, "Tylenol");
 			
-			Drug vicadin = new Drug(0, strengths, "Vicadin");
+			Drug tylenol = new Drug("Tylenol");
 			
-			Drug crazyPills = new Drug(0, strengths, "Crazy Pills");
+			Drug vicadin = new Drug("Vicadin");
+			
+			Drug crazyPills = new Drug("Crazy Pills");
 			
 			Patient georgeBush = new Patient("George", "Bush", Patient.GENDER_MALE);
 			Patient billClinton = new Patient("Bill", "Clinton", Patient.GENDER_MALE);

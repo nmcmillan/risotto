@@ -1,13 +1,13 @@
 package com.risotto.model;
 
 import java.util.ListIterator;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.util.Log;
+import android.database.CursorIndexOutOfBoundsException;
+import android.net.Uri;
 
 import com.risotto.storage.StorageProvider;
 
@@ -16,141 +16,57 @@ public class Drug {
 	public static final String LOG_TAG = "RISOTTO_DRUG";
 	
 	// Required Fields
+	private String brandName;
 	
-	/**
-	 * As of (3/22) we are thinking this is unnecessary
-	 */
-	//private int unitVolume;
-	
-	/**
-	 * Medicare data: amount of active ingredient in the pill, not the size of the pill; we are saying that a drug (e.g. Advil)
-	 * can have multiple strengths, but we don't want to have duplicate drug entries in the database; all strenths for a given drug
-	 * will be captured in this array
-	 */
-	private Vector<String> strength;	
-	
-	/**
-	 * 
-	 */
+	// Optional Fields
 	private String genericName;
+	private String manufacturer;
+	
+	// Possible drug details
+	private Vector<DrugDetails> drugDetails;
 	
 	// Unique id used for storage references
 	private int _id;
 	private static final int INVALID_ID = -1;
-	
-	private FORM form;
-	
-	// Optional Fields
-	private String brandName;
-	private String nickName;
-	private String manufacturer;
-	private Vector<Drug> interactions;
-	private int drugId;
-	private Color color;
-	private int grossCost;
-	private SHAPE shape;
-	
-	
-	private SIZE size;
-	
-	// Over-the-counter drug.
-	public static final byte TYPE_OTC = 0;
-	// Prescription drug.
-	public static final byte TYPE_PRE = 1;	
-
-	// Possible solid shapes.
-	public enum SHAPE {
-		ROUND,
-		OBLONG,
-		OVAL,
-		SQUARE,
-		RECTANGLE,
-		DIAMOND,
-		THREE_SIDED,
-		FIVE_SIDED,
-		SIX_SIDED,
-		SEVEN_SIDED,
-		EIGHT_SIDED,
-		OTHER,
-		NONE
-	}
-	
-	// The many forms which the drug can be.
- 	public enum FORM {
-		CAPSULES,
-		TABLETS,
-		POWDERS,
-		DROPS,
-		LIQUIDS,
-		SPRAY,
-		SKIN,
-		SUPPOSITORIES,
-		NONE,
-		OTHER;
-		
-	}
-
- 	// Possible sizes of solid drugs.
- 	public enum SIZE {
- 		SMALL,
- 		MEDIUM,
- 		LARGE,
- 		NONE,
- 		OTHER
- 	}
  	
- 	/**
- 	 * Generates an empty Drug object where:
- 	 *  - unitVolume = 0
- 	 *  - strength= null
- 	 *  - genericName = ""
- 	 */
  	public Drug() {
- 		this(0,"","");
+ 		this("");
  	}
 	
- 	/**
- 	 * 
- 	 * Creates a Drug object with the given input parameters set.
- 	 * 
- 	 * @param unitVolume 
- 	 * @param strength
- 	 * @param genericName
- 	 */
-	public Drug(int unitVolume, Vector<String> strength, String genericName) {
-		this(INVALID_ID, unitVolume, strength, genericName);
+	public Drug(String brandName) {
+		this(INVALID_ID, brandName);
 	}
 	
-	public Drug(int unitVolume, String strength, String genericName) {
-		Vector<String> s = new Vector<String>();
-		s.add(strength);
-		this._id = INVALID_ID;
-		this.strength = s;
-		this.genericName = genericName;
-		
+	public Drug(String brandName, DrugDetails drugDetails) {
+		this(INVALID_ID, brandName, drugDetails);
 	}
 	
-	private Drug(int _id, int unitVolume, Vector<String>strength, String genericName) {
+	private Drug(int _id, String brandName) {
 		this._id = _id;
-		//this.setUnitVolume(unitVolume);
-		this.strength = strength;
-		this.genericName = genericName;
+		this.brandName = brandName;
+	}
+	
+	private Drug(int _id, String brandName, DrugDetails drugDetails) {
+		this._id = _id;
+		this.brandName = brandName;
+		// Call for an add to the vector
+		this.addDrugDetails(drugDetails);
 	}
 
-	public String getMedicalName() {
+	public String getGenericName() {
 		return genericName;
 	}
 
-	public void setMedicalName(String medicalName) {
-		this.genericName = medicalName;
+	public void setGenericName(String genericName) {
+		this.genericName = genericName;
 	}
 
-	public String getCommonName() {
+	public String getBrandName() {
 		return brandName;
 	}
 
-	public void setCommonName(String commonName) {
-		this.brandName = commonName;
+	public void setBrandName(String brandName) {
+		this.brandName = brandName;
 	}
 
 	public String getManufacturer() {
@@ -160,86 +76,6 @@ public class Drug {
 	public void setManufacturer(String manufacturer) {
 		this.manufacturer = manufacturer;
 	}
-
-	private Vector<Drug> getInteractions() {
-		return interactions;
-	}
-
-	private void setInteractions(Vector<Drug> interactions) {
-		this.interactions = interactions;
-	}
-
-	public Vector<String> getStrength() {
-		return strength;
-	}
-
-	public void setStrength(Vector<String> strength) {
-		this.strength = strength;
-	}
-
-	public String getNickName() {
-		return nickName;
-	}
-
-	public void setNickName(String nickName) {
-		this.nickName = nickName;
-	}
-
-	public int getDrugId() {
-		return drugId;
-	}
-
-	public void setDrugId(int drugId) {
-		this.drugId = drugId;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
-	}
-
-	public int getGrossCost() {
-		return grossCost;
-	}
-
-	public void setGrossCost(int grossCost) {
-		this.grossCost = grossCost;
-	}
-
-	public SHAPE getShape() {
-		return shape;
-	}
-
-	public void setShape(SHAPE shape) {
-		this.shape = shape;
-	}
-
-	public FORM getForm() {
-		return form;
-	}
-
-	public void setForm(FORM form) {
-		this.form = form;
-	}
-
-	public SIZE getSize() {
-		return size;
-	}
-
-	public void setSize(SIZE size) {
-		this.size = size;
-	}
-
-	/*public void setUnitVolume(int unitVolume) {
-		this.unitVolume = unitVolume;
-	}
-
-	public int getUnitVolume() {
-		return unitVolume;
-	}*/
 	
 	public int get_id() {
 		return _id;
@@ -249,27 +85,76 @@ public class Drug {
 		this._id = _id;
 	}
 	
-	public void addStrength(String newStrength) {
-		this.strength.add(newStrength);
+	public boolean addDrugDetails(DrugDetails drugDetail) {
+		if (this.drugDetails == null) {
+			this.drugDetails = new Vector<DrugDetails>();
+		}
+		
+		// TODO Make sure that we are not adding duplicates.
+		
+		return this.drugDetails.add(drugDetail);
 	}
 	
-	public ContentValues toContentValues() {
-		ContentValues cv = new ContentValues();
-		cv.put(StorageProvider.DrugColumns.DRUG_BRAND_NAME, this.genericName);
+	public boolean removeDrugDetails(DrugDetails drugDetail) {
+		if (this.drugDetails == null) {
+			return false;
+		} else {
+			// TODO Do some checking to make sure that we are removing the correct detail based on the id.
+			return this.drugDetails.remove(drugDetail);
+		}
+	}
+	
+	public Vector<DrugDetails> getDrugDetails() {
+		return this.drugDetails;
+	}
+	
+	
+	public int storeDrugAndDetails(Context context) {
+		// Create a new 'ContentValues' to store our values
+		ContentValues drugValues = new ContentValues();
 		
-		/*ByteBuffer byteBuffer = ByteBuffer.allocate(this.strength.length * 4);        
-        IntBuffer intBuffer = byteBuffer.asIntBuffer();
-        intBuffer.put(this.strength);
-        byte[] array = byteBuffer.array();*/
+		/**
+		 * STORE ALL REQUIRED FIELDS.
+		 */
+		drugValues.put(StorageProvider.DrugColumns.DRUG_BRAND_NAME, this.getBrandName());
 		
-		//just storing one value for strength right now, let's just build a string
-		//with the strengths rather than converting to byte array
+		/**
+		 * STORE ANY OPTIONAL FIELDS.
+		 */
+		// Store the generic name if not empty
+		if( !this.getGenericName().equalsIgnoreCase("") ){
+			drugValues.put(StorageProvider.DrugColumns.DRUG_GENERIC_NAME, this.getGenericName());
+		}
+		// Store the manufacturer if not empty
+		if ( !this.getManufacturer().equalsIgnoreCase("") ) {
+			drugValues.put(StorageProvider.DrugColumns.DRUG_MANUFACTURER, this.getManufacturer());
+		}
 		
-		//cv.put(StorageProvider.DrugColumns.DRUG_STRENGTH, this.strength[0]);
+		// TODO Store any of the other drug interactions here.
+			
+		/**
+		 * STORE THE DRUG.
+		 */
+		// Store the drug, because why the hell not...
+		Uri drugUri = context.getApplicationContext().getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, drugValues);
+		int drugId = Integer.parseInt(drugUri.getPathSegments().get(1));
 		
-		cv.put(StorageProvider.DrugColumns.DRUG_STRENGTH,convertStrengthToString(strength));
-
-        return cv;
+		// Get an iterator on the drug details
+		ListIterator<DrugDetails> detailList = this.getDrugDetails().listIterator();
+		
+		/**
+		 * For each of the drug details, set the drug id and store the details.
+		 */
+		while (detailList.hasNext()) {
+			// Get the next DrugDetails object
+			DrugDetails currDetails = detailList.next();
+			// Store the Drug object reference.
+			currDetails.setDrugId(drugId);
+			// Convert the DrugDetails to ContentValues and store them
+			context.getApplicationContext().getContentResolver().insert(StorageProvider.DrugDetailColumns.CONTENT_URI, currDetails.toContentValues());
+		}
+		
+		return drugId;
 	}
 	
 	/**
@@ -279,60 +164,45 @@ public class Drug {
 	 * @param c - cursor object pointing to the row to be used to create the drug object
 	 * @return a new drug object created from a given row in the content provider
 	 */
-	public static Drug fromCursor(Cursor c) {
-		// Declare a return object
-		Drug returnDrug = null;
-		
-		// Declare required fields.
-		//int unitVolume = 0;
-		Vector<String> strength = null;
-		String genericName = "";
-		String strenString = "";
-		
-		// Set required fields
-		genericName = c.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME));
-		strenString = c.getString(c.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH));
-		strength = convertStrengthToVector(strenString);
-		
-		// Create the object with required fields
-		returnDrug = new Drug(0, strength, genericName);
-		
-		Log.d(LOG_TAG,"column index of _id : " + c.getColumnIndex(StorageProvider.DrugColumns._ID));
-		
-		returnDrug._id = Integer.parseInt(c.getString(c.getColumnIndex(StorageProvider.DrugColumns._ID)));
-		
-		// Check/set any non-required fields.
-		
-		return returnDrug;
-	}
-	
-	public static String convertStrengthToString(Vector<String> stren) {
-		String strengthString = "";
-		
-		ListIterator<String> li = stren.listIterator();
-		
-		while(li.hasNext()) {
-			strengthString += li.next() + ",";
-		}
-		return strengthString;
-	}
-	
-	/**
-	 * Method to convert the string stored in the database of strengths back into a vector
-	 * 
-	 * 
-	 * @param strenString
-	 * @return
-	 */
-	public static Vector<String> convertStrengthToVector(String strenString) {
-		Vector<String> stren = new Vector<String>();
-		StringTokenizer st = new StringTokenizer(strenString,",");
-		
-		while(st.hasMoreElements()) {
-			stren.add(st.nextToken());
-		}
-		String[] x = {};
-		return stren;
+	public static Drug fromCursor(Cursor cursor, Context context) throws CursorIndexOutOfBoundsException {
+
+		try {
+			// Create the drug object
+			Drug newDrug = null;
+			
+			/**
+			 * GET THE REQUIRED FIELDS.
+			 */
+			int _id = cursor.getInt(cursor.getColumnIndex(StorageProvider.DrugColumns._ID));
+			String brandName = cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME));
+
+			// Inst. the drug
+			newDrug = new Drug(_id, brandName);
+			
+			/**
+			 * GET THE OPTIONAL FIELDS.
+			 */
+			// TODO GET ALL OF THE DRUG DETAILS FOR THIS DRUG (CRAP)
+			
+			// Get all of the DrugDetails associated with this drug
+			String whereClause = StorageProvider.DrugDetailColumns.DRUG_DETAILS_DRUG + "=" + "'" + newDrug.get_id() + "'";
+			Cursor detailsCursor = context.getApplicationContext().getContentResolver().query(StorageProvider.DrugDetailColumns.CONTENT_URI, null, whereClause, null, null);
+			
+			detailsCursor.moveToFirst();
+			
+			do {
+				newDrug.addDrugDetails(DrugDetails.fromCursor(detailsCursor));
+			}  while (detailsCursor.moveToNext());
+			
+			// Close and release the cursor.
+			detailsCursor.close();	
+						
+			// Return the new drug!
+			return newDrug;
+			
+		} catch (CursorIndexOutOfBoundsException cioobe) {
+			throw cioobe;
+		}	
 	}
 
 }
