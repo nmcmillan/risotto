@@ -108,7 +108,6 @@ public class Drug {
 		return this.drugDetails;
 	}
 	
-	
 	public int storeDrugAndDetails(Context context) {
 		// Create a new 'ContentValues' to store our values
 		ContentValues drugValues = new ContentValues();
@@ -130,7 +129,7 @@ public class Drug {
 			drugValues.put(StorageProvider.DrugColumns.DRUG_MANUFACTURER, this.getManufacturer());
 		}
 		
-		// TODO Store any of the other drug interactions here.
+		// TODO Store drug interactions.
 			
 		/**
 		 * STORE THE DRUG.
@@ -182,15 +181,30 @@ public class Drug {
 			/**
 			 * GET THE OPTIONAL FIELDS.
 			 */
-			// TODO GET ALL OF THE DRUG DETAILS FOR THIS DRUG (CRAP)
+			// Get the generic name.
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_GENERIC_NAME))) {
+				newDrug.setGenericName(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_GENERIC_NAME)));
+			}
+		
+			// Get the manufacturer
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_MANUFACTURER))) {
+				newDrug.setManufacturer(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_MANUFACTURER)));
+			}
+			
+			// Get any interactions
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_INTERACTIONS))) {
+				// TODO Get all interactions.
+			}
 			
 			// Get all of the DrugDetails associated with this drug
 			String whereClause = StorageProvider.DrugDetailColumns.DRUG_DETAILS_DRUG + "=" + "'" + newDrug.get_id() + "'";
 			Cursor detailsCursor = context.getApplicationContext().getContentResolver().query(StorageProvider.DrugDetailColumns.CONTENT_URI, null, whereClause, null, null);
 			
+			// Move the cursor to the start
 			detailsCursor.moveToFirst();
 			
 			do {
+				// Add the drug details object to the drug class.
 				newDrug.addDrugDetails(DrugDetails.fromCursor(detailsCursor));
 			}  while (detailsCursor.moveToNext());
 			
