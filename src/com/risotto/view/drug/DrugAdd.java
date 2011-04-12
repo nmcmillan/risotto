@@ -1,4 +1,4 @@
-package com.risotto.view;
+package com.risotto.view.drug;
 
 import android.app.Activity;
 import android.app.AlertDialog;

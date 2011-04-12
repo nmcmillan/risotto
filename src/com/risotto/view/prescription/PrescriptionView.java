@@ -1,4 +1,4 @@
-package com.risotto.view;
+package com.risotto.view.prescription;
 
 import java.util.Enumeration;
 import android.app.ListActivity;
@@ -22,7 +22,7 @@ import com.risotto.controller.StatusBarNotification.Content;
 import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.service.MainService;
 
-public class AlarmView extends ListActivity {
+public class PrescriptionView extends ListActivity {
 
 	StatusBarNotificationManager stbm = new StatusBarNotificationManager(this);
 	String[] nots = new String[2];

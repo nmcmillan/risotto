@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.risotto.view;
+package com.risotto.view.drug;
 
 import java.util.ListIterator;
 import java.util.NoSuchElementException;

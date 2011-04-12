@@ -6,10 +6,13 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
-import com.risotto.storage.StorageTester;
-import com.risotto.view.DrugView;
 
-public class HelloWorld extends TabActivity {
+import com.risotto.storage.StorageTester;
+import com.risotto.view.drug.DrugView;
+import com.risotto.view.patient.PatientView;
+import com.risotto.view.prescription.PrescriptionView;
+
+public class MainActivity extends TabActivity {
 	
 	/*
 	 * When the device is rotated, Android runs through the full lifecycle of your application.  It calls pause, stop, destroy
@@ -34,21 +37,30 @@ public class HelloWorld extends TabActivity {
         TabSpec spec;  // Reusable TabSpec for each tab
         Intent intent;  // Reusable Intent for each tab
 
-        // Create an Intent to launch an Activity for the tab (to be reused)
-        intent = new Intent().setClass(this, DrugView.class);
-        spec = tabHost.newTabSpec("drug").setIndicator("Drugs",
-            	res.getDrawable(R.drawable.micro_white))
-            	.setContent(intent);
+        // Create tab interface
+        
+        // Position 0 = Prescription tab
+        /*intent = new Intent().setClass(this, PrescriptionView.class);
+        spec = tabHost.newTabSpec("meds")
+        				.setIndicator("Prescriptions", res.getDrawable(R.drawable.micro_white))
+        				.setContent(intent);
+        tabHost.addTab(spec); */
+        
+        
+        // Position 1 = People tab
+        intent = new Intent().setClass(this, PatientView.class);
+        spec = tabHost.newTabSpec("people")
+        				.setIndicator("People", res.getDrawable(R.drawable.micro_white))
+        				.setContent(intent);
         tabHost.addTab(spec);
-
-        // Do the same for the other tabs
-        /*intent = new Intent().setClass(this, AlarmView.class);
-        spec = tabHost.newTabSpec("alarms").setIndicator("Alarms",
-                          res.getDrawable(R.drawable.micro_white))
-                      .setContent(intent);
-        tabHost.addTab(spec);*/
-       
-
+        
+        // Position 2 = Schedules tab
+        intent = new Intent().setClass(this, DrugView.class);
+        spec = tabHost.newTabSpec("schedules")
+        				.setIndicator("Schedules", res.getDrawable(R.drawable.micro_white))
+        				.setContent(intent);
+        tabHost.addTab(spec);
+        
         tabHost.setCurrentTab(0);
     }
 }

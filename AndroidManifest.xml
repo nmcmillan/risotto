@@ -11,7 +11,7 @@
 	<application android:icon="@drawable/icon" android:label="@string/app_name" android:launchMode="singleInstance">
 
 		<!-- Launch Activity -->
-		<activity android:name="com.risotto.HelloWorld" android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">
+		<activity android:name="com.risotto.MainActivity" android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">
 		
 			<intent-filter>
 				<!-- Main entry activity in this application node. -->
@@ -27,13 +27,16 @@
             android:authorities="com.risotto.storage.provider" />
 		
 		<!-- Drug View Activity -->
-		<activity android:name="com.risotto.view.DrugView"/>
+		<activity android:name="com.risotto.view.drug.DrugView"/>
 		
 		<!-- Alarm View Activity -->
-		<activity android:name="com.risotto.view.AlarmView"/>
-		
+		<activity android:name="com.risotto.view.prescription.PrescriptionView"/>
+			
 		<!-- Drug Details View Activity -->
-		<activity android:name="com.risotto.view.DrugDetailsView"/>
+		<activity android:name="com.risotto.view.drug.DrugDetailsView"/>
+		
+		<!-- Patient View Activity -->
+		<activity android:name="com.risotto.view.patient.PatientView"/>
 		
 		<!-- Dialog Activity -->
 		<activity android:name="com.risotto.DialogActivity" android:theme="@android:style/Theme.Dialog" android:excludeFromRecents="true"/>
@@ -47,7 +50,7 @@
         </receiver>
         
         <!-- Drug Add/Edit activity -->
-        <activity android:name="com.risotto.view.DrugAdd"
+        <activity android:name="com.risotto.view.drug.DrugAdd"
         	android:windowSoftInputMode="stateVisible"
         	android:label="@string/drug_editor_title"
         	android:theme="@android:style/Theme.Dialog">

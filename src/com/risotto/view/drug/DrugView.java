@@ -1,4 +1,4 @@
-package com.risotto.view;
+package com.risotto.view.drug;
 
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
@@ -73,7 +73,7 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 				Menu.NONE, //group id for doing batch changes
 				MENU_ITEM_ADD_POSITION, //position
 				Menu.NONE, //order, see getOrder()
-				R.string.drug_list_view_add) //name ofr button - link to XML
+				R.string.drug_list_view_add) //name of button - link to XML
 				.setIcon(android.R.drawable.ic_menu_add);
 		
 		return true;
