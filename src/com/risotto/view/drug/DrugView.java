@@ -53,9 +53,15 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	public static final int MENU_ITEM_ADD_POSITION = Menu.FIRST;
 	public static final int MENU_ITEM_REMOVE_ALL_POSITION = Menu.FIRST + 1;
 	
-	private static String[] PROJECTION = {
+	private static String[] DRUG_PROJECTION = {
 		StorageProvider.DrugColumns._ID,
 		StorageProvider.DrugColumns.DRUG_BRAND_NAME,
+	};
+	
+	private static String[] DRUG_DETAILS_PROJECTION = {
+		StorageProvider.DrugDetailColumns._ID,
+		StorageProvider.DrugDetailColumns.DRUG_DETAILS_DRUG,
+		StorageProvider.DrugDetailColumns.DRUG_DETAILS_DRUG_STRENGTH
 	};
 	
 	/**

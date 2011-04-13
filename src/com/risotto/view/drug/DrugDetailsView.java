@@ -32,7 +32,6 @@ public class DrugDetailsView extends Activity {
 	private static String[] PROJECTION = {
 		StorageProvider.DrugColumns._ID,
 		StorageProvider.DrugColumns.DRUG_BRAND_NAME,
-		StorageProvider.DrugColumns.DRUG_STRENGTH,
 	};
 
 	/* 
@@ -40,7 +39,7 @@ public class DrugDetailsView extends Activity {
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	/*	super.onCreate(savedInstanceState);
 		Log.d(LOG_TAG,"onCreate called successfully");
 		
 		setContentView(R.layout.drug_details_layout);
@@ -79,7 +78,7 @@ public class DrugDetailsView extends Activity {
 		} catch(NoSuchElementException e) {
 			Log.d(LOG_TAG,"No elements in strength vector.");
 		}
-		
+		*/
 	}
 
 	/* 
