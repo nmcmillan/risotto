@@ -1,13 +1,13 @@
 package com.risotto.storage;
 
 import java.util.Calendar;
-import java.util.Vector;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
 import com.risotto.model.Drug;
+import com.risotto.model.DrugDetails;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
 
@@ -33,16 +33,20 @@ public class StorageTester {
 			
 			log("Adding some static data to the database...");
 			
-			Vector<String> strengths = new Vector<String>();
-			strengths.add("100");
-			strengths.add("200");
-			strengths.add("400");
+			DrugDetails drugDetails = new DrugDetails(DrugDetails.TYPE_PRE, 200, "mg");
+			DrugDetails drugDetails1 = new DrugDetails(DrugDetails.TYPE_PRE, 400, "mg");
+			DrugDetails drugDetails2 = new DrugDetails(DrugDetails.TYPE_PRE, 10, "ml");
+			DrugDetails drugDetails3 = new DrugDetails(DrugDetails.TYPE_PRE, 50, "ml");
 			
 			Drug tylenol = new Drug("Tylenol");
+			tylenol.addDrugDetails(drugDetails);
+			tylenol.addDrugDetails(drugDetails1);
 			
 			Drug vicadin = new Drug("Vicadin");
+			vicadin.addDrugDetails(drugDetails2);
 			
 			Drug crazyPills = new Drug("Crazy Pills");
+			crazyPills.addDrugDetails(drugDetails3);
 			
 			Patient georgeBush = new Patient("George", "Bush", Patient.GENDER_MALE);
 			Patient billClinton = new Patient("Bill", "Clinton", Patient.GENDER_MALE);

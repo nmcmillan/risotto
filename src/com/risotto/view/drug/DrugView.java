@@ -1,15 +1,11 @@
 package com.risotto.view.drug;
 
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
-import java.util.Vector;
-
 import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Typeface;
+import android.database.MergeCursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +19,6 @@ import android.widget.TextView;
 import com.risotto.R;
 import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
-import com.risotto.model.DrugDetails;
 import com.risotto.service.MainService;
 import com.risotto.storage.StorageProvider;
 
@@ -168,13 +163,37 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	
 	  getListView().setOnCreateContextMenuListener(this);
 	  
-	  Cursor cursor = this.getContentResolver().query(getIntent().getData(), PROJECTION, null, null, null);
+	  Cursor drugCursor = this.getContentResolver().query(getIntent().getData(), DRUG_PROJECTION, null, null, null);
+	  Cursor detailsCursor = this.getContentResolver().query(StorageProvider.DrugDetailColumns.CONTENT_URI, null, null, null, null);
 	  
-	  if(null != cursor) {
-		  startManagingCursor(cursor);
+	  Cursor[] cursorArray = { drugCursor, detailsCursor };
+	  
+	  MergeCursor mergedCursor = new MergeCursor(cursorArray);
+	  
+	  if(null != mergedCursor) {
+		  startManagingCursor(mergedCursor);
 		  
-		  Log.d(LOG_TAG,"count: " + cursor.getCount());
-		  Log.d(LOG_TAG,"cursor column count: " + cursor.getColumnCount());
+		  Log.d(LOG_TAG,"count: " + mergedCursor.getCount());
+		  Log.d(LOG_TAG,"cursor column count: " + mergedCursor.getColumnCount());
+		  
+		  //mergedCursor
+		  Cursor joinedCursor = StorageProvider.drugJoin();
+		  
+		  //Log.d(LOG_TAG,"joined count: " + joinedCursor.getCount());
+		  
+		  //joinedCursor.moveToFirst();
+		  
+		  /*String[] columns = joinedCursor.getColumnNames();
+		  for(String name : columns) {
+			  Log.d(LOG_TAG,"joined column: " + name);
+		  }
+		  
+		  do {
+			  Log.d(LOG_TAG, "joined brand name: " + joinedCursor.getString(joinedCursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)));
+		  } while (joinedCursor.moveToNext());*/
+		  
+		  
+		  //Log.d(LOG_TAG,"joined columns: " + );
 		  
 		  //note: the cursor originally points to a null row, needs to move before trying to print data
 		  //cursor.moveToFirst();
@@ -186,7 +205,7 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 		  SimpleCursorAdapter adapter = new SimpleCursorAdapter(
 				  this,						//context
 				  R.layout.drug_list_item,	//layout
-				  cursor,					//cursor
+				  joinedCursor,					//cursor
 				  new String[] {StorageProvider.DrugColumns.DRUG_BRAND_NAME},	//column name 
 				  //new int[] {R.id.drug_list_view_name,R.id.drug_list_view_strength}); //mapping
 				  new int[] {R.id.drug_list_view_name}); //mapping
@@ -221,14 +240,34 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	}
 
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-		Log.d(LOG_TAG,"In set view value...");
-		Drug drug = Drug.fromCursor(cursor, this);
-		TextView v;
-		if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)) {
-			//convert drug name to correct string (drugName maps to TextView)
-			v = (TextView) view;
-			v.setText(drug.getBrandName());
+		Log.d(LOG_TAG,"cursor index: " + cursor.getPosition());
+		Drug drug;
+		boolean drugsEqual = true;
+		
+		cursor.moveToLast();
+		
+		while(drugsEqual) {
+			drug = Drug.fromCursor(cursor, this);
+			TextView v;
+			if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)) {
+				//convert drug name to correct string (drugName maps to TextView)
+				v = (TextView) view;
+				v.setText(drug.getBrandName());
+			}
+			
+			//attempt to move cursor to next row, if it returns false, then we're done with the cursor
+			if(cursor.moveToNext()) {
+				//if the drug names aren't equal, then set drugs equal to false & move the cursor back one
+				//so it will get moved ahead next time it's called
+				if(!drug.getBrandName().equals(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)))) {
+					drugsEqual = false;
+					}
+			}
+			else {
+				return true;
+			}
 		}
+		return true;
 //		else if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH)) {
 //			v = (TextView) view;
 //			Vector<String> strength = drug.getStrength();
@@ -246,10 +285,10 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 //			}
 //			
 //		}
-		else {
-			return false;
-		}
-		return true;
+		//else {
+			//return false;
+		//}
+		//return true;
 	}
 	
 	

@@ -55,14 +55,14 @@ public class DrugDetailsView extends Activity {
 		dCursor.moveToFirst();
 		
 		try {
-			editDrug = Drug.fromCursor(dCursor);
+			editDrug = Drug.fromCursor(dCursor, this);
 		} catch (Exception e) {
 			Log.d(LOG_TAG,"Exception thrown:");
 			e.printStackTrace();
 		}
 		
 		TextView dNameView = (TextView) this.findViewById(R.id.drug_details_drug_name);
-		dNameView.setText(editDrug.getMedicalName());
+		dNameView.setText(editDrug.getBrandName());
 		
 		TextView dStrengthView = (TextView) this.findViewById(R.id.drug_details_drug_strength);
 		Vector<String> strength = editDrug.getStrength();

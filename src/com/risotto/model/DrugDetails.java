@@ -45,7 +45,7 @@ public class DrugDetails {
 		SMALL, MEDIUM, LARGE, NONE, OTHER
 	}
 
-	public DrugDetails(byte type, int strength, String strengthLabel) {
+	public DrugDetails(int type, int strength, String strengthLabel) {
 		this(INVALID_ID, type, strength, strengthLabel);
 	}
 
@@ -325,7 +325,7 @@ public class DrugDetails {
 		 * STORE ANY OPTIONAL FIELDS.
 		 */
 		// Nick Name
-		if (!this.getNickName().equalsIgnoreCase("")) {
+		if (this.getNickName() != null && !this.getNickName().equalsIgnoreCase("")) {
 			drugDetailsValues
 					.put(StorageProvider.DrugDetailColumns.DRUG_DETAILS_DRUG_NICK_NAME,
 							this.getNickName());

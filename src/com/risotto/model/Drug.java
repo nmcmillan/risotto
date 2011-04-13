@@ -216,9 +216,10 @@ public class Drug {
 					newDrug.addDrugDetails(DrugDetails.fromCursor(detailsCursor));
 				}  while (detailsCursor.moveToNext());
 				
-				// Close and release the cursor.
-				detailsCursor.close();	
 			}
+			
+			// Close and release the cursor.
+			detailsCursor.close();
 					
 			Log.d(LOG_TAG, "Returning the new drug.");
 			
