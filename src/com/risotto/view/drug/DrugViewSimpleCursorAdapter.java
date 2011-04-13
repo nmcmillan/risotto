@@ -1,4 +1,4 @@
-package com.risotto.view;
+package com.risotto.view.drug;
 
 import android.content.Context;
 import android.database.Cursor;
