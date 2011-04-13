@@ -39,7 +39,7 @@ public class DrugDetailsView extends Activity {
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	/*	super.onCreate(savedInstanceState);
 		Log.d(LOG_TAG,"onCreate called successfully");
 		
 		setContentView(R.layout.drug_details_layout);
@@ -64,21 +64,21 @@ public class DrugDetailsView extends Activity {
 		TextView dNameView = (TextView) this.findViewById(R.id.drug_details_drug_name);
 		dNameView.setText(editDrug.getBrandName());
 		
-//		TextView dStrengthView = (TextView) this.findViewById(R.id.drug_details_drug_strength);
-//		Vector<String> strength = editDrug.getStrength();
-//		ListIterator<String> li = strength.listIterator();
-//		//can do this because for a drug to be in the DB, it must have at least one strength
-//		try {
-//			String strenString = li.next() + " mg ";
-//			while(li.hasNext()) {
-//				strenString += ", " + li.next() + " mg ";
-//			}
-//			dStrengthView.setText(strenString);
-//			dStrengthView.setTypeface(Typeface.create("null", Typeface.ITALIC));
-//		} catch(NoSuchElementException e) {
-//			Log.d(LOG_TAG,"No elements in strength vector.");
-//		}
-		
+		TextView dStrengthView = (TextView) this.findViewById(R.id.drug_details_drug_strength);
+		Vector<String> strength = editDrug.getStrength();
+		ListIterator<String> li = strength.listIterator();
+		//can do this because for a drug to be in the DB, it must have at least one strength
+		try {
+			String strenString = li.next() + " mg ";
+			while(li.hasNext()) {
+				strenString += ", " + li.next() + " mg ";
+			}
+			dStrengthView.setText(strenString);
+			dStrengthView.setTypeface(Typeface.create("null", Typeface.ITALIC));
+		} catch(NoSuchElementException e) {
+			Log.d(LOG_TAG,"No elements in strength vector.");
+		}
+		*/
 	}
 
 	/* 

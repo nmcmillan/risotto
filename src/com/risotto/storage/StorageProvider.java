@@ -339,7 +339,7 @@ public class StorageProvider extends ContentProvider {
 	    public static final String DEFAULT_SORT_ORDER = SCHEDULES_NEXT_TIME + " DESC";	
 	}
 
-	private StorageDatabaseHelper mOpenHelper;
+	private static StorageDatabaseHelper mOpenHelper;
 	
 	@Override
 	public boolean onCreate() {
@@ -381,6 +381,17 @@ public class StorageProvider extends ContentProvider {
 		}
 	}
 
+	public static Cursor drugJoin() {
+		Log.d(LOG_TAG,"in drugJoin(before)");
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		
+		//"SELECT * FROM table_a INNER JOIN table_b ON a.id=b.other_id WHERE b.property_id=?";
+		
+		String sqlQuery = "SELECT * FROM drugs INNER JOIN drug_details ON drug_details.drug=drugs._id ORDER BY drug_details.drug;";
+		Log.d(LOG_TAG,"in drugJoin(after)");
+		return db.rawQuery(sqlQuery, null);
+	}
+	
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		
