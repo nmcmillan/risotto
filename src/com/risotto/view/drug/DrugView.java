@@ -216,7 +216,7 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		Log.d(LOG_TAG,"In set view value...");
-		
+
 
 		Drug drug = Drug.fromCursor(cursor, this);
 		TextView v;
