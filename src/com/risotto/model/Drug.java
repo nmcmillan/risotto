@@ -1,14 +1,19 @@
 package com.risotto.model;
 
-import java.util.ListIterator;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OptionalDataException;
+import java.io.StreamCorruptedException;
+import java.util.Enumeration;
 import java.util.Vector;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
-import android.graphics.Color;
-import android.util.Log;
 import android.net.Uri;
 import android.util.Log;
 
@@ -20,33 +25,22 @@ public class Drug {
 	
 	// Required Fields
 	private String brandName;
+	private Vector<DrugDetails> drugDetails;
 	
 	// Optional Fields
 	private String genericName;
 	private String manufacturer;
 	
-	// Possible drug details
-	private Vector<DrugDetails> drugDetails;
-	
 	// Unique id used for storage references
 	private int _id;
 	private static final int INVALID_ID = -1;
- 	
- 	public Drug() {
- 		this("");
- 	}
-	
-	public Drug(String brandName) {
-		this(INVALID_ID, brandName);
-	}
 	
 	public Drug(String brandName, DrugDetails drugDetails) {
 		this(INVALID_ID, brandName, drugDetails);
 	}
 	
-	private Drug(int _id, String brandName) {
-		this._id = _id;
-		this.brandName = brandName;
+	public Drug(String brandName, int type, int strength, String strengthLabel) {
+		this(brandName, new DrugDetails(type, strength, strengthLabel));
 	}
 	
 	private Drug(int _id, String brandName, DrugDetails drugDetails) {
@@ -54,6 +48,12 @@ public class Drug {
 		this.brandName = brandName;
 		// Call for an add to the vector
 		this.addDrugDetails(drugDetails);
+	}
+	
+	private Drug(int _id, String brandName, Vector<DrugDetails> drugDetails) {
+		this._id = _id;
+		this.brandName = brandName;
+		this.drugDetails = drugDetails;
 	}
 
 	public String getGenericName() {
@@ -111,14 +111,62 @@ public class Drug {
 		return this.drugDetails;
 	}
 	
-	public int storeDrugAndDetails(Context context) {
+	/*
+	 * Some helper functions for the view.
+	 */
+	public String getPrintableStrengths() {
+		String returnString = "";
+		
+		Enumeration<DrugDetails> drugDetailsEnum = this.getDrugDetails().elements();
+		
+		do {
+			DrugDetails nextDetails = drugDetailsEnum.nextElement();
+			returnString+= nextDetails.getStrength() + "" + nextDetails.getStrengthLabel();
+			
+			if (drugDetailsEnum.hasMoreElements()) {
+				returnString+= ", ";
+			}
+		} while(drugDetailsEnum.hasMoreElements());
+		
+		return returnString;
+	}
+	
+	public int storeDrug(Context context) {
+		// Store the drug...
+		Uri drugUri = context.getApplicationContext().getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, this.toContentValues());
+		// Parse off the row number from the resulting URI
+		int drugId = Integer.parseInt(drugUri.getPathSegments().get(1));
+		// Return the row number
+		// TODO Should we return the URI instead?
+		return drugId;	
+	}
+	
+	public ContentValues toContentValues() {
 		// Create a new 'ContentValues' to store our values
 		ContentValues drugValues = new ContentValues();
 		
 		/**
 		 * STORE ALL REQUIRED FIELDS.
 		 */
+		// Store the brand name
 		drugValues.put(StorageProvider.DrugColumns.DRUG_BRAND_NAME, this.getBrandName());
+		
+		// Store the details vector
+		Log.d(LOG_TAG, "Attempting to store the details vector...");
+		try {
+			ByteArrayOutputStream b = new ByteArrayOutputStream();
+			ObjectOutputStream o = new ObjectOutputStream(b);
+			o.writeObject(this.getDrugDetails());
+			o.flush();
+			// Place the vector in the blob
+			drugValues.put(StorageProvider.DrugColumns.DRUG_DETAILS, b.toByteArray());
+			// Close the stream
+			o.close();
+			
+		} catch (IOException e) {
+			Log.d(LOG_TAG, "Exception while trying to serialize the details vector...");
+			e.printStackTrace();
+		}
 		
 		/**
 		 * STORE ANY OPTIONAL FIELDS.
@@ -134,31 +182,7 @@ public class Drug {
 		
 		// TODO Store drug interactions.
 			
-		/**
-		 * STORE THE DRUG.
-		 */
-		// Store the drug, because why the hell not...
-		Uri drugUri = context.getApplicationContext().getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, drugValues);
-		int drugId = Integer.parseInt(drugUri.getPathSegments().get(1));
-		
-		if ( this.getDrugDetails() != null) {
-			// Get an iterator on the drug details
-			ListIterator<DrugDetails> detailList = this.getDrugDetails().listIterator();
-			
-			/**
-			 * For each of the drug details, set the drug id and store the details.
-			 */
-			while (detailList.hasNext()) {
-				// Get the next DrugDetails object
-				DrugDetails currDetails = detailList.next();
-				// Store the Drug object reference.
-				currDetails.setDrugId(drugId);
-				// Convert the DrugDetails to ContentValues and store them
-				context.getApplicationContext().getContentResolver().insert(StorageProvider.DrugDetailColumns.CONTENT_URI, currDetails.toContentValues());
-			}
-		}
-		
-		return drugId;
+		return drugValues;
 	}
 	
 	public static Drug fromCursor(Cursor cursor, Context context) throws CursorIndexOutOfBoundsException {
@@ -172,13 +196,38 @@ public class Drug {
 			/**
 			 * GET THE REQUIRED FIELDS.
 			 */
+			// Get the ID
 			int _id = cursor.getInt(cursor.getColumnIndex(StorageProvider.DrugColumns._ID));
+			// Get the Brand Name
 			String brandName = cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME));
 
-			Log.d(LOG_TAG, "Got required fields: " + _id + " " + brandName);
+			// Get the DrugDetails vector
+			Log.d(LOG_TAG, "Attempting to get the details vector...");
+			Vector<DrugDetails> drugDetails = null;
 			
-			// Inst. the drug
-			newDrug = new Drug(_id, brandName);
+			byte[] detailsArray = cursor.getBlob(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_DETAILS));
+			
+			try {
+				ByteArrayInputStream bb = new ByteArrayInputStream(detailsArray);
+				ObjectInputStream oo = new ObjectInputStream(bb);
+				drugDetails = (Vector<DrugDetails>)oo.readObject();
+				oo.close();
+			} catch (StreamCorruptedException e) {
+				Log.d(LOG_TAG, "SteamCorruptedExcpetion while getting the details vector...");
+				e.printStackTrace();
+			} catch (OptionalDataException e) {
+				Log.d(LOG_TAG, "OptionalDataException while getting the details vector...");
+				e.printStackTrace();
+			} catch (IOException e) {
+				Log.d(LOG_TAG, "IOException while getting the details vector...");
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				Log.d(LOG_TAG, "ClassNotFoundException while getting the details vector...");
+				e.printStackTrace();
+			}
+			
+			// Instantiate the drug object
+			newDrug = new Drug(_id, brandName, drugDetails);
 			
 			/**
 			 * GET THE OPTIONAL FIELDS.
@@ -197,31 +246,6 @@ public class Drug {
 			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_INTERACTIONS))) {
 				// TODO Get all interactions.
 			}
-			
-			Log.d(LOG_TAG, "About to look for any drug details...");
-			// Get all of the DrugDetails associated with this drug
-			String whereClause = StorageProvider.DrugDetailColumns.DRUG_DETAILS_DRUG + "=" + "'" + newDrug.get_id() + "'";
-			Cursor detailsCursor = context.getApplicationContext().getContentResolver().query(StorageProvider.DrugDetailColumns.CONTENT_URI, null, whereClause, null, null);
-			Log.d(LOG_TAG, "Completed the search for drug details...");
-			
-			if ( detailsCursor != null && detailsCursor.getCount() != 0 ) {
-				Log.d(LOG_TAG, "There are drug details for this drug!");
-				Log.d(LOG_TAG, "Number of entries in the details cursor: " + detailsCursor.getCount());
-				
-				// Move the cursor to the start
-				detailsCursor.moveToFirst();
-				
-				do {
-					// Add the drug details object to the drug class.
-					newDrug.addDrugDetails(DrugDetails.fromCursor(detailsCursor));
-				}  while (detailsCursor.moveToNext());
-				
-			}
-			
-			// Close and release the cursor.
-			detailsCursor.close();
-					
-			Log.d(LOG_TAG, "Returning the new drug.");
 			
 			// Return the new drug!
 			return newDrug;

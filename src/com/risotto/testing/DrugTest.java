@@ -20,7 +20,7 @@ public class DrugTest {
 		strengths.add("100");
 		strengths.add("150");
 		strengths.add("200");		
-		Drug drug = new Drug("Tylenol");
+		//Drug drug = new Drug("Tylenol");
 		//ContentValues cv = drug.toContentValues();
 		//Drug newDrug = Drug.fromContentValues(cv);
 		

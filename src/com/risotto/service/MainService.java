@@ -15,6 +15,7 @@ import android.util.Log;
 import com.risotto.controller.StatusBarNotification;
 import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
+import com.risotto.model.DrugDetails;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
 import com.risotto.storage.StorageProvider;
@@ -104,7 +105,7 @@ public class MainService extends Service {
 		StatusBarNotificationManager sbnm = new StatusBarNotificationManager(this.getApplicationContext());
 		
 		// Create a new prescription.
-		Prescription prep = new Prescription(new Patient("Nick", "McMillan", Patient.GENDER_MALE),new Drug("Name"),Prescription.DOSE_TYPE_EVERY_DAY,10,10);
+		Prescription prep = new Prescription(new Patient("Nick", "McMillan", Patient.GENDER_MALE),new Drug("Ibuprofen", DrugDetails.TYPE_PRE, 400, "mg"),Prescription.DOSE_TYPE_EVERY_DAY,10,10);
 		
 		// Create the new status bar notification.
 		StatusBarNotification not = new StatusBarNotification(this, prep, intent.getStringExtra("TOP_TEXT"), intent.getStringExtra("TITLE_TEXT"), intent.getStringExtra("BODY_TEXT"));

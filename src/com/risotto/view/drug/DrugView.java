@@ -53,12 +53,6 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 		StorageProvider.DrugColumns.DRUG_BRAND_NAME,
 	};
 	
-	private static String[] DRUG_DETAILS_PROJECTION = {
-		StorageProvider.DrugDetailColumns._ID,
-		StorageProvider.DrugDetailColumns.DRUG_DETAILS_DRUG,
-		StorageProvider.DrugDetailColumns.DRUG_DETAILS_DRUG_STRENGTH
-	};
-	
 	/**
 	 * This method is only called once and that's the first time the 
 	 * options menu is displayed.
@@ -164,17 +158,17 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	  getListView().setOnCreateContextMenuListener(this);
 	  
 	  Cursor drugCursor = this.getContentResolver().query(getIntent().getData(), DRUG_PROJECTION, null, null, null);
-	  Cursor detailsCursor = this.getContentResolver().query(StorageProvider.DrugDetailColumns.CONTENT_URI, null, null, null, null);
+	  //Cursor detailsCursor = this.getContentResolver().query(StorageProvider.DrugDetailColumns.CONTENT_URI, null, null, null, null);
 	  
-	  Cursor[] cursorArray = { drugCursor, detailsCursor };
+	  //Cursor[] cursorArray = { drugCursor, detailsCursor };
 	  
-	  MergeCursor mergedCursor = new MergeCursor(cursorArray);
+	 // MergeCursor mergedCursor = new MergeCursor(cursorArray);
 	  
-	  if(null != mergedCursor) {
-		  startManagingCursor(mergedCursor);
+	  if(null != drugCursor) {
+		  startManagingCursor(drugCursor);
 		  
-		  Log.d(LOG_TAG,"count: " + mergedCursor.getCount());
-		  Log.d(LOG_TAG,"cursor column count: " + mergedCursor.getColumnCount());
+		  Log.d(LOG_TAG,"count: " + drugCursor.getCount());
+		  Log.d(LOG_TAG,"cursor column count: " + drugCursor.getColumnCount());
 		  
 		  //mergedCursor
 		  Cursor joinedCursor = StorageProvider.drugJoin();

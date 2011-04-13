@@ -209,7 +209,7 @@ public class Patient {
 			String lastName = cursor.getString(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_LAST_NAME));
 			int gender = cursor.getInt(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_GENDER));
 			
-			// Instant. the patient
+			// Instantiate the patient object
 			newPatient = new Patient(_id, firstName, lastName, gender);
 			
 			/**

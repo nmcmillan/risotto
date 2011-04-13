@@ -1,6 +1,7 @@
 package com.risotto.storage;
 
 import java.util.Calendar;
+import java.util.Enumeration;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -38,15 +39,12 @@ public class StorageTester {
 			DrugDetails drugDetails2 = new DrugDetails(DrugDetails.TYPE_PRE, 10, "ml");
 			DrugDetails drugDetails3 = new DrugDetails(DrugDetails.TYPE_PRE, 50, "ml");
 			
-			Drug tylenol = new Drug("Tylenol");
-			tylenol.addDrugDetails(drugDetails);
+			Drug tylenol = new Drug("Tylenol", drugDetails);
 			tylenol.addDrugDetails(drugDetails1);
 			
-			Drug vicadin = new Drug("Vicadin");
-			vicadin.addDrugDetails(drugDetails2);
+			Drug vicadin = new Drug("Vicadin", drugDetails2);
 			
-			Drug crazyPills = new Drug("Crazy Pills");
-			crazyPills.addDrugDetails(drugDetails3);
+			Drug crazyPills = new Drug("Crazy Pills", drugDetails3);
 			
 			Patient georgeBush = new Patient("George", "Bush", Patient.GENDER_MALE);
 			Patient billClinton = new Patient("Bill", "Clinton", Patient.GENDER_MALE);
@@ -64,16 +62,10 @@ public class StorageTester {
 			
 			Prescription morePrescription = new Prescription(bObama, crazyPills, 1, 2, 3);
 			
-			//log("Attempting to store the drug...");
-			//context.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, newDrug.toContentValues());
-			//log("Attempting to store the patient...");
-			//context.getContentResolver().insert(StorageProvider.PatientColumns.CONTENT_URI, newPatient.toContentValues());
 			log("Attempting to store the prescription...");
 			context.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, newPrescription.toContentValues(context));
 			context.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, anotherPrescription.toContentValues(context));
 			context.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, morePrescription.toContentValues(context));
-			
-			
 			
 			log("Added some entries to the databases.");
 		}
@@ -91,6 +83,28 @@ public class StorageTester {
 	
 	private static void queryTest(Context context) {
 		log("Starting the query test...");
+		
+		Cursor drugCursor = context.getApplicationContext().getContentResolver().query(StorageProvider.DrugColumns.CONTENT_URI, null, null, null, null);
+		
+		drugCursor.moveToFirst();
+		
+		do {
+			Drug newDrug = Drug.fromCursor(drugCursor, context);
+			log("Drug ID: " + newDrug.get_id());
+			log("Drug Name: " + newDrug.getBrandName());
+			log("Drug Strengths: " + newDrug.getPrintableStrengths());
+			
+			Enumeration<DrugDetails> myEnum = newDrug.getDrugDetails().elements();
+			
+			while ( myEnum.hasMoreElements() ) {
+				DrugDetails newDetails = myEnum.nextElement();
+				log("Detail Type: " + newDetails.getType());
+				log("Details Strength: " + newDetails.getStrength() + newDetails.getStrengthLabel());
+			}
+			
+		} while (drugCursor.moveToNext());
+		
+		drugCursor.close();
 		
 		log("Query test complete.");
 	}

@@ -320,7 +320,7 @@ public class Prescription {
 		// If the drug is new, we need to store the drug
 		if (newDrug) {
 			// Store the drug
-			int drugId = this.getDrug().storeDrugAndDetails(context);
+			int drugId = this.getDrug().storeDrug(context);
 			// Store the new _id back to the drug object in memory.
 			this.getDrug().set_id(drugId);
 		}
@@ -457,7 +457,7 @@ public class Prescription {
 			scheduled = true;
 		}
 		
-		// Int. the prescription object.
+		// Instantiate the prescription object.
 		newPrescription = new Prescription(_id, newPatient, newDrug, doseType, doseSize, totalUnits);
 		newPrescription.setScheduled(scheduled);
 		
