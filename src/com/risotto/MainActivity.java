@@ -56,8 +56,8 @@ public class MainActivity extends TabActivity {
         
         // Position 2 = Schedules tab
         intent = new Intent().setClass(this, DrugView.class);
-        spec = tabHost.newTabSpec("schedules")
-        				.setIndicator("Schedules", res.getDrawable(R.drawable.micro_white))
+        spec = tabHost.newTabSpec("drugs")
+        				.setIndicator("drugs", res.getDrawable(R.drawable.micro_white))
         				.setContent(intent);
         tabHost.addTab(spec);
         

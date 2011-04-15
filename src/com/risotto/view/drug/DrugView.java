@@ -167,11 +167,11 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	  if(null != drugCursor) {
 		  startManagingCursor(drugCursor);
 		  
-		  Log.d(LOG_TAG,"count: " + drugCursor.getCount());
-		  Log.d(LOG_TAG,"cursor column count: " + drugCursor.getColumnCount());
+		  //Log.d(LOG_TAG,"count: " + drugCursor.getCount());
+		  //Log.d(LOG_TAG,"cursor column count: " + drugCursor.getColumnCount());
 		  
 		  //mergedCursor
-		  Cursor joinedCursor = StorageProvider.drugJoin();
+		  //Cursor joinedCursor = StorageProvider.drugJoin();
 		  
 		  //Log.d(LOG_TAG,"joined count: " + joinedCursor.getCount());
 		  
@@ -199,10 +199,10 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 		  SimpleCursorAdapter adapter = new SimpleCursorAdapter(
 				  this,						//context
 				  R.layout.drug_list_item,	//layout
-				  joinedCursor,					//cursor
-				  new String[] {StorageProvider.DrugColumns.DRUG_BRAND_NAME},	//column name 
-				  //new int[] {R.id.drug_list_view_name,R.id.drug_list_view_strength}); //mapping
-				  new int[] {R.id.drug_list_view_name}); //mapping
+				  drugCursor,					//cursor
+				  new String[] {StorageProvider.DrugColumns.DRUG_BRAND_NAME, StorageProvider.DrugColumns.DRUG_DETAILS_STRENGTH},	//column name 
+				  new int[] {R.id.drug_list_view_name,R.id.drug_list_view_strength}); //mapping
+				  //new int[] {R.id.drug_list_view_name}); //mapping
 		  
 		  adapter.setViewBinder(this);
 		  setListAdapter(adapter);
@@ -234,58 +234,68 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	}
 
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-		Log.d(LOG_TAG,"cursor index: " + cursor.getPosition());
-		Drug drug;
-		boolean drugsEqual = true;
+		Log.d(LOG_TAG,"in setViewValue");
 		
-		cursor.moveToLast();
+		cursor.moveToFirst();
 		
-		while(drugsEqual) {
-			drug = Drug.fromCursor(cursor, this);
-			TextView v;
-			if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)) {
-				//convert drug name to correct string (drugName maps to TextView)
-				v = (TextView) view;
-				v.setText(drug.getBrandName());
+		Drug drug = Drug.fromCursor(cursor, this);
+		TextView v;
+		
+		//if the current column to display is the drug_brand_name, extract from the drug object
+		if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)) {
+			v = (TextView) view;
+			v.setText(drug.getBrandName());
+		} else if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_DETAILS_STRENGTH)) {
+			v = (TextView) view;
+			//Vector<String> strength = drug.getStrength();
+			Log.d(LOG_TAG, drug.getPrintableStrengths());
+			//ListIterator<String> li = strength.listIterator();
+			//can do this because for a drug to be in the DB, it must have at least one strength
+			/*try {
+				String strenString = li.next() + " mg ";
+				while(li.hasNext()) {
+					strenString += ", " + li.next() + " mg ";
+				}
+				v.setText(strenString);
+				v.setTypeface(Typeface.create("null", Typeface.ITALIC));
+			} catch(NoSuchElementException e) {
+				return false;
 			}
 			
-			//attempt to move cursor to next row, if it returns false, then we're done with the cursor
-			if(cursor.moveToNext()) {
-				//if the drug names aren't equal, then set drugs equal to false & move the cursor back one
-				//so it will get moved ahead next time it's called
-				if(!drug.getBrandName().equals(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)))) {
-					drugsEqual = false;
-					}
-			}
-			else {
-				return true;
-			}
 		}
+		else {
+			return false;
+		}*/
+		}
+		
 		return true;
-//		else if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH)) {
-//			v = (TextView) view;
-//			Vector<String> strength = drug.getStrength();
-//			ListIterator<String> li = strength.listIterator();
-//			//can do this because for a drug to be in the DB, it must have at least one strength
-//			try {
-//				String strenString = li.next() + " mg ";
-//				while(li.hasNext()) {
-//					strenString += ", " + li.next() + " mg ";
-//				}
-//				v.setText(strenString);
-//				v.setTypeface(Typeface.create("null", Typeface.ITALIC));
-//			} catch(NoSuchElementException e) {
-//				return false;
-//			}
-//			
-//		}
-		//else {
-			//return false;
-		//}
-		//return true;
+	}
+}
+
+/*Drug drug;
+boolean drugsEqual = true;
+
+cursor.moveToLast();
+
+while(drugsEqual) {
+	drug = Drug.fromCursor(cursor, this);
+	TextView v;
+	if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)) {
+		//convert drug name to correct string (drugName maps to TextView)
+		v = (TextView) view;
+		v.setText(drug.getBrandName());
 	}
 	
-	
-	
-	
-}
+	//attempt to move cursor to next row, if it returns false, then we're done with the cursor
+	if(cursor.moveToNext()) {
+		//if the drug names aren't equal, then set drugs equal to false & move the cursor back one
+		//so it will get moved ahead next time it's called
+		if(!drug.getBrandName().equals(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)))) {
+			drugsEqual = false;
+			}
+	}
+	else {
+		return true;
+	}
+}*/
+
