@@ -22,7 +22,7 @@ public class StorageProvider extends ContentProvider {
     public static final String AUTHORITY = StorageProvider.class.getPackage().getName() + ".provider";
     
     private static final String DATABASE_NAME = "risotto.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String DRUGS_TABLE_NAME = "drugs";
     private static final String PATIENTS_TABLE_NAME = "patients";
     private static final String PRESCRIPTIONS_TABLE_NAME = "prescriptions";
@@ -92,21 +92,17 @@ public class StorageProvider extends ContentProvider {
 			db.execSQL("CREATE TABLE " + DRUGS_TABLE_NAME + " ("
 					+ DrugColumns._ID + " INTEGER PRIMARY KEY,"
 					+ DrugColumns.DRUG_BRAND_NAME + " TEXT NOT NULL,"
+					+ DrugColumns.DRUG_TYPE + " TEXT NOT NULL,"
+					+ DrugColumns.DRUG_STRENGTH + " INTEGER NOT NULL,"
+					+ DrugColumns.DRUG_STRENGTH_LABEL + " TEXT NOT NULL,"
 					+ DrugColumns.DRUG_GENERIC_NAME + " TEXT,"
 					+ DrugColumns.DRUG_MANUFACTURER + " TEXT,"
 					+ DrugColumns.DRUG_INTERACTIONS + " BLOB"
-//					+ DrugColumns.DRUG_DETAILS_TYPE + " INTEGER NOT NULL,"
-//					+ DrugColumns.DRUG_DETAILS_STRENGTH + " INTEGER NOT NULL,"
-//					+ DrugColumns.DRUG_DETAILS_STRENGTH_LABEL + " TEXT NOT NULL,"
-					+ DrugColumns.DRUG_DETAILS_TYPE + " INTEGER,"
-					+ DrugColumns.DRUG_DETAILS_STRENGTH + " INTEGER,"
-					+ DrugColumns.DRUG_DETAILS_STRENGTH_LABEL + " TEXT,"
-					+ DrugColumns.DRUG_DETAILS_NICK_NAME + " TEXT,"
-					+ DrugColumns.DRUG_DETAILS_FORM + " INTEGER,"
-					+ DrugColumns.DRUG_DETAILS_COLOR + " INTEGER,"
-					+ DrugColumns.DRUG_DETAILS_SHAPE + " INTEGER,"
-					+ DrugColumns.DRUG_DETAILS_SIZE + " INTEGER,"
-					+ DrugColumns.DRUG_DETAILS + " BLOB NOT NULL"
+					+ DrugColumns.DRUG_NICK_NAME + " TEXT,"
+					+ DrugColumns.DRUG_FORM + " TEXT,"
+					+ DrugColumns.DRUG_COLOR + " INTEGER,"
+					+ DrugColumns.DRUG_SHAPE + " TEXT,"
+					+ DrugColumns.DRUG_SIZE + " TEXT"
 					+ ");");	
 		}
 		
@@ -183,29 +179,27 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final String DRUG_BRAND_NAME = "brand_name";
 		
+		public static final String DRUG_TYPE = "type";
+		
+		public static final String DRUG_STRENGTH = "strength";
+		
+		public static final String DRUG_STRENGTH_LABEL = "strength_label";
+		
 		public static final String DRUG_GENERIC_NAME = "generic_name";	
 		
 		public static final String DRUG_MANUFACTURER = "manufacturer";
 		
 		public static final String DRUG_INTERACTIONS = "interactions";
 		
-		public static final String DRUG_DETAILS = "details";
+		public static final String DRUG_NICK_NAME = "nick_name";
 		
-		public static final String DRUG_DETAILS_NICK_NAME = "details_nick_name";
+		public static final String DRUG_FORM = "form";
 		
-		public static final String DRUG_DETAILS_TYPE = "details_type";
+		public static final String DRUG_COLOR = "color";
 		
-		public static final String DRUG_DETAILS_STRENGTH = "details_strength";
+		public static final String DRUG_SHAPE = "shape";
 		
-		public static final String DRUG_DETAILS_STRENGTH_LABEL = "details_strength_label";
-		
-		public static final String DRUG_DETAILS_FORM = "details_form";
-		
-		public static final String DRUG_DETAILS_COLOR = "details_color";
-		
-		public static final String DRUG_DETAILS_SHAPE = "details_shape";
-		
-		public static final String DRUG_DETAILS_SIZE = "details_size";
+		public static final String DRUG_SIZE = "size";
 	    
 	    public static final String DEFAULT_SORT_ORDER = DRUG_BRAND_NAME + " DESC";	
 	}
@@ -354,6 +348,9 @@ public class StorageProvider extends ContentProvider {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		
 		//"SELECT * FROM table_a INNER JOIN table_b ON a.id=b.other_id WHERE b.property_id=?";
+		
+		// Prescription Query
+		// select * from prescriptions, drugs, patients WHERE prescriptions.drug = drugs._id and prescriptions.patient = patients._id;
 		
 		String sqlQuery = "SELECT * FROM drugs INNER JOIN drug_details ON drug_details.drug=drugs._id ORDER BY drug_details.drug;";
 		Log.d(LOG_TAG,"in drugJoin(after)");

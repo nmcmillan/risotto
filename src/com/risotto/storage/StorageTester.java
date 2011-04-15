@@ -1,14 +1,12 @@
 package com.risotto.storage;
 
 import java.util.Calendar;
-import java.util.Enumeration;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
 import com.risotto.model.Drug;
-import com.risotto.model.DrugDetails;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
 
@@ -34,17 +32,12 @@ public class StorageTester {
 			
 			log("Adding some static data to the database...");
 			
-			DrugDetails drugDetails = new DrugDetails(DrugDetails.TYPE_PRE, 200, "mg");
-			DrugDetails drugDetails1 = new DrugDetails(DrugDetails.TYPE_PRE, 400, "mg");
-			DrugDetails drugDetails2 = new DrugDetails(DrugDetails.TYPE_PRE, 10, "ml");
-			DrugDetails drugDetails3 = new DrugDetails(DrugDetails.TYPE_PRE, 50, "ml");
 			
-			Drug tylenol = new Drug("Tylenol", drugDetails);
-			tylenol.addDrugDetails(drugDetails1);
+			Drug tylenol = new Drug("Tylenol", Drug.TYPE.OVER_THE_COUNTER, 400, "mg");
 			
-			Drug vicadin = new Drug("Vicadin", drugDetails2);
+			Drug vicadin = new Drug("Vicadin", Drug.TYPE.PRESCRIPTION, 500, "mg");
 			
-			Drug crazyPills = new Drug("Crazy Pills", drugDetails3);
+			Drug crazyPills = new Drug("Crazy Pills", Drug.TYPE.PRESCRIPTION, 1000, "ml");
 			
 			Patient georgeBush = new Patient("George", "Bush", Patient.GENDER_MALE);
 			Patient billClinton = new Patient("Bill", "Clinton", Patient.GENDER_MALE);
@@ -89,18 +82,10 @@ public class StorageTester {
 		drugCursor.moveToFirst();
 		
 		do {
-			Drug newDrug = Drug.fromCursor(drugCursor, context);
+			Drug newDrug = Drug.fromCursor(drugCursor);
 			log("Drug ID: " + newDrug.get_id());
 			log("Drug Name: " + newDrug.getBrandName());
-			log("Drug Strengths: " + newDrug.getPrintableStrengths());
-			
-			Enumeration<DrugDetails> myEnum = newDrug.getDrugDetails().elements();
-			
-			while ( myEnum.hasMoreElements() ) {
-				DrugDetails newDetails = myEnum.nextElement();
-				log("Detail Type: " + newDetails.getType());
-				log("Details Strength: " + newDetails.getStrength() + newDetails.getStrengthLabel());
-			}
+			log("Drug Strengths: " + newDrug.getPrintableStrength());
 			
 		} while (drugCursor.moveToNext());
 		
