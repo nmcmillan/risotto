@@ -13,12 +13,27 @@
 	<string name="button_taken">Taken</string>
 	
 	<!-- Drug Edit Strings -->
-	<string name="drug_add_strength">Strength...</string>
-	<string name="drug_add_name">Name...</string>
-	<string name="drug_editor_title">New drug info:</string>
 	<string name="drug_resolve_title">Drug Information:</string>
-	<string name="button_drug_edit_ok">OK</string>
+	
+	<!-- Drug Add Strings -->
+	<string name="drug_editor_title">New drug info:</string>
+	<string name="drug_add_strength">Drug Strength...</string>
+	<string name="drug_add_name">Drug Name...</string>
+	<string name="drug_type_default">Drug Type</string>
+	<string name="button_drug_edit_ok">Add!</string>
 	<string name="drug_list_view_add">Add Drug</string>
+	<string name="drug_types">Drug Types:</string>
+	<string-array name="drug_types_array">
+		<item>CAPSULES</item>
+		<item>TABLETS</item>
+		<item>POWDERS</item>
+		<item>DROPS</item>
+		<item>LIQUIDS</item>
+		<item>SPRAY</item>
+		<item>SKIN</item>
+		<item>SUPPOSITORIES</item>
+		<item>OTHER</item>
+	</string-array>
 	
 	<!-- Drug Details Strings -->
 	<string name="drug_details_title">Drug Details:</string>

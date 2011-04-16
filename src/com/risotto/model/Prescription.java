@@ -446,7 +446,7 @@ public class Prescription {
 		// Get the drug object from the id
 		Uri myDrug = ContentUris.withAppendedId(StorageProvider.DrugColumns.CONTENT_URI, drugId);
 		Cursor drugCursor = context.getApplicationContext().getContentResolver().query(myDrug, null, null, null, null);
-		newDrug = Drug.fromCursor(drugCursor, context);
+		newDrug = Drug.fromCursor(drugCursor);
 		
 		int doseType = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_TYPE));
 		int doseSize = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_SIZE));

@@ -1,13 +1,10 @@
 package com.risotto.model;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.io.StreamCorruptedException;
-import java.util.Enumeration;
 import java.util.Vector;
 
 import android.content.ContentValues;
@@ -25,35 +22,54 @@ public class Drug {
 	
 	// Required Fields
 	private String brandName;
-	private Vector<DrugDetails> drugDetails;
+	private TYPE type;
+	private int strength;
+	private String strengthLabel;
 	
 	// Optional Fields
-	private String genericName;
-	private String manufacturer;
+	private String genericName = "";
+	private String manufacturer = "";
+	private Vector<Integer> interactions = null;
+	private String nickName = "";
+	private FORM form = FORM.DEFAULT;
+	private int color = -1;
+	private SHAPE shape = SHAPE.DEFAULT;
+	private SIZE size = SIZE.DEFAULT;
 	
 	// Unique id used for storage references
 	private int _id;
 	private static final int INVALID_ID = -1;
 	
-	public Drug(String brandName, DrugDetails drugDetails) {
-		this(INVALID_ID, brandName, drugDetails);
+	// Possible drug types.
+	public enum TYPE {
+		OVER_THE_COUNTER, PRESCRIPTION, DEFAULT
+	}
+
+	// Possible solid shapes.
+	public enum SHAPE {
+		ROUND, OBLONG, OVAL, SQUARE, RECTANGLE, DIAMOND, THREE_SIDED, FIVE_SIDED, SIX_SIDED, SEVEN_SIDED, EIGHT_SIDED, NONE, OTHER, DEFAULT
+	}
+
+	// The many forms which the drug can be.
+	public enum FORM {
+		CAPSULES, TABLETS, POWDERS, DROPS, LIQUIDS, SPRAY, SKIN, SUPPOSITORIES, NONE, OTHER, DEFAULT
+	}
+
+	// Possible sizes of solid drugs.
+	public enum SIZE {
+		SMALL, MEDIUM, LARGE, NONE, OTHER, DEFAULT
 	}
 	
-	public Drug(String brandName, int type, int strength, String strengthLabel) {
-		this(brandName, new DrugDetails(type, strength, strengthLabel));
+	public Drug(String brandName, TYPE type, int strength, String strengthLabel) {
+		this(INVALID_ID, brandName, type, strength, strengthLabel);
 	}
 	
-	private Drug(int _id, String brandName, DrugDetails drugDetails) {
+	private Drug(int _id, String brandName, TYPE type, int strength, String strengthLabel) {
 		this._id = _id;
 		this.brandName = brandName;
-		// Call for an add to the vector
-		this.addDrugDetails(drugDetails);
-	}
-	
-	private Drug(int _id, String brandName, Vector<DrugDetails> drugDetails) {
-		this._id = _id;
-		this.brandName = brandName;
-		this.drugDetails = drugDetails;
+		this.type = type;
+		this.strength = strength;
+		this.strengthLabel = strengthLabel;
 	}
 
 	public String getGenericName() {
@@ -80,6 +96,78 @@ public class Drug {
 		this.manufacturer = manufacturer;
 	}
 	
+	public TYPE getType() {
+		return type;
+	}
+
+	public void setType(TYPE type) {
+		this.type = type;
+	}
+
+	public int getStrength() {
+		return strength;
+	}
+
+	public void setStrength(int strength) {
+		this.strength = strength;
+	}
+
+	public String getStrengthLabel() {
+		return strengthLabel;
+	}
+
+	public void setStrengthLabel(String strengthLabel) {
+		this.strengthLabel = strengthLabel;
+	}
+
+	public Vector<Integer> getInteractions() {
+		return interactions;
+	}
+
+	public void setInteractions(Vector<Integer> interactions) {
+		this.interactions = interactions;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
+	public FORM getForm() {
+		return form;
+	}
+
+	public void setForm(FORM form) {
+		this.form = form;
+	}
+
+	public int getColor() {
+		return color;
+	}
+
+	public void setColor(int color) {
+		this.color = color;
+	}
+
+	public SHAPE getShape() {
+		return shape;
+	}
+
+	public void setShape(SHAPE shape) {
+		this.shape = shape;
+	}
+
+	public SIZE getSize() {
+		return size;
+	}
+
+	public void setSize(SIZE size) {
+		this.size = size;
+	}
+	
 	public int get_id() {
 		return _id;
 	}
@@ -88,47 +176,11 @@ public class Drug {
 		this._id = _id;
 	}
 	
-	public boolean addDrugDetails(DrugDetails drugDetail) {
-		if (this.drugDetails == null) {
-			this.drugDetails = new Vector<DrugDetails>();
-		}
-		
-		// TODO Make sure that we are not adding duplicates.
-		
-		return this.drugDetails.add(drugDetail);
-	}
-	
-	public boolean removeDrugDetails(DrugDetails drugDetail) {
-		if (this.drugDetails == null) {
-			return false;
-		} else {
-			// TODO Do some checking to make sure that we are removing the correct detail based on the id.
-			return this.drugDetails.remove(drugDetail);
-		}
-	}
-	
-	public Vector<DrugDetails> getDrugDetails() {
-		return this.drugDetails;
-	}
-	
 	/*
 	 * Some helper functions for the view.
 	 */
-	public String getPrintableStrengths() {
-		String returnString = "";
-		
-		Enumeration<DrugDetails> drugDetailsEnum = this.getDrugDetails().elements();
-		
-		do {
-			DrugDetails nextDetails = drugDetailsEnum.nextElement();
-			returnString+= nextDetails.getStrength() + "" + nextDetails.getStrengthLabel();
-			
-			if (drugDetailsEnum.hasMoreElements()) {
-				returnString+= ", ";
-			}
-		} while(drugDetailsEnum.hasMoreElements());
-		
-		return returnString;
+	public String getPrintableStrength() {
+		return "" + this.getStrength() + "" + this.getStrengthLabel();
 	}
 	
 	public int storeDrug(Context context) {
@@ -151,22 +203,14 @@ public class Drug {
 		// Store the brand name
 		drugValues.put(StorageProvider.DrugColumns.DRUG_BRAND_NAME, this.getBrandName());
 		
-		// Store the details vector
-		Log.d(LOG_TAG, "Attempting to store the details vector...");
-		try {
-			ByteArrayOutputStream b = new ByteArrayOutputStream();
-			ObjectOutputStream o = new ObjectOutputStream(b);
-			o.writeObject(this.getDrugDetails());
-			o.flush();
-			// Place the vector in the blob
-			drugValues.put(StorageProvider.DrugColumns.DRUG_DETAILS, b.toByteArray());
-			// Close the stream
-			o.close();
-			
-		} catch (IOException e) {
-			Log.d(LOG_TAG, "Exception while trying to serialize the details vector...");
-			e.printStackTrace();
-		}
+		// Store the type
+		drugValues.put(StorageProvider.DrugColumns.DRUG_TYPE, this.getType().toString());
+		
+		// Store the strength
+		drugValues.put(StorageProvider.DrugColumns.DRUG_STRENGTH, this.getStrength());
+		
+		// Store the strength label
+		drugValues.put(StorageProvider.DrugColumns.DRUG_STRENGTH_LABEL, this.getStrengthLabel());
 		
 		/**
 		 * STORE ANY OPTIONAL FIELDS.
@@ -175,9 +219,35 @@ public class Drug {
 		if( this.getGenericName() != null && !this.getGenericName().equalsIgnoreCase("") ){
 			drugValues.put(StorageProvider.DrugColumns.DRUG_GENERIC_NAME, this.getGenericName());
 		}
+		
 		// Store the manufacturer if not empty
 		if ( this.getManufacturer() != null && !this.getManufacturer().equalsIgnoreCase("") ) {
 			drugValues.put(StorageProvider.DrugColumns.DRUG_MANUFACTURER, this.getManufacturer());
+		}
+		
+		// Store the nick name if not empty.
+		if ( this.getNickName() != null && !this.getNickName().equalsIgnoreCase("") ) {
+			drugValues.put(StorageProvider.DrugColumns.DRUG_NICK_NAME, this.getNickName());
+		}
+		
+		// Store the form
+		if ( this.getForm() != null && !this.getForm().equals(FORM.DEFAULT)) {
+			drugValues.put(StorageProvider.DrugColumns.DRUG_FORM, this.getForm().toString());
+		}
+		
+		// Store the color
+		if ( this.getColor() != -1 ) {
+			drugValues.put(StorageProvider.DrugColumns.DRUG_COLOR, this.getColor());
+		}
+		
+		// Store the shape
+		if ( this.getShape() != null && !this.getShape().equals(SHAPE.DEFAULT)) {
+			drugValues.put(StorageProvider.DrugColumns.DRUG_SHAPE, this.getShape().toString());
+		}
+		
+		// Store the size
+		if ( this.getSize() != null && !this.getSize().equals(SIZE.DEFAULT)) {
+			drugValues.put(StorageProvider.DrugColumns.DRUG_SIZE, this.getSize().toString());
 		}
 		
 		// TODO Store drug interactions.
@@ -185,7 +255,7 @@ public class Drug {
 		return drugValues;
 	}
 	
-	public static Drug fromCursor(Cursor cursor, Context context) throws CursorIndexOutOfBoundsException {
+	public static Drug fromCursor(Cursor cursor) throws CursorIndexOutOfBoundsException {
 
 		Log.d(LOG_TAG, "Entering from cursor...");
 		
@@ -199,35 +269,28 @@ public class Drug {
 			// Get the ID
 			int _id = cursor.getInt(cursor.getColumnIndex(StorageProvider.DrugColumns._ID));
 			// Get the Brand Name
-			String brandName = cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME));
-
-			// Get the DrugDetails vector
-			Log.d(LOG_TAG, "Attempting to get the details vector...");
-			Vector<DrugDetails> drugDetails = null;
-			
-			byte[] detailsArray = cursor.getBlob(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_DETAILS));
-			
-			try {
-				ByteArrayInputStream bb = new ByteArrayInputStream(detailsArray);
-				ObjectInputStream oo = new ObjectInputStream(bb);
-				drugDetails = (Vector<DrugDetails>)oo.readObject();
-				oo.close();
-			} catch (StreamCorruptedException e) {
-				Log.d(LOG_TAG, "SteamCorruptedExcpetion while getting the details vector...");
-				e.printStackTrace();
-			} catch (OptionalDataException e) {
-				Log.d(LOG_TAG, "OptionalDataException while getting the details vector...");
-				e.printStackTrace();
-			} catch (IOException e) {
-				Log.d(LOG_TAG, "IOException while getting the details vector...");
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				Log.d(LOG_TAG, "ClassNotFoundException while getting the details vector...");
-				e.printStackTrace();
+			String brandName = "";
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME))) {
+				brandName = cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME));
+			}
+			// Get the type
+			TYPE type = TYPE.DEFAULT;
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_TYPE))) {
+				type = TYPE.valueOf(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_TYPE)));
+			}
+			// Get the strength
+			int strength = -1;
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH))) {
+				strength = cursor.getInt(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH));
+			}
+			// Get the strength label
+			String strengthLabel = "";
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH_LABEL))) {
+				strengthLabel = cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH_LABEL));
 			}
 			
 			// Instantiate the drug object
-			newDrug = new Drug(_id, brandName, drugDetails);
+			newDrug = new Drug(_id, brandName, type, strength, strengthLabel);
 			
 			/**
 			 * GET THE OPTIONAL FIELDS.
@@ -240,6 +303,31 @@ public class Drug {
 			// Get the manufacturer
 			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_MANUFACTURER))) {
 				newDrug.setManufacturer(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_MANUFACTURER)));
+			}
+			
+			// Get the nick name
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_NICK_NAME))) {
+				newDrug.setNickName(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_NICK_NAME)));
+			}
+			
+			// Get the form
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_FORM))) {
+				newDrug.setForm(FORM.valueOf(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_FORM))));
+			}
+			
+			// Get the color
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_COLOR))) {
+				newDrug.setColor(cursor.getInt(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_COLOR)));
+			}
+			
+			// Get the shape
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_SHAPE))) {
+				newDrug.setShape(SHAPE.valueOf(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_SHAPE))));
+			}
+			
+			// Get the size
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_SIZE))) {
+				newDrug.setSize(SIZE.valueOf(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_SIZE))));
 			}
 			
 			// Get any interactions

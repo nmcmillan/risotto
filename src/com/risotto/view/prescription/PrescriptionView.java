@@ -1,7 +1,8 @@
 package com.risotto.view.prescription;
 
-import java.util.Enumeration;
 import android.app.ListActivity;
+import android.database.Cursor;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -10,66 +11,35 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import com.risotto.R;
-import com.risotto.controller.StatusBarNotification;
-import com.risotto.controller.StatusBarNotification.Content;
-import com.risotto.controller.StatusBarNotificationManager;
+import com.risotto.model.Drug;
 import com.risotto.service.MainService;
+import com.risotto.storage.StorageProvider;
 
-public class PrescriptionView extends ListActivity {
-
-	StatusBarNotificationManager stbm = new StatusBarNotificationManager(this);
-	String[] nots = new String[2];
-	static final String[] COUNTRIES = new String[] {
-	    "Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra",
-	    "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda", "Argentina",
-	    "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan",
-	    "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium",
-	    "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia",
-	    "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory",
-	    "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burundi",
-	    "Cote d'Ivoire", "Cambodia", "Cameroon", "Canada", "Cape Verde",
-	    "Cayman Islands", "Central African Republic", "Chad", "Chile", "China",
-	    "Christmas Island", "Cocos (Keeling) Islands", "Colombia", "Comoros", "Congo",
-	    "Cook Islands", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic",
-	    "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic",
-	    "East Timor", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea",
-	    "Estonia", "Ethiopia", "Faeroe Islands", "Falkland Islands", "Fiji", "Finland",
-	    "Former Yugoslav Republic of Macedonia", "France", "French Guiana", "French Polynesia",
-	    "French Southern Territories", "Gabon", "Georgia", "Germany", "Ghana", "Gibraltar",
-	    "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guinea", "Guinea-Bissau",
-	    "Guyana", "Haiti", "Heard Island and McDonald Islands", "Honduras", "Hong Kong", "Hungary",
-	    "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica",
-	    "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos",
-	    "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg",
-	    "Macau", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands",
-	    "Martinique", "Mauritania", "Mauritius", "Mayotte", "Mexico", "Micronesia", "Moldova",
-	    "Monaco", "Mongolia", "Montserrat", "Morocco", "Mozambique", "Myanmar", "Namibia",
-	    "Nauru", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand",
-	    "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "North Korea", "Northern Marianas",
-	    "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru",
-	    "Philippines", "Pitcairn Islands", "Poland", "Portugal", "Puerto Rico", "Qatar",
-	    "Reunion", "Romania", "Russia", "Rwanda", "Sqo Tome and Principe", "Saint Helena",
-	    "Saint Kitts and Nevis", "Saint Lucia", "Saint Pierre and Miquelon",
-	    "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Saudi Arabia", "Senegal",
-	    "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands",
-	    "Somalia", "South Africa", "South Georgia and the South Sandwich Islands", "South Korea",
-	    "Spain", "Sri Lanka", "Sudan", "Suriname", "Svalbard and Jan Mayen", "Swaziland", "Sweden",
-	    "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "The Bahamas",
-	    "The Gambia", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey",
-	    "Turkmenistan", "Turks and Caicos Islands", "Tuvalu", "Virgin Islands", "Uganda",
-	    "Ukraine", "United Arab Emirates", "United Kingdom",
-	    "United States", "United States Minor Outlying Islands", "Uruguay", "Uzbekistan",
-	    "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Wallis and Futuna", "Western Sahara",
-	    "Yemen", "Yugoslavia", "Zambia", "Zimbabwe"
-	  };
+public class PrescriptionView extends ListActivity implements SimpleCursorAdapter.ViewBinder {
 	
+	private static final String[] PRESCRIPTION_PROJECTION = {
+		//Prescription columns
+		StorageProvider.PrescriptionColumns._ID,
+		StorageProvider.PrescriptionColumns.PRESCRIPTION_PATIENT,
+		StorageProvider.PrescriptionColumns.PRESCRIPTION_DATE_EXPIRATION,
+		
+		//Patient columns
+		StorageProvider.PatientColumns._ID,
+		StorageProvider.PatientColumns.PATIENT_FIRST_NAME,
+		StorageProvider.PatientColumns.PATIENT_LAST_NAME,
+		
+		//Drug columns
+		StorageProvider.DrugColumns._ID,
+		StorageProvider.DrugColumns.DRUG_BRAND_NAME,
+		StorageProvider.DrugColumns.DRUG_FORM		
+	};
+	
+	public static final String LOG_TAG = "com.risotto.view.prescription.PrescriptionView";
 	
 	/**
 	 * Create a menu that will pop up when the user presses the Menu button.
@@ -112,8 +82,8 @@ public class PrescriptionView extends ListActivity {
 		switch (item.getItemId()) {
 		case R.id.alarm_view_context_menu_edit:
 			System.out.println("Attempting to change notification");
-			stbm.modify(1, Content.STATUS_BAR, "This is a test.");
-			nots[0] = "New";
+			//stbm.modify(1, Content.STATUS_BAR, "This is a test.");
+			//nots[0] = "New";
 			//onContentChanged();
 			((ArrayAdapter<String>)(this.getListAdapter())).notifyDataSetChanged();
 			return true;
@@ -128,34 +98,57 @@ public class PrescriptionView extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 	  super.onCreate(savedInstanceState);
 	  
-	  Enumeration<StatusBarNotification> n = stbm.getAllNotifications();
-	  
-	  int count = 0;
-	  
-	  while(null != n && n.hasMoreElements()) {
-			nots[count] = n.nextElement().getStatusBarText();
-			count++;
-	  }
-	  
-	  
-	  //setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, nots));
-	  setListAdapter(new ArrayAdapter<String>(this,android.R.layout. simple_list_item_1, nots));
+	  Cursor prepCursor = StorageProvider.prescriptionJoinQuery(PRESCRIPTION_PROJECTION);
 
+	  if (null != prepCursor) {
+			startManagingCursor(prepCursor);
+
+			Log.d(LOG_TAG, "count: " + prepCursor.getCount());
+			Log.d(LOG_TAG, "cursor column count: " + prepCursor.getColumnCount());
+			
+			SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+					this, // context
+					R.layout.prescription_list_view, // layout
+					prepCursor, // cursor
+					new String[] { 
+						StorageProvider.PatientColumns.PATIENT_FIRST_NAME,
+						StorageProvider.PatientColumns.PATIENT_LAST_NAME,
+						StorageProvider.DrugColumns.DRUG_BRAND_NAME},
+					new int[] { R.id.prescription_list_view_patient_first_name,
+							R.id.prescription_list_view_patient_last_name,
+							R.id.prescription_list_view_drug_name}); // mapping
+							
+			adapter.setViewBinder(this);
+			setListAdapter(adapter);
+	  }
+	  else {
+		  Log.d(LOG_TAG,"prepCursor was null");
+	  }
+		
 	  registerForContextMenu(getListView());
 	  
-	  ListView lv = getListView();
-	  lv.setTextFilterEnabled(true);
-
-	  lv.setOnItemClickListener(new OnItemClickListener() {
-	    public void onItemClick(AdapterView<?> parent, View view,
-	        int position, long id) {
-	      // When clicked, show a toast with the TextView text
-	      System.out.println("Toast.");
-	      Toast.makeText(getApplicationContext(), ((TextView) view).getText(),
-	          Toast.LENGTH_SHORT).show();
-	    }
-	  });
-	}
 	
+	}
+
+	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+		//Log.d(LOG_TAG, "cursor index: " + cursor.getPosition());
+		//Drug newDrug = Drug.fromCursor(cursor);
+
+		if (columnIndex == cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_FIRST_NAME)) {
+			((TextView)view).setText(cursor.getString(columnIndex));
+		} else if (columnIndex == cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_LAST_NAME)) {
+			//((TextView)view).setText(newDrug.getPrintableStrength());
+			//((TextView)view).setTypeface(Typeface.create("null", Typeface.ITALIC));
+			((TextView)view).setText(cursor.getString(columnIndex));
+		} else if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)) {
+			Log.d(LOG_TAG,"brand name");
+			((TextView)view).setText(cursor.getString(columnIndex));
+		} else {
+			Log.d(LOG_TAG,"column index passed in: " + columnIndex);
+			Log.d(LOG_TAG,"column index drug brand name: " + StorageProvider.DrugColumns.DRUG_BRAND_NAME);
+			return false;
+		}
+		return true;
+	}
 	
 }

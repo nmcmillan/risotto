@@ -9,8 +9,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.AdapterView;
 
 import com.risotto.R;
 import com.risotto.model.Drug;
@@ -25,7 +28,7 @@ import com.risotto.storage.StorageProvider;
  *
  */
 
-public class DrugAdd extends Activity implements View.OnClickListener {
+public class DrugAdd extends Activity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 	
 	public static final String EDIT_DRUG_ACTION="com.risotto.action.EDIT_DRUG";
 	
@@ -56,7 +59,6 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 		
 		setContentView(R.layout.drug_add_layout);
 	
-		//get the URI of the drug we're looking to edit
 		//TO DO: the list menu must have to package this before
 		//it sends off the intent
 		drugUri = getIntent().getData();
@@ -68,21 +70,20 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 		//do we need to dynamically add EditText boxes as needed?
 		
 		drugNameEditText = (EditText) this.findViewById(R.id.drug_add_field_name);
-		if(null == this.drugNameEditText)
-			Log.d(LOG_TAG,"drugNameEditText is null");
-		else
-			drugNameEditText.setHint("Drug name...");
+		drugNameEditText.setHint(R.string.drug_add_name);
 		//drugNameText.setOnClickListener(this);
 		
 		drugStrengthEditText = (EditText) this.findViewById(R.id.drug_add_field_strength);
-		drugStrengthEditText.setHint("Drug strength...");
+		drugStrengthEditText.setHint(R.string.drug_add_strength);
 		//drugStrengthText.setOnClickListener(this);
+		
+		Spinner spinner = (Spinner) this.findViewById(R.id.drug_add_type_spinner);
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.drug_types_array, android.R.layout.simple_spinner_dropdown_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(adapter);
 		
 		Button b = (Button) this.findViewById(R.id.button_drug_edit_ok);
 		b.setOnClickListener(this);
-		
-		
-		
 	}
 	
 	@Override
@@ -96,15 +97,13 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 		//will only be called when 'ok' is called because it's the only view attached to a clicklistener
 		
 		//called when button is clicked & when text field is clicked b/c setOnClickListener attached to it
-		//NOTE: if an activity overtakes this one (phone call, user presses home button) any saving will need
-		//		to be done in onPause() --> this is already being done
 		Log.d(LOG_TAG,"onClick");
 		
 		//TO DO: sanitize inputs to protect against SQL injection
 		
 		boolean validStrength = true;
 		boolean validName = true;
-		String enteredStrength = "";
+		int enteredStrength = -1;
 		
 		String enteredName = drugNameEditText.getText().toString().trim();
 		
@@ -112,8 +111,7 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 			validName = false;
 		}
 		try {
-			int x = Integer.parseInt(drugStrengthEditText.getEditableText().toString());
-			enteredStrength = drugStrengthEditText.getEditableText().toString(); 		
+			enteredStrength = Integer.parseInt(drugStrengthEditText.getEditableText().toString());
 		} catch (NumberFormatException e) {
 			validStrength = false;
 		}
@@ -121,11 +119,9 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 			//both are incorrect, display appropriate message
 			new AlertDialog.Builder(this)
 		    .setTitle("Drug Info Incorrect")
-		    .setMessage("Whoops - the drug name can't be empty and the drug strength must be a number, try again!")
+		    .setMessage("Oops - the drug name can't be empty and the drug strength must be a number, try again!")
 		    //don't do anything when the button is clicked
-		    .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {}
-			})
+		    .setPositiveButton("Okay", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) {} })
 		    .show();
 		}
 		else if(!validName) {
@@ -133,10 +129,7 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 			new AlertDialog.Builder(this)
 		    .setTitle("Drug Name")
 		    .setMessage("The drug name can't be empty, please try again!")
-		    //don't do anything when the button is clicked
-		    .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {}
-			})
+		    .setPositiveButton("Okay", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) {} })
 		    .show();
 			this.drugNameEditText.requestFocus();
 		}
@@ -153,47 +146,23 @@ public class DrugAdd extends Activity implements View.OnClickListener {
 			this.drugStrengthEditText.requestFocus();
 		}
 		else {
-//			//Basic info checks done, now search for drug to see if it's in database
-//			//Cursor storedDrugs = this.getContentResolver().query(StorageProvider.DrugColumns.CONTENT_URI, PROJECTION, null, null, null);
-//			String whereClause = StorageProvider.DrugColumns.DRUG_BRAND_NAME + "=" + "'" + enteredName + "'";
-//		
-//			//First run a query to see if the drug is already in the database.
-//			Cursor dCursor = this.getContentResolver().query(
-//						StorageProvider.DrugColumns.CONTENT_URI, 
-//						PROJECTION, 
-//						whereClause, 
-//						null, 
-//						null);
-//			
-//			//if the count is greater than 0, that means the drug was already in the database
-//			//update the row
-//			if(dCursor.getCount() > 0) {
-//				dCursor.moveToFirst();
-//				Drug existingDrug = Drug.fromCursor(dCursor, this);
-//				//existingDrug.addStrength(enteredStrength);
-//				int id = existingDrug.get_id();
-//				Uri uri = StorageProvider.DrugColumns.CONTENT_URI.buildUpon().appendPath(String.valueOf(id)).build();
-//				ContentValues cv = existingDrug.toContentValues();
-//				this.getContentResolver().update(uri, cv, null, null);
-//				this.getContentResolver().notifyChange(uri, null);
-//				
-//			}
-//			else {
-//				Drug newDrug = new Drug(0,enteredStrength,enteredName);
-//				ContentValues cv = newDrug.toContentValues();
-//				Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
-//				Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
-//			}
-			/*Code for iterating over cursor
-			while(dCursor.moveToNext()) {
-				Drug d = Drug.fromCursor(dCursor);
-				Log.d(LOG_TAG,d.getMedicalName());
-			}*/
-			
-			finish();
+				Drug newDrug = new Drug(enteredName,Drug.TYPE.DEFAULT,enteredStrength,"");
+				ContentValues cv = newDrug.toContentValues();
+				Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
+				Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
 		}
 		
+		finish();
+	}
+
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+			long arg3) {
+		// TODO Auto-generated method stub
 		
+	}
+
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
 		
 	}
 }

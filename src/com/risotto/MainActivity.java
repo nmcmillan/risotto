@@ -61,6 +61,13 @@ public class MainActivity extends TabActivity {
         				.setContent(intent);
         tabHost.addTab(spec);
         
+        // Position 3 = Prescription Tab
+        intent = new Intent().setClass(this, PrescriptionView.class);
+        spec = tabHost.newTabSpec("prescriptions")
+        				.setIndicator("Prescriptions", res.getDrawable(R.drawable.micro_gray))
+        				.setContent(intent);
+        tabHost.addTab(spec);        				
+        
         tabHost.setCurrentTab(0);
     }
 }

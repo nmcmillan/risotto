@@ -29,7 +29,7 @@
 		<!-- Drug View Activity -->
 		<activity android:name="com.risotto.view.drug.DrugView"/>
 		
-		<!-- Alarm View Activity -->
+		<!-- Prescription View Activity -->
 		<activity android:name="com.risotto.view.prescription.PrescriptionView"/>
 			
 		<!-- Drug Details View Activity -->
@@ -50,10 +50,12 @@
         </receiver>
         
         <!-- Drug Add/Edit activity -->
+        <!-- android:theme="@android:style/Theme.Dialog"   -->
         <activity android:name="com.risotto.view.drug.DrugAdd"
-        	android:windowSoftInputMode="stateVisible"
         	android:label="@string/drug_editor_title"
-        	android:theme="@android:style/Theme.Dialog">
+        	android:theme="@android:style/Theme.Dialog"
+        	android:windowNoTitle="true"
+        	android:windowSoftInputMode="stateVisible" >
         		<intent-filter>
 	                <action android:name="android.intent.action.INSERT" />
 	                <category android:name="android.intent.category.DEFAULT" />
