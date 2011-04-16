@@ -13,17 +13,6 @@
      See the License for the specific language governing permissions and
      limitations under the License.    
 -->
-
-<!--<TextView xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    android:id="@android:id/text1"-->
-<!--    android:layout_width="fill_parent" -->
-<!--    android:layout_height="?android:attr/listPreferredItemHeight"-->
-<!--    android:textAppearance="?android:attr/textAppearanceLarge"-->
-<!--    android:gravity="center_vertical"-->
-<!--    android:paddingLeft="5dip"-->
-<!--    android:singleLine="true"-->
-<!--/>-->
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
@@ -48,30 +37,3 @@
         android:layout_alignParentRight="true"
         android:text="Icon" />
 </RelativeLayout>
-
-<!--<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--	android:label="display_drug_table"-->
-<!--    android:layout_width="fill_parent"-->
-<!--    android:layout_height="?android:attr/listPreferredItemHeight"-->
-<!--    android:stretchColumns="1">-->
-<!---->
-<!--    <TableRow-->
-<!--    	android:layout_span="2">-->
-<!--		        <TextView-->
-<!--		            android:text="Drug Name"-->
-<!--		            android:padding="3dip" />-->
-<!--		        <ImageView-->
-<!--		        	android:text="Icon"		          -->
-<!--		            android:padding="3dip"-->
-<!--		            android:src="@android:drawable/ic_menu_add" -->
-<!--		            android:layout_gravity="right"/>-->
-<!--    </TableRow>-->
-<!--    <TableRow>	    -->
-<!--		    	<TextView-->
-<!--		            android:layout_column="0"-->
-<!--		            -->
-<!--		            android:text="Strength"-->
-<!--		            android:padding="3dip" />-->
-<!--    </TableRow>-->
-<!---->
-<!--</TableLayout>-->

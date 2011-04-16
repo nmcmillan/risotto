@@ -1,6 +1,7 @@
 package com.risotto.view.prescription;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -19,8 +20,12 @@ import com.risotto.R;
 import com.risotto.model.Drug;
 import com.risotto.service.MainService;
 import com.risotto.storage.StorageProvider;
+import com.risotto.view.drug.DrugDetailsView;
+import com.risotto.view.drug.DrugView;
 
 public class PrescriptionView extends ListActivity implements SimpleCursorAdapter.ViewBinder {
+	
+	public static final String ACTION_ADD_PRESCRIPTION = "com.risotto.view.prescription.PrescriptionAdd";
 	
 	private static final String[] PRESCRIPTION_PROJECTION = {
 		//Prescription columns
@@ -47,7 +52,7 @@ public class PrescriptionView extends ListActivity implements SimpleCursorAdapte
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.layout.alarm_menu_layout, menu);
+	    inflater.inflate(R.layout.prescription_menu_layout, menu);
 	    return true;
 	}
 	
@@ -56,13 +61,13 @@ public class PrescriptionView extends ListActivity implements SimpleCursorAdapte
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.alarm_menu_add_alarm:
-	    	Log.d(MainService.LOG_TAG, "You clicked add an alarm...");
-	        return true;
-	    case R.id.alarm_menu_remove_all_alarms:
-	        Log.d(MainService.LOG_TAG, "You clicked remove all alarms...");
+	    case R.id.prescription_menu_add_prep:
+	    	//send intent to add prescription
+	    	Intent newPrepIntent = new Intent();
+			newPrepIntent.setAction(PrescriptionView.ACTION_ADD_PRESCRIPTION);
+			newPrepIntent.setClass(getApplicationContext(), PrescriptionAdd.class);
+			startActivity(newPrepIntent);
 	        return true;
 	    default:
 	        return super.onOptionsItemSelected(item);

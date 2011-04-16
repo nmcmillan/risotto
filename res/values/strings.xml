@@ -35,6 +35,10 @@
 		<item>OTHER</item>
 	</string-array>
 	
+	<!-- Prescription Add Strings -->
+	<string name="prescription_add_title">New Prescription info:</string>
+	<string name="prescription_add_patient_selector_title">Select Patient:</string>
+
 	<!-- Drug Details Strings -->
 	<string name="drug_details_title">Drug Details:</string>
 

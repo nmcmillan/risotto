@@ -89,7 +89,7 @@ public class DrugView extends ListActivity implements
 
 		Log.d(LOG_TAG, "haveItems: " + haveItems);
 
-		if (haveItems) {
+		/*if (haveItems) {
 			Uri uri = ContentUris.withAppendedId(getIntent().getData(),
 					getSelectedItemId());
 			// sending this intent, so there will have to be an
@@ -106,9 +106,9 @@ public class DrugView extends ListActivity implements
 
 			menu.addIntentOptions(Menu.CATEGORY_ALTERNATIVE, 0, 0, null,
 					specifics, intent, 0, items);
-		} else {
+		} else {*/
 			menu.removeGroup(Menu.CATEGORY_ALTERNATIVE);
-		}
+		//}
 
 		return true;
 	}
@@ -154,6 +154,12 @@ public class DrugView extends ListActivity implements
 		// that are not handled by the application;
 		// multiple options here, see the javadoc
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
+		
+		Intent intent = getIntent();
+
+		if (null == intent.getData()) {
+			intent.setData(StorageProvider.DrugColumns.CONTENT_URI);
+		}
 
 		getListView().setOnCreateContextMenuListener(this);
 

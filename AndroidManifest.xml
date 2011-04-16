@@ -35,6 +35,10 @@
 		<!-- Drug Details View Activity -->
 		<activity android:name="com.risotto.view.drug.DrugDetailsView"/>
 		
+		<!-- Prescription Add Activity -->
+		<activity android:name="com.risotto.view.prescription.PrescriptionAdd"
+			android:label="@string/prescription_add_title"/>
+		
 		<!-- Patient View Activity -->
 		<activity android:name="com.risotto.view.patient.PatientView"/>
 		
@@ -50,7 +54,6 @@
         </receiver>
         
         <!-- Drug Add/Edit activity -->
-        <!-- android:theme="@android:style/Theme.Dialog"   -->
         <activity android:name="com.risotto.view.drug.DrugAdd"
         	android:label="@string/drug_editor_title"
         	android:theme="@android:style/Theme.Dialog"
