@@ -2,16 +2,16 @@ package com.risotto.service;
 
 import java.util.Enumeration;
 import java.util.Vector;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.database.Cursor;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-
 import com.risotto.controller.StatusBarNotification;
 import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
@@ -66,7 +66,6 @@ public class MainService extends Service {
 		}	
 		return Service.START_STICKY;
 	}
-	
 	
 	private void scheduleAlarm() {
 		
@@ -193,8 +192,27 @@ public class MainService extends Service {
 			
 			// Close and release the cursor.
 			prescCursor.close();
+			
+			// Register for any possible changes to this URI
+			this.getApplicationContext().getContentResolver().registerContentObserver(StorageProvider.DrugColumns.CONTENT_URI, true, new ScheduleContentObserver(new Handler()));
+			
 		}
 		
 	}
+	
+	class ScheduleContentObserver extends ContentObserver {
 
+		public ScheduleContentObserver(Handler handler) {
+			super(handler);
+			
+		}
+
+		@Override
+		public void onChange(boolean selfChange) {
+			Log.d(LOG_TAG, "ScheduleContentObserver onChange() called...");
+			Log.d(LOG_TAG, "Updating schedules.");
+			MainService.this.scheduleTests();
+		}
+
+	}
 }
