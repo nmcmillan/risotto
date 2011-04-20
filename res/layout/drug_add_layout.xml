@@ -9,11 +9,6 @@
     android:paddingLeft="6dip"
     android:paddingRight="6dip"
     android:paddingBottom="3dip"> -->
-    
-      <!-- Add text to the box that tells the user what to enter in the field.
-    	 Display text grayed out or ghosted and select it all when the user 
-    	 clicks the field.  That way it won't disappear until the user starts
-    	 typing, similar to web sites. -->
     	
     <EditText android:id="@+id/drug_add_field_name" 
     	android:selectAllOnFocus="true"

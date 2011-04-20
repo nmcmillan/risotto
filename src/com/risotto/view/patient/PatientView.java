@@ -5,16 +5,22 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.SimpleCursorAdapter;
 
 import com.risotto.R;
 import com.risotto.model.Patient;
+import com.risotto.service.MainService;
 import com.risotto.storage.StorageProvider;
+import com.risotto.view.drug.DrugDetailsView;
+import com.risotto.view.drug.DrugView;
 
 public class PatientView extends ListActivity implements SimpleCursorAdapter.ViewBinder {
 
-	public static final String LOG_TAG = "com.risotto.view.drug.DrugView";
+	public static final String LOG_TAG = "com.risotto.view.drug.PatientView";
+	public static final int MENU_ITEM_ADD_POSITION = Menu.FIRST;
 	
 	private static String[] PROJECTION = {
 		StorageProvider.PatientColumns._ID,
@@ -77,6 +83,46 @@ public class PatientView extends ListActivity implements SimpleCursorAdapter.Vie
 		  }
 		
 		  registerForContextMenu(getListView());
+	}
+	
+	/**
+	 * This method is only called once and that's the first time the options
+	 * menu is displayed.
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		/*
+		 * MenuInflater inflater = getMenuInflater();
+		 * inflater.inflate(R.layout.drug_menu_layout, menu); return true;
+		 */
+		menu.add(Menu.NONE, // group id for doing batch changes
+				MENU_ITEM_ADD_POSITION, // position
+				Menu.NONE, // order, see getOrder()
+				R.string.patient_view_menu_add) // name of button - link to XML
+				.setIcon(android.R.drawable.ic_menu_add);
+
+		return true;
+	}
+	
+	/**
+	 * Handles actions when buttons from the menu created in
+	 * 'onCreateOptionsMenu'
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle item selection
+		switch (item.getItemId()) {
+		case MENU_ITEM_ADD_POSITION:
+			Log.d(LOG_TAG, "MENU_ITEM_ADD clicked");
+			Intent addIntent = new Intent();
+			addIntent.setAction(PatientAdd.ACTION_VIEW_ADD_PATIENT);
+			addIntent.setClass(getApplicationContext(), PatientAdd.class);
+			startActivity(addIntent);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 	
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {

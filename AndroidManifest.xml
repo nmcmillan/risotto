@@ -53,9 +53,15 @@
         	</intent-filter>
         </receiver>
         
+        <!-- Drug Add activity -->
+        <activity android:name="com.risotto.view.patient.PatientAdd"
+        	android:label="@string/patient_add_window_title"
+        	android:theme="@android:style/Theme.Dialog"
+        	android:windowSoftInputMode="stateVisible"/>
+        
         <!-- Drug Add/Edit activity -->
         <activity android:name="com.risotto.view.drug.DrugAdd"
-        	android:label="@string/drug_editor_title"
+        	android:label="@string/drug_add_window_title"
         	android:theme="@android:style/Theme.Dialog"
         	android:windowNoTitle="true"
         	android:windowSoftInputMode="stateVisible" >

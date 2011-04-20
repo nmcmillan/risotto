@@ -58,16 +58,6 @@ public class DrugAdd extends Activity implements View.OnClickListener, AdapterVi
 		Log.d(LOG_TAG,"onCreate called");
 		
 		setContentView(R.layout.drug_add_layout);
-	
-		//TO DO: the list menu must have to package this before
-		//it sends off the intent
-		drugUri = getIntent().getData();
-		drugCursor = managedQuery(drugUri,PROJECTION,null,null,null);
-		
-		//find the objects that we want to display and set it to be run
-		//when it is clicked, which will call the onClick()
-		
-		//do we need to dynamically add EditText boxes as needed?
 		
 		drugNameEditText = (EditText) this.findViewById(R.id.drug_add_field_name);
 		drugNameEditText.setHint(R.string.drug_add_name);
