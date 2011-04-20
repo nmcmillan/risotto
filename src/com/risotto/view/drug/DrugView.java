@@ -29,8 +29,7 @@ import com.risotto.storage.StorageProvider;
  * @author nick
  * 
  */
-public class DrugView extends ListActivity implements
-		SimpleCursorAdapter.ViewBinder {
+public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBinder {
 
 	protected final static String LOG_TAG = "DrugView";
 
@@ -38,12 +37,9 @@ public class DrugView extends ListActivity implements
 
 	// String to define the name of the extra data being sent in intent to
 	// DrugDetailsView
-	public static final String DRUG_DETAILS_DB_ID = "com.risotto.view.DrugView.DrugDetailsURI";
-
-	private StatusBarNotificationManager stbm = new StatusBarNotificationManager(
-			this);
+	public static final String DRUG_DETAILS_DB_ID = "com.risotto.view.drug.DrugView.DrugDetails_ID";
+	public static final String DRUG_DETAILS_BRAND_NAME = "com.risotto.view.drug.DrugView.DrugDetails_NAME";
 	private ContentResolver contentResolver;
-	private Drug newDrug;
 	private Uri drugUri;
 
 	// define location of buttons:
@@ -70,7 +66,7 @@ public class DrugView extends ListActivity implements
 		menu.add(Menu.NONE, // group id for doing batch changes
 				MENU_ITEM_ADD_POSITION, // position
 				Menu.NONE, // order, see getOrder()
-				R.string.drug_list_view_add) // name of button - link to XML
+				R.string.drug_view_menu_add) // name of button - link to XML
 				.setIcon(android.R.drawable.ic_menu_add);
 
 		return true;
@@ -81,7 +77,7 @@ public class DrugView extends ListActivity implements
 	 * displayed. So for a view that will have it's menus change given a certain
 	 * context, this method will be called.
 	 */
-	@Override
+	/*@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 
@@ -89,7 +85,7 @@ public class DrugView extends ListActivity implements
 
 		Log.d(LOG_TAG, "haveItems: " + haveItems);
 
-		/*if (haveItems) {
+		if (haveItems) {
 			Uri uri = ContentUris.withAppendedId(getIntent().getData(),
 					getSelectedItemId());
 			// sending this intent, so there will have to be an
@@ -106,12 +102,12 @@ public class DrugView extends ListActivity implements
 
 			menu.addIntentOptions(Menu.CATEGORY_ALTERNATIVE, 0, 0, null,
 					specifics, intent, 0, items);
-		} else {*/
-			menu.removeGroup(Menu.CATEGORY_ALTERNATIVE);
+		} else {
+			//menu.removeGroup(Menu.CATEGORY_ALTERNATIVE);
 		//}
 
 		return true;
-	}
+	}*/
 
 	/**
 	 * Handles actions when buttons from the menu created in
@@ -170,8 +166,7 @@ public class DrugView extends ListActivity implements
 			startManagingCursor(drugCursor);
 
 			Log.d(LOG_TAG, "count: " + drugCursor.getCount());
-			Log.d(LOG_TAG,
-					"cursor column count: " + drugCursor.getColumnCount());
+			Log.d(LOG_TAG, "cursor column count: " + drugCursor.getColumnCount());
 
 			SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, // context
 					R.layout.drug_list_item, // layout
@@ -195,7 +190,24 @@ public class DrugView extends ListActivity implements
 		editIntent.setAction(DrugView.ACTION_VIEW_DRUG_DETAILS);
 		editIntent.setClass(getApplicationContext(), DrugDetailsView.class);
 		editIntent.putExtra(DrugView.DRUG_DETAILS_DB_ID, String.valueOf(id));
-		startActivity(editIntent);
+		
+		Uri drugUri = StorageProvider.DrugColumns.CONTENT_URI.buildUpon().appendPath(String.valueOf(id)).build();
+		
+		Cursor dCursor = getContentResolver().query(
+				drugUri, 
+				DRUG_PROJECTION, 
+				null, 
+				null, 
+				null);
+		if(null != dCursor) {
+			dCursor.moveToFirst();
+			Drug selectedDrug = Drug.fromCursor(dCursor);
+			editIntent.putExtra(DrugView.DRUG_DETAILS_BRAND_NAME, selectedDrug.getBrandName());
+			startActivity(editIntent);
+		}
+		else {
+			Log.d(LOG_TAG,"Couldn't find drug in database.");
+		}
 	}
 
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
