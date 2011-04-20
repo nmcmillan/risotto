@@ -179,7 +179,7 @@ public class Drug {
 		return _id;
 	}
 
-	public void set_id(int _id) {
+	protected void set_id(int _id) {
 		this._id = _id;
 	}
 	

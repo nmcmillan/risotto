@@ -120,7 +120,7 @@ public class Patient {
 		this.relations = relations;
 	}
 
-	public boolean addRelation(Context appContext, GENDER relationType, int relationId) {
+	public boolean addRelation(Context context, GENDER relationType, int relationId) {
 		boolean returnValue = true;
 		
 		if ( this.relations == null ) {
@@ -129,7 +129,7 @@ public class Patient {
 		}
 		
 		// Check to see if that relation ID exists in the database...
-		Cursor patientCursor = appContext.getApplicationContext().getContentResolver().query(Uri.withAppendedPath(com.risotto.storage.StorageProvider.PatientColumns.CONTENT_URI, String.valueOf(relationId)), null, null, null, null);
+		Cursor patientCursor = context.getApplicationContext().getContentResolver().query(Uri.withAppendedPath(com.risotto.storage.StorageProvider.PatientColumns.CONTENT_URI, String.valueOf(relationId)), null, null, null, null);
 		
 		if (patientCursor == null) {
 			// No patient exists, cannot enter this relation...
@@ -163,7 +163,7 @@ public class Patient {
 		return _id;
 	}
 
-	public void set_id(int _id) {
+	protected void set_id(int _id) {
 		this._id = _id;
 	}
 	

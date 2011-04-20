@@ -6,11 +6,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Vector;
+
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -200,7 +199,7 @@ public class Prescription {
 		return _id;
 	}
 
-	public void set_id(int _id) {
+	protected void set_id(int _id) {
 		this._id = _id;
 	}
 
@@ -816,29 +815,6 @@ public class Prescription {
 			}
 			
 		}
-		
-//		// Store the days of the week that this prescription is needed
-//		if (!this.daysOfWeek.isEmpty()) {
-//			// Sort the vector in ascending order.
-//			Collections.sort(this.daysOfWeek);
-//			// Trim the vector
-//			this.daysOfWeek.trimToSize();
-//			// Get an enumeration
-//			Enumeration<Integer> daysEnum = this.daysOfWeek.elements();
-//
-//			while (daysEnum.hasMoreElements()) {
-//				// Get the value from the enum (integer representation of the
-//				// day of the week)
-//				Integer value = daysEnum.nextElement();
-//				/**
-//				 * For the time being, just store a boolean flag to the days.
-//				 * Eventually the scheduled "times" will be stored in the
-//				 * columns.
-//				 */
-//				// TODO Figure out what we want to store in this structure.
-//				cv.put(dayToColumnName(value), 1);
-//			}
-//		}
 
 		// Return the 'ContentValues' to the caller
 		return cv;
