@@ -1,9 +1,15 @@
 package com.risotto.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Vector;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -20,19 +26,30 @@ public class Prescription {
 	private Patient patient;
 	private Drug drug;
 	private int doseType;
-	private int doseSize;
-	private int totalUnits;
+	
+	// Extra Constructor Fields
+	private int doseSize = -1;
+	private int totalUnits = -1;
 	private boolean scheduled = false;
 
 	// Optional Fields
 	private Date filled;
-	private String drName;
+	private String drName = "NULL";
 	private int prescripID = -1;
 	private int cost = -1;
 	private int numDaysSupplied = -1;
 	private int numRefills = -1;
 	private Date expiration;
 	private Vector<Integer> daysOfWeek;
+	
+	// Scheduled time vectors
+	private Vector<String> sundayTimes;
+	private Vector<String> mondayTimes;
+	private Vector<String> tuesdayTimes;
+	private Vector<String> wednesdayTimes;
+	private Vector<String> thursdayTimes;
+	private Vector<String> fridayTimes;
+	private Vector<String> saturdayTimes;
 
 	// Scheduling constants
 	public static final int SCHEDULED = 1;
@@ -55,6 +72,17 @@ public class Prescription {
 	// DEBUG: LOG_TAG
 	private static final String LOG_TAG = "RISOTTO_PRESCRIPTION";
 
+	public Prescription(Patient patient, Drug drug, int doseType) {
+		this(INVALID_ID, patient, drug, doseType);
+	}
+	
+	private Prescription(int _id, Patient patient, Drug drug, int doseType) {
+		this._id = _id;
+		this.patient = patient;
+		this.drug = drug;
+		this.daysOfWeek = new Vector<Integer>();
+	}
+	
 	public Prescription(Patient patient, Drug drug, int doseType, int doseSize,
 			int totalUnits) {
 		this(INVALID_ID, patient, drug, doseType, doseSize, totalUnits);
@@ -181,6 +209,91 @@ public class Prescription {
 
 	public boolean isScheduled() {
 		return scheduled;
+	}
+	
+	public boolean addTimeEveryDay(String time) {
+		boolean returnValue = false;
+		
+		return returnValue;
+	}
+	
+	public boolean addTimeSpecificDay( int dayOfWeek, String time ) {
+		boolean returnValue = false;
+		
+		return returnValue;
+	}
+	
+	public boolean removeTimeEveryDay(String time) {
+		boolean returnValue = false;
+		
+		return returnValue;
+	}
+	
+	public boolean removeTimeSpecificDay( int dayOfWeek, String time ) {
+		boolean returnValue = false;
+		
+		return returnValue;
+	}
+	
+	public boolean clearAllTimes() {
+		boolean returnValue = false;
+		
+		return returnValue;
+	}
+	
+	private void initializeAllDayVectors() {
+		this.sundayTimes = new Vector<String>();
+		this.mondayTimes = new Vector<String>();
+		this.tuesdayTimes = new Vector<String>();
+		this.wednesdayTimes = new Vector<String>();
+		this.thursdayTimes = new Vector<String>();
+		this.fridayTimes = new Vector<String>();
+		this.saturdayTimes = new Vector<String>();
+	}
+	
+	private byte[] dayVectorToBytes(Vector<String> dayVector) {
+		byte[] returnArray = null;
+		
+		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream(); 
+			ObjectOutputStream oos = new ObjectOutputStream(bos); 
+			// Serialize the vector
+			oos.writeObject(dayVector);
+			// Flush the stream
+			oos.flush();
+			// Create the byte array
+			byte[] relationBytes = bos.toByteArray();
+			// Set the return value.
+			returnArray = relationBytes;
+			// Close the stream
+			oos.close();
+		} catch (IOException e) {
+			Log.e(LOG_TAG, "Could not write the Vector<String> object to byte array.");
+			e.printStackTrace();
+		} 
+		
+		return returnArray;
+	}
+	
+	private Vector<String> dayVectorFromBytes(byte[] dayBytes) {
+		Vector<String> dayVector = null;
+		
+		try {
+			ByteArrayInputStream bis = new ByteArrayInputStream(dayBytes);           
+			ObjectInputStream ois = new ObjectInputStream(bis);   
+			@SuppressWarnings("unchecked")
+			// Read the vector
+			Vector<String> tempVector = (Vector<String>)ois.readObject(); 
+			// Set the return value
+			dayVector = tempVector;
+			// Close the stream.
+			ois.close();
+		} catch (Exception e) {
+			Log.e(LOG_TAG, "Could not parse the Vector<String> object from byte array.");
+			e.printStackTrace();
+		}
+		
+		return dayVector;
 	}
 
 	public void addDay(int dayOfWeek) {
@@ -345,18 +458,16 @@ public class Prescription {
 		/**
 		 * STORE REQUIRED FIELDS
 		 */
+		// Store the patient id.
 		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_PATIENT, this
 				.getPatient().get_id());
+		// Store the drug id.
 		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DRUG, this
 				.getDrug().get_id());
+		// Store the dose type.
 		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_TYPE,
 				this.getDoseType());
-		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_SIZE,
-				this.getDoseSize());
-		cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS,
-				this.getTotalUnits());
-		
-		// Store the scheduled flag
+		// Store the scheduled flag.
 		if (this.isScheduled()) {
 			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_SCHEDULED,
 					SCHEDULED);
@@ -368,12 +479,20 @@ public class Prescription {
 		/**
 		 * STORE OPTIONAL FIELDS
 		 */
+		// Store the dose size.
+		if (this.getDoseSize() != -1) {
+			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_SIZE,this.getDoseSize());
+		}		
+		// Store the total units.
+		if (this.getTotalUnits() != -1) {
+			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS, this.getTotalUnits());
+		}
 		// Store the date filled.
 		if (this.getFilled() != null) {
 			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DATE_FILLED, this.getFilled().getTime());
 		}
 		// Store the Dr's name.
-		if ( this.getDrName() != null && !this.getDrName().equalsIgnoreCase("") ) {
+		if ( this.getDrName() != null && !this.getDrName().equalsIgnoreCase("NULL") ) {
 			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DR_NAME, this.getDrName());
 		}
 		// Store the prescription id.
@@ -425,6 +544,20 @@ public class Prescription {
 
 	}
 
+	/**
+	 * This function will take a cursor and parse the information found within returning 
+	 * a Prescription object. If you are using this function you must have the following 
+	 * columns in your cursor query projection:
+	 * 
+	 * PrescriptionColumns._ID
+	 * PrescriptionColumns.PRESCRIPTION_PATIENT
+	 * PrescriptionColumns.PRESCRIPTION_DRUG
+	 * PrescriptionColumns.PRESCRIPTION_DOSE_TYPE
+	 * 
+	 * @param cursor the cursor to process
+	 * @param context the application context (needed for ContentResolver queries)
+	 * @return a populated Prescription object
+	 */
 	public static Prescription fromCursor(Cursor cursor, Context context) {
 		// Create the new objects.
 		Prescription newPrescription = null;
@@ -437,33 +570,49 @@ public class Prescription {
 		int _id = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns._ID));
 		
 		int patientId = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_PATIENT));
+		Log.d(LOG_TAG, "Patient ID: " + patientId);
 		// Get the Patient object from the id
 		Uri myPatient = ContentUris.withAppendedId(StorageProvider.PatientColumns.CONTENT_URI, patientId);
 		Cursor patientCursor = context.getApplicationContext().getContentResolver().query(myPatient, null, null, null, null);
+		patientCursor.moveToFirst();
 		newPatient = Patient.fromCursor(patientCursor);
+		patientCursor.close();
 		
 		int drugId = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DRUG));
+		Log.d(LOG_TAG, "Drug ID: " + drugId);
 		// Get the drug object from the id
 		Uri myDrug = ContentUris.withAppendedId(StorageProvider.DrugColumns.CONTENT_URI, drugId);
 		Cursor drugCursor = context.getApplicationContext().getContentResolver().query(myDrug, null, null, null, null);
+		drugCursor.moveToFirst();
 		newDrug = Drug.fromCursor(drugCursor);
+		drugCursor.close();
 		
+		// Get the dose type.
 		int doseType = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_TYPE));
-		int doseSize = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_SIZE));
-		int totalUnits = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS));
+
+		// Get the scheduled boolean.
 		int scheduledBoolean = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_SCHEDULED));
 		boolean scheduled = false;
 		if (scheduledBoolean == Prescription.SCHEDULED) {
 			scheduled = true;
 		}
-		
 		// Instantiate the prescription object.
-		newPrescription = new Prescription(_id, newPatient, newDrug, doseType, doseSize, totalUnits);
+		newPrescription = new Prescription(_id, newPatient, newDrug, doseType);
 		newPrescription.setScheduled(scheduled);
 		
 		/**
 		 * GET THE OPTIONAL FIELDS.
 		 */
+		// Get the dose size.
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_SIZE))) {
+			int doseSize = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_SIZE));
+			newPrescription.setDoseSize(doseSize);
+		}	
+		// Get the total units.
+		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS))) {
+			int totalUnits = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS));
+			newPrescription.setTotalUnits(totalUnits);
+		}
 		// Get the date filled.
 		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DATE_FILLED))) {
 			int dateFilledInt = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DATE_FILLED));

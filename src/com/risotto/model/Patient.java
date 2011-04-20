@@ -18,42 +18,62 @@ import com.risotto.storage.StorageProvider;
 public class Patient {
 	
 	// Required Fields
-	private int gender;
 	private String firstName;
-	private String lastName;
+	
+	// Extra Constructor Fields
+	private String lastName = "NULL";
+	private GENDER gender = GENDER.DEFAULT;
 	
 	// Optional Fields
-	private Hashtable<Integer, Integer> relations;
+	private Hashtable<Integer, String> relations;
 	private int age = -1;
 	
 	// Relation constants
-	public static final int RELATION_MOTHER = 0;
-	public static final int RELATION_FATHER = 1;
-	public static final int RELATION_DAUGHTER = 2;
-	public static final int RELATION_SON = 3;
-	public static final int RELATION_GRANDFATHER = 4;
-	public static final int RELATION_GRANDMOTHER = 5;
-	public static final int RELATION_GRANDSON = 6;
-	public static final int RELATION_GRANDDAUGHTER = 7;
-	public static final int RELATION_AUNT = 8;
-	public static final int RELATION_UNCLE = 9;
-	public static final int RELATION_COUSIN = 10;
-	public static final int RELATION_OTHER = 11;
+	public enum RELATION {
+		MOTHER,
+		FATHER,
+		DAUGHTER,
+		SON,
+		GRANDFATHER,
+		GRANDMOTHER,
+		GRANDSON,
+		GRANDDAUGHTER,
+		AUNT,
+		UNCLE,
+		COUSIN,
+		OTHER,
+		DEFAULT
+	}
 	
 	// Gender constants
-	public static final int GENDER_MALE = 0;
-	public static final int GENDER_FEMALE = 1;
-	public static final int GENDER_OTHER = 2;
+	public enum GENDER {
+		MALE,
+		FEMALE,
+		OTHER,
+		DEFAULT
+	}
 	
 	// Unique id used for storage references
 	private int _id;
 	private static final int INVALID_ID = -1;
 	
-	public Patient(String firstName, String lastName, int gender) {
+	// DEBUG: LOG_TAG
+	private static final String LOG_TAG = "RISOTTO_PATIENT";
+	
+	public Patient(String firstName) {
+		this(INVALID_ID, firstName);
+	}
+	
+	private Patient(int _id, String firstName) {
+		this._id = _id;
+		this.firstName = firstName;
+	}
+	
+	public Patient(String firstName, String lastName, GENDER gender) {
 		this(INVALID_ID, firstName, lastName, gender);
 	}
 
-	private Patient(int _id, String firstName, String lastName, int gender) {
+	private Patient(int _id, String firstName, String lastName, GENDER gender) {
 		this._id = _id;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -68,11 +88,11 @@ public class Patient {
 		this.age = age;
 	}
 
-	public int getGender() {
+	public GENDER getGender() {
 		return gender;
 	}
 
-	public void setGender(int gender) {
+	public void setGender(GENDER gender) {
 		this.gender = gender;
 	}
 
@@ -92,20 +112,20 @@ public class Patient {
 		this.lastName = lastName;
 	}
 	
-	public Hashtable<Integer, Integer> getRelations() {
+	public Hashtable<Integer, String> getRelations() {
 		return this.relations;
 	}
 	
-	private void setRelations(Hashtable<Integer, Integer> relations) {
+	private void setRelations(Hashtable<Integer, String> relations) {
 		this.relations = relations;
 	}
 
-	public boolean addRelation(Context appContext, int relationType, int relationId) {
+	public boolean addRelation(Context appContext, GENDER relationType, int relationId) {
 		boolean returnValue = true;
 		
 		if ( this.relations == null ) {
 			// The hash table has not been initialized, create it here
-			this.relations = new Hashtable<Integer, Integer>();
+			this.relations = new Hashtable<Integer, String>();
 		}
 		
 		// Check to see if that relation ID exists in the database...
@@ -117,7 +137,7 @@ public class Patient {
 		} else {
 			// A patient exists, add the relation to our data...
 			// Note: This will overwrite a relationship to the patient indicated by relation id
-			relations.put(relationId, relationType);
+			relations.put(relationId, relationType.toString());
 			returnValue = true;
 		}
 		
@@ -156,14 +176,19 @@ public class Patient {
 		 */
 		// Store the first name
 		patientValues.put(StorageProvider.PatientColumns.PATIENT_FIRST_NAME, this.getFirstName());
-		// Store the last name
-		patientValues.put(StorageProvider.PatientColumns.PATIENT_LAST_NAME, this.getLastName());
-		// Store the value gender
-		patientValues.put(StorageProvider.PatientColumns.PATIENT_GENDER, this.getGender());
-		
+
 		/**
 		 * STORE ANY OPTIONAL FIELDS.
 		 */
+		// Store the last name
+		if ( this.getLastName() != null && this.getLastName().equals("NULL")) {
+			patientValues.put(StorageProvider.PatientColumns.PATIENT_LAST_NAME, this.getLastName());
+		}
+		// Store the value gender
+		if ( this.getGender() != null && this.getGender() != GENDER.DEFAULT) {
+			patientValues.put(StorageProvider.PatientColumns.PATIENT_GENDER, this.getGender().toString());
+		}
+		
 		// Store the age
 		if ( this.getAge() != -1) {
 			patientValues.put(StorageProvider.PatientColumns.PATIENT_AGE, this.getAge());
@@ -186,7 +211,7 @@ public class Patient {
 				oos.close();
 				
 			} catch (IOException e) {
-				Log.e("RISOTTO_PATIENT", "Could not write the relations object.");
+				Log.e(LOG_TAG, "Could not write the relations object.");
 				e.printStackTrace();
 			} 
 		}
@@ -197,6 +222,8 @@ public class Patient {
 	
 	public static Patient fromCursor(Cursor cursor) throws CursorIndexOutOfBoundsException {
 		
+		Log.d(LOG_TAG, "Entering fromCursor()");
+		
 		try {
 			// Create the Patient object
 			Patient newPatient = null;
@@ -204,21 +231,37 @@ public class Patient {
 			/**
 			 * GET THE REQUIRED FIELDS.
 			 */
+			// Get the integer id.
 			int _id = cursor.getInt(cursor.getColumnIndex(StorageProvider.PatientColumns._ID));
-			String firstName = cursor.getString(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_FIRST_NAME));
-			String lastName = cursor.getString(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_LAST_NAME));
-			int gender = cursor.getInt(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_GENDER));
+			
+			// Get the first name.
+			String firstName = "NULL";
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_FIRST_NAME))) {
+				firstName = cursor.getString(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_FIRST_NAME));
+			}
 			
 			// Instantiate the patient object
-			newPatient = new Patient(_id, firstName, lastName, gender);
+			newPatient = new Patient(_id, firstName);
 			
 			/**
 			 * GET THE OPTIONAL FIELDS.
 			 */
+			// Get the last name.
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_LAST_NAME))) {
+				String lastName = cursor.getString(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_LAST_NAME));
+				newPatient.setLastName(lastName);
+			}
+			// Get the gender.
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_GENDER))) {
+				String gender = cursor.getString(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_GENDER));
+				newPatient.setGender(GENDER.valueOf(gender));
+			}
+			// Get the age.
 			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_AGE))) {
 				newPatient.setAge(cursor.getInt(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_AGE)));
 			}
 			
+			// Get the relations.
 			if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_RELATIONS))) {
 				byte[] byteRelations = cursor.getBlob(cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_RELATIONS));
 				
@@ -226,12 +269,12 @@ public class Patient {
 					ByteArrayInputStream bis = new ByteArrayInputStream(byteRelations);           
 					ObjectInputStream ois = new ObjectInputStream(bis);   
 					@SuppressWarnings("unchecked")
-					Hashtable<Integer, Integer> byteHash = (Hashtable<Integer, Integer>)ois.readObject(); 
+					Hashtable<Integer, String> byteHash = (Hashtable<Integer, String>)ois.readObject(); 
 					newPatient.setRelations(byteHash);
 					// Close the stream.
 					ois.close();
 				} catch (Exception e) {
-					Log.e("RISOTTO_PATIENT", "Could not parse the relations object.");
+					Log.e(LOG_TAG, "Could not parse the relations object.");
 					e.printStackTrace();
 				}
 			}
@@ -239,6 +282,8 @@ public class Patient {
 			// Return the new Patient object.
 			return newPatient;
 		} catch (CursorIndexOutOfBoundsException cioobe) {
+			Log.e(LOG_TAG, "Exception in Patient fromCursor()...");
+			cioobe.printStackTrace();
 			throw cioobe;
 		}
 

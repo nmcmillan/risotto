@@ -1,10 +1,5 @@
 package com.risotto.model;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.OptionalDataException;
-import java.io.StreamCorruptedException;
 import java.util.Vector;
 
 import android.content.ContentValues;
@@ -18,19 +13,19 @@ import com.risotto.storage.StorageProvider;
 
 public class Drug {
 	
-	public static final String LOG_TAG = "RISOTTO_DRUG";
-	
 	// Required Fields
 	private String brandName;
-	private TYPE type;
-	private int strength;
-	private String strengthLabel;
+	
+	// Extra Constructor Fields
+	private TYPE type = TYPE.DEFAULT;
+	private int strength = -1;
+	private String strengthLabel = "NULL";
 	
 	// Optional Fields
-	private String genericName = "";
-	private String manufacturer = "";
+	private String compoundName = "NULL";
+	private String manufacturer = "NULL";
 	private Vector<Integer> interactions = null;
-	private String nickName = "";
+	private String nickName = "NULL";
 	private FORM form = FORM.DEFAULT;
 	private int color = -1;
 	private SHAPE shape = SHAPE.DEFAULT;
@@ -39,6 +34,9 @@ public class Drug {
 	// Unique id used for storage references
 	private int _id;
 	private static final int INVALID_ID = -1;
+	
+	// DEBUG: LOG_TAG
+	private static final String LOG_TAG = "RISOTTO_DRUG";
 	
 	// Possible drug types.
 	public enum TYPE {
@@ -60,6 +58,15 @@ public class Drug {
 		SMALL, MEDIUM, LARGE, NONE, OTHER, DEFAULT
 	}
 	
+	public Drug(String brandName) {
+		this(INVALID_ID, brandName);
+	}
+	
+	private Drug(int _id, String brandName) {
+		this._id = _id;
+		this.brandName = brandName;
+	}
+	
 	public Drug(String brandName, TYPE type, int strength, String strengthLabel) {
 		this(INVALID_ID, brandName, type, strength, strengthLabel);
 	}
@@ -72,12 +79,12 @@ public class Drug {
 		this.strengthLabel = strengthLabel;
 	}
 
-	public String getGenericName() {
-		return genericName;
+	public String getCompoundName() {
+		return compoundName;
 	}
 
-	public void setGenericName(String genericName) {
-		this.genericName = genericName;
+	public void setCompoundName(String compoundName) {
+		this.compoundName = compoundName;
 	}
 
 	public String getBrandName() {
@@ -203,30 +210,36 @@ public class Drug {
 		// Store the brand name
 		drugValues.put(StorageProvider.DrugColumns.DRUG_BRAND_NAME, this.getBrandName());
 		
-		// Store the type
-		drugValues.put(StorageProvider.DrugColumns.DRUG_TYPE, this.getType().toString());
-		
-		// Store the strength
-		drugValues.put(StorageProvider.DrugColumns.DRUG_STRENGTH, this.getStrength());
-		
-		// Store the strength label
-		drugValues.put(StorageProvider.DrugColumns.DRUG_STRENGTH_LABEL, this.getStrengthLabel());
-		
 		/**
 		 * STORE ANY OPTIONAL FIELDS.
 		 */
-		// Store the generic name if not empty
-		if( this.getGenericName() != null && !this.getGenericName().equalsIgnoreCase("") ){
-			drugValues.put(StorageProvider.DrugColumns.DRUG_GENERIC_NAME, this.getGenericName());
+		// Store the type
+		if ( this.getType() != null && this.getType() != TYPE.DEFAULT ) {
+			drugValues.put(StorageProvider.DrugColumns.DRUG_TYPE, this.getType().toString());
+		}
+		
+		// Store the strength
+		if ( this.getStrength() != -1 ) {
+			drugValues.put(StorageProvider.DrugColumns.DRUG_STRENGTH, this.getStrength());
+		}
+		
+		// Store the strength label
+		if ( this.getStrengthLabel() != null && !this.getStrengthLabel().equals("NULL")) {
+			drugValues.put(StorageProvider.DrugColumns.DRUG_STRENGTH_LABEL, this.getStrengthLabel());
+		}
+		
+		// Store the compound name if not empty
+		if( this.getCompoundName() != null && !this.getCompoundName().equals("NULL") ){
+			drugValues.put(StorageProvider.DrugColumns.DRUG_COMPOUND_NAME, this.getCompoundName());
 		}
 		
 		// Store the manufacturer if not empty
-		if ( this.getManufacturer() != null && !this.getManufacturer().equalsIgnoreCase("") ) {
+		if ( this.getManufacturer() != null && !this.getManufacturer().equals("NULL") ) {
 			drugValues.put(StorageProvider.DrugColumns.DRUG_MANUFACTURER, this.getManufacturer());
 		}
 		
 		// Store the nick name if not empty.
-		if ( this.getNickName() != null && !this.getNickName().equalsIgnoreCase("") ) {
+		if ( this.getNickName() != null && !this.getNickName().equals("NULL") ) {
 			drugValues.put(StorageProvider.DrugColumns.DRUG_NICK_NAME, this.getNickName());
 		}
 		
@@ -268,36 +281,38 @@ public class Drug {
 			 */
 			// Get the ID
 			int _id = cursor.getInt(cursor.getColumnIndex(StorageProvider.DrugColumns._ID));
+			
 			// Get the Brand Name
-			String brandName = "";
+			String brandName = "NULL";
 			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME))) {
 				brandName = cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME));
 			}
-			// Get the type
-			TYPE type = TYPE.DEFAULT;
-			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_TYPE))) {
-				type = TYPE.valueOf(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_TYPE)));
-			}
-			// Get the strength
-			int strength = -1;
-			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH))) {
-				strength = cursor.getInt(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH));
-			}
-			// Get the strength label
-			String strengthLabel = "";
-			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH_LABEL))) {
-				strengthLabel = cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH_LABEL));
-			}
 			
 			// Instantiate the drug object
-			newDrug = new Drug(_id, brandName, type, strength, strengthLabel);
+			newDrug = new Drug(_id, brandName);
 			
 			/**
 			 * GET THE OPTIONAL FIELDS.
 			 */
-			// Get the generic name.
-			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_GENERIC_NAME))) {
-				newDrug.setGenericName(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_GENERIC_NAME)));
+			// Get the type
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_TYPE))) {
+				TYPE type = TYPE.valueOf(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_TYPE)));
+				newDrug.setType(type);
+			}
+			// Get the strength
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH))) {
+				int strength = cursor.getInt(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH));
+				newDrug.setStrength(strength);
+			}
+			// Get the strength label
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH_LABEL))) {
+				String strengthLabel = cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH_LABEL));
+				newDrug.setStrengthLabel(strengthLabel);
+			}
+			
+			// Get the compound name
+			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_COMPOUND_NAME))) {
+				newDrug.setCompoundName(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_COMPOUND_NAME)));
 			}
 		
 			// Get the manufacturer

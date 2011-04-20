@@ -92,10 +92,10 @@ public class StorageProvider extends ContentProvider {
 			db.execSQL("CREATE TABLE " + DRUGS_TABLE_NAME + " ("
 					+ DrugColumns._ID + " INTEGER PRIMARY KEY,"
 					+ DrugColumns.DRUG_BRAND_NAME + " TEXT NOT NULL,"
-					+ DrugColumns.DRUG_TYPE + " TEXT NOT NULL,"
-					+ DrugColumns.DRUG_STRENGTH + " INTEGER NOT NULL,"
-					+ DrugColumns.DRUG_STRENGTH_LABEL + " TEXT NOT NULL,"
-					+ DrugColumns.DRUG_GENERIC_NAME + " TEXT,"
+					+ DrugColumns.DRUG_TYPE + " TEXT,"
+					+ DrugColumns.DRUG_STRENGTH + " INTEGER,"
+					+ DrugColumns.DRUG_STRENGTH_LABEL + " TEXT,"
+					+ DrugColumns.DRUG_COMPOUND_NAME + " TEXT,"
 					+ DrugColumns.DRUG_MANUFACTURER + " TEXT,"
 					+ DrugColumns.DRUG_INTERACTIONS + " BLOB"
 					+ DrugColumns.DRUG_NICK_NAME + " TEXT,"
@@ -111,8 +111,8 @@ public class StorageProvider extends ContentProvider {
 			db.execSQL("CREATE TABLE " + PATIENTS_TABLE_NAME + " ("
 					+ PatientColumns._ID + " INTEGER PRIMARY KEY,"
 					+ PatientColumns.PATIENT_FIRST_NAME + " TEXT NOT NULL,"
-					+ PatientColumns.PATIENT_LAST_NAME + " TEXT NOT NULL,"
-					+ PatientColumns.PATIENT_GENDER + " INTEGER NOT NULL,"
+					+ PatientColumns.PATIENT_LAST_NAME + " TEXT,"
+					+ PatientColumns.PATIENT_GENDER + " TEXT,"
 					+ PatientColumns.PATIENT_AGE + " INTEGER,"
 					+ PatientColumns.PATIENT_RELATIONS + " BLOB"
 					+ ");");
@@ -125,8 +125,8 @@ public class StorageProvider extends ContentProvider {
 					+ PrescriptionColumns.PRESCRIPTION_PATIENT + " INTEGER NOT NULL,"
 					+ PrescriptionColumns.PRESCRIPTION_DRUG + " INTEGER NOT NULL,"
 					+ PrescriptionColumns.PRESCRIPTION_DOSE_TYPE + " INTEGER NOT NULL,"
-					+ PrescriptionColumns.PRESCRIPTION_DOSE_SIZE + " INTEGER NOT NULL,"
-					+ PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS + " INTEGER NOT NULL,"
+					+ PrescriptionColumns.PRESCRIPTION_DOSE_SIZE + " INTEGER,"
+					+ PrescriptionColumns.PRESCRIPTION_TOTAL_UNITS + " INTEGER,"
 					+ PrescriptionColumns.PRESCRIPTION_DATE_FILLED + " INTEGER,"
 					+ PrescriptionColumns.PRESCRIPTION_DR_NAME + " TEXT,"
 					+ PrescriptionColumns.PRESCRIPTION_UNIQUE_ID + " TEXT,"
@@ -185,7 +185,7 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final String DRUG_STRENGTH_LABEL = "strength_label";
 		
-		public static final String DRUG_GENERIC_NAME = "generic_name";	
+		public static final String DRUG_COMPOUND_NAME = "compound_name";	
 		
 		public static final String DRUG_MANUFACTURER = "manufacturer";
 		
@@ -361,6 +361,7 @@ public class StorageProvider extends ContentProvider {
 			count++;
 			proj += projection[count];*/
 			sqlQuery = "select " + proj + " from prescriptions, drugs, patients WHERE prescriptions.drug = drugs._id and prescriptions.patient = patients._id";
+
 			Log.d(LOG_TAG,"prescirptionJoinQuery(after)");
 		}catch (Exception e) {
 			e.printStackTrace();

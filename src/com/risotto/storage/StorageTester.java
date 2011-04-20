@@ -39,9 +39,9 @@ public class StorageTester {
 			
 			Drug crazyPills = new Drug("Crazy Pills", Drug.TYPE.PRESCRIPTION, 1000, "ml");
 			
-			Patient georgeBush = new Patient("George", "Bush", Patient.GENDER_MALE);
-			Patient billClinton = new Patient("Bill", "Clinton", Patient.GENDER_MALE);
-			Patient bObama = new Patient("Barak", "Obama", Patient.GENDER_MALE);
+			Patient georgeBush = new Patient("George", "Bush", Patient.GENDER.MALE);
+			Patient billClinton = new Patient("Bill", "Clinton", Patient.GENDER.MALE);
+			Patient bObama = new Patient("Barak", "Obama", Patient.GENDER.MALE);
 			
 			Prescription newPrescription = new Prescription(georgeBush, tylenol, 1, 2, 3);
 			newPrescription.addDay(Calendar.MONDAY);
@@ -90,6 +90,38 @@ public class StorageTester {
 		} while (drugCursor.moveToNext());
 		
 		drugCursor.close();
+		
+		Cursor prescriptionCursor = StorageProvider.prescriptionJoinQuery(null);		
+		
+		if ( prescriptionCursor != null ) {
+		
+			log("Prescription cursor is not null.");
+			
+			prescriptionCursor.moveToFirst();
+			
+			log("Prescritpion cursor count: " + prescriptionCursor.getCount());
+			
+			log("Prescription cursor columns: " + prescriptionCursor.getColumnCount());
+			
+			String[] colNames = prescriptionCursor.getColumnNames();
+			
+			for ( String name : colNames) {
+				log("Column Name: " + name);
+			}
+			
+			do {
+				Prescription newPrescription = Prescription.fromCursor(prescriptionCursor, context);
+				log("Prescription ID: " + newPrescription.get_id());
+				log("Prescription Patient: " + newPrescription.getPatient().getFirstName());
+				log("Prescription Drug: " + newPrescription.getDrug().getBrandName());
+				log("Prescription Dose Type: " + newPrescription.getDoseType());
+			} while (prescriptionCursor.moveToNext());
+		
+		} else {
+			log("Prescription cursor is null.");
+		}
+		
+		prescriptionCursor.close();
 		
 		log("Query test complete.");
 	}
