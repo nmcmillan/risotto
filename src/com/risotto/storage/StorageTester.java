@@ -32,7 +32,6 @@ public class StorageTester {
 			
 			log("Adding some static data to the database...");
 			
-			
 			Drug tylenol = new Drug("Tylenol", Drug.TYPE.OVER_THE_COUNTER, 400, "mg");
 			
 			Drug vicadin = new Drug("Vicadin", Drug.TYPE.PRESCRIPTION, 500, "mg");
@@ -44,25 +43,6 @@ public class StorageTester {
 			Patient bObama = new Patient("Barak", "Obama", Patient.GENDER.MALE);
 			
 			Prescription newPrescription = new Prescription(georgeBush, tylenol, 1, 2, 3);
-			newPrescription.addTimeEveryDay("7:00");
-			log(newPrescription.toString());
-			
-			newPrescription.removeTimeEveryDay("7:00");
-			log("Removing 7:00 from this prescription...");
-			log(newPrescription.toString());
-			
-			newPrescription.addTimeEveryDay("21:00");
-			log("Assing 21:00 to this prescription...");
-			log(newPrescription.toString());
-			
-			newPrescription.clearAllTimes();
-			log("Clearing all times...");
-			log(newPrescription.toString());
-			
-			newPrescription.addTimeSpecificDay(Calendar.MONDAY, "1:00");
-			newPrescription.addTimeSpecificDay(Calendar.WEDNESDAY, "1:00");
-			newPrescription.addTimeSpecificDay(Calendar.FRIDAY, "1:00");
-			log("Adding 1:00 on MWF...");
 			log(newPrescription.toString());
 			
 			Prescription anotherPrescription = new Prescription(billClinton, vicadin, 1, 2, 3);
@@ -75,11 +55,7 @@ public class StorageTester {
 			morePrescription.addTimeSpecificDay(Calendar.THURSDAY, "7:00");
 			log(morePrescription.toString());
 			
-			morePrescription.removeTimeSpecificDay(Calendar.TUESDAY, "7:00");
-			log("Removing Tuesday @ 7:00...");
-			log(morePrescription.toString());
-			
-			log("Attempting to store the prescription...");
+			log("Attempting to store the prescriptions...");
 			context.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, newPrescription.toContentValues(context));
 			context.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, anotherPrescription.toContentValues(context));
 			context.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, morePrescription.toContentValues(context));
@@ -135,10 +111,7 @@ public class StorageTester {
 			
 			do {
 				Prescription newPrescription = Prescription.fromCursor(prescriptionCursor, context);
-				log("Prescription ID: " + newPrescription.get_id());
-				log("Prescription Patient: " + newPrescription.getPatient().getFirstName());
-				log("Prescription Drug: " + newPrescription.getDrug().getBrandName());
-				log("Prescription Dose Type: " + newPrescription.getDoseType());
+				log(newPrescription.toString());
 			} while (prescriptionCursor.moveToNext());
 		
 		} else {

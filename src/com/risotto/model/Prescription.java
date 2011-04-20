@@ -30,7 +30,6 @@ public class Prescription {
 	// Extra Constructor Fields
 	private int doseSize = -1;
 	private int totalUnits = -1;
-	private boolean scheduled = false;
 
 	// Optional Fields
 	private Date filled;
@@ -203,10 +202,6 @@ public class Prescription {
 
 	public void set_id(int _id) {
 		this._id = _id;
-	}
-
-	private void setScheduled(boolean scheduled) {
-		this.scheduled = scheduled;
 	}
 
 	public boolean isScheduled() {
@@ -476,6 +471,11 @@ public class Prescription {
 	private byte[] dayVectorToBytes(Vector<String> dayVector) {
 		byte[] returnArray = null;
 		
+		Log.d(LOG_TAG, "Atempting to convert a day vector to bytes...");
+		
+		// Trim the vector to remove any unnecessary space.
+		dayVector.trimToSize();
+		
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream(); 
 			ObjectOutputStream oos = new ObjectOutputStream(bos); 
@@ -494,11 +494,15 @@ public class Prescription {
 			e.printStackTrace();
 		} 
 		
+		Log.d(LOG_TAG, "Returning after converting day vector to bytes...");
+		
 		return returnArray;
 	}
 	
 	private Vector<String> dayVectorFromBytes(byte[] dayBytes) {
 		Vector<String> dayVector = null;
+		
+		Log.d(LOG_TAG, "Attempting to parse day bytes into a vector...");
 		
 		try {
 			ByteArrayInputStream bis = new ByteArrayInputStream(dayBytes);           
@@ -514,6 +518,8 @@ public class Prescription {
 			Log.e(LOG_TAG, "Could not parse the Vector<String> object from byte array.");
 			e.printStackTrace();
 		}
+		
+		Log.d(LOG_TAG, "Returning after converting day bytes into a vector...");
 		
 		return dayVector;
 	}
@@ -756,28 +762,83 @@ public class Prescription {
 			cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DATE_EXPIRATION, this.getExpiration().getTime());
 		}
 		
-		// Store the days of the week that this prescription is needed
-		if (!this.daysOfWeek.isEmpty()) {
-			// Sort the vector in ascending order.
-			Collections.sort(this.daysOfWeek);
-			// Trim the vector
-			this.daysOfWeek.trimToSize();
-			// Get an enumeration
+		// If there is schedule data...
+		if ( this.isScheduled() ) {
+			//...get an enum on the the schedule vector.
 			Enumeration<Integer> daysEnum = this.daysOfWeek.elements();
-
+			
 			while (daysEnum.hasMoreElements()) {
 				// Get the value from the enum (integer representation of the
 				// day of the week)
 				Integer value = daysEnum.nextElement();
-				/**
-				 * For the time being, just store a boolean flag to the days.
-				 * Eventually the scheduled "times" will be stored in the
-				 * columns.
-				 */
-				// TODO Figure out what we want to store in this structure.
-				cv.put(dayToColumnName(value), 1);
+				
+				switch (value) {
+				case Calendar.SUNDAY:
+					// There is some data on sunday, add it to the content values
+					Log.d(LOG_TAG, "Found some data on Sunday, converting it to add to the content values.");
+					cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY, this.dayVectorToBytes(this.sundayTimes));
+					break;
+				case Calendar.MONDAY:
+					// There is some data on monday, add it to the content values
+					Log.d(LOG_TAG, "Found some data on Monday, converting it to add to the content values.");
+					cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY, this.dayVectorToBytes(this.mondayTimes));
+					break;
+				case Calendar.TUESDAY:
+					// There is some data on tuesday, add it to the content values
+					Log.d(LOG_TAG, "Found some data on Tuesday, converting it to add to the content values.");
+					cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY, this.dayVectorToBytes(this.tuesdayTimes));
+					break;
+				case Calendar.WEDNESDAY:
+					// There is some data on wednesday, add it to the content values
+					Log.d(LOG_TAG, "Found some data on Wednesday, converting it to add to the content values.");
+					cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY, this.dayVectorToBytes(this.wednesdayTimes));
+					break;
+				case Calendar.THURSDAY:
+					// There is some data on thursday, add it to the content values
+					Log.d(LOG_TAG, "Found some data on Thursday, converting it to add to the content values.");
+					cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY, this.dayVectorToBytes(this.thursdayTimes));
+					break;
+				case Calendar.FRIDAY:
+					// There is some data on friday, add it to the content values
+					Log.d(LOG_TAG, "Found some data on Friday, converting it to add to the content values.");
+					cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY, this.dayVectorToBytes(this.fridayTimes));
+					break;
+				case Calendar.SATURDAY:
+					// There is some data on saturday, add it to the content values
+					Log.d(LOG_TAG, "Found some data on Saturday, converting it to add to the content values.");
+					cv.put(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY, this.dayVectorToBytes(this.saturdayTimes));
+					break;
+				default:
+					// Not sure how we would get to this case, panic...
+					Log.e(LOG_TAG, "Found some data on an unknown day in the toContentValues()");
+					break;
+				}
 			}
+			
 		}
+		
+//		// Store the days of the week that this prescription is needed
+//		if (!this.daysOfWeek.isEmpty()) {
+//			// Sort the vector in ascending order.
+//			Collections.sort(this.daysOfWeek);
+//			// Trim the vector
+//			this.daysOfWeek.trimToSize();
+//			// Get an enumeration
+//			Enumeration<Integer> daysEnum = this.daysOfWeek.elements();
+//
+//			while (daysEnum.hasMoreElements()) {
+//				// Get the value from the enum (integer representation of the
+//				// day of the week)
+//				Integer value = daysEnum.nextElement();
+//				/**
+//				 * For the time being, just store a boolean flag to the days.
+//				 * Eventually the scheduled "times" will be stored in the
+//				 * columns.
+//				 */
+//				// TODO Figure out what we want to store in this structure.
+//				cv.put(dayToColumnName(value), 1);
+//			}
+//		}
 
 		// Return the 'ContentValues' to the caller
 		return cv;
@@ -830,15 +891,8 @@ public class Prescription {
 		// Get the dose type.
 		int doseType = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_TYPE));
 
-		// Get the scheduled boolean.
-		int scheduledBoolean = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_SCHEDULED));
-		boolean scheduled = false;
-		if (scheduledBoolean == Prescription.SCHEDULED) {
-			scheduled = true;
-		}
 		// Instantiate the prescription object.
 		newPrescription = new Prescription(_id, newPatient, newDrug, doseType);
-		newPrescription.setScheduled(scheduled);
 		
 		/**
 		 * GET THE OPTIONAL FIELDS.
@@ -884,33 +938,49 @@ public class Prescription {
 			newPrescription.setExpiration(new Date((long)dateExpiredInt));
 		}
 		// Get the scheduled days of the week.
-		// TODO Figure out what data we want to store in this data structure...
 		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY))) {
-			int sundayData = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY));
+			Log.d(LOG_TAG, "Found cursor data on Sunday, attempting to parse and add it...");
+			// Get the byte[] from the cursor
+			byte[] sundayData = cursor.getBlob(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY));
+			// Parse and set the resulting vector of times
+			newPrescription.sundayTimes = newPrescription.dayVectorFromBytes(sundayData);
+			// Make sure the scheduling vector has been updated for this day
 			newPrescription.addDay(columnNameToDay(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY));
 		}
 		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY))) {
-			int mondayData = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY));
+			Log.d(LOG_TAG, "Found cursor data on Monday, attempting to parse and add it...");
+			byte[] mondayData = cursor.getBlob(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY));
+			newPrescription.mondayTimes = newPrescription.dayVectorFromBytes(mondayData);
 			newPrescription.addDay(columnNameToDay(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY));
 		}
 		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY))) {
-			int tuesdayData = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY));
+			Log.d(LOG_TAG, "Found cursor data on Tuesday, attempting to parse and add it...");
+			byte[] tuesdayData = cursor.getBlob(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY));
+			newPrescription.tuesdayTimes = newPrescription.dayVectorFromBytes(tuesdayData);
 			newPrescription.addDay(columnNameToDay(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY));
 		}
 		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY))) {
-			int wednesdayData = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY));
+			Log.d(LOG_TAG, "Found cursor data on Wednesday, attempting to parse and add it...");
+			byte[] wednesdayData = cursor.getBlob(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY));
+			newPrescription.wednesdayTimes = newPrescription.dayVectorFromBytes(wednesdayData);
 			newPrescription.addDay(columnNameToDay(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY));
 		}
 		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY))) {
-			int thursdayData = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY));
+			Log.d(LOG_TAG, "Found cursor data on Thursday, attempting to parse and add it...");
+			byte[] thursdayData = cursor.getBlob(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY));
+			newPrescription.thursdayTimes = newPrescription.dayVectorFromBytes(thursdayData);
 			newPrescription.addDay(columnNameToDay(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY));
 		}
 		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY))) {
-			int fridayData = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY));
+			Log.d(LOG_TAG, "Found cursor data on Friday, attempting to parse and add it...");
+			byte[] fridayData = cursor.getBlob(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY));
+			newPrescription.fridayTimes = newPrescription.dayVectorFromBytes(fridayData);
 			newPrescription.addDay(columnNameToDay(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY));
 		}
 		if ( !cursor.isNull(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY))) {
-			int saturdayData = cursor.getInt(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY));
+			Log.d(LOG_TAG, "Found cursor data on Saturday, attempting to parse and add it...");
+			byte[] saturdayData = cursor.getBlob(cursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY));
+			newPrescription.saturdayTimes = newPrescription.dayVectorFromBytes(saturdayData);
 			newPrescription.addDay(columnNameToDay(StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY));
 		}
 
