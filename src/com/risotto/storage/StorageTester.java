@@ -44,16 +44,40 @@ public class StorageTester {
 			Patient bObama = new Patient("Barak", "Obama", Patient.GENDER.MALE);
 			
 			Prescription newPrescription = new Prescription(georgeBush, tylenol, 1, 2, 3);
-			newPrescription.addDay(Calendar.MONDAY);
-			newPrescription.addDay(Calendar.SATURDAY);
-			newPrescription.setScheduled(true);
+			newPrescription.addTimeEveryDay("7:00");
+			log(newPrescription.toString());
+			
+			newPrescription.removeTimeEveryDay("7:00");
+			log("Removing 7:00 from this prescription...");
+			log(newPrescription.toString());
+			
+			newPrescription.addTimeEveryDay("21:00");
+			log("Assing 21:00 to this prescription...");
+			log(newPrescription.toString());
+			
+			newPrescription.clearAllTimes();
+			log("Clearing all times...");
+			log(newPrescription.toString());
+			
+			newPrescription.addTimeSpecificDay(Calendar.MONDAY, "1:00");
+			newPrescription.addTimeSpecificDay(Calendar.WEDNESDAY, "1:00");
+			newPrescription.addTimeSpecificDay(Calendar.FRIDAY, "1:00");
+			log("Adding 1:00 on MWF...");
+			log(newPrescription.toString());
 			
 			Prescription anotherPrescription = new Prescription(billClinton, vicadin, 1, 2, 3);
-			anotherPrescription.addDay(Calendar.TUESDAY);
-			anotherPrescription.addDay(Calendar.THURSDAY);
-			anotherPrescription.setScheduled(true);
+			anotherPrescription.addTimeEveryDay("7:00");
+			anotherPrescription.addTimeEveryDay("17:00");
+			log(anotherPrescription.toString());
 			
 			Prescription morePrescription = new Prescription(bObama, crazyPills, 1, 2, 3);
+			morePrescription.addTimeSpecificDay(Calendar.TUESDAY, "7:00");
+			morePrescription.addTimeSpecificDay(Calendar.THURSDAY, "7:00");
+			log(morePrescription.toString());
+			
+			morePrescription.removeTimeSpecificDay(Calendar.TUESDAY, "7:00");
+			log("Removing Tuesday @ 7:00...");
+			log(morePrescription.toString());
 			
 			log("Attempting to store the prescription...");
 			context.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, newPrescription.toContentValues(context));

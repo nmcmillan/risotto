@@ -81,6 +81,7 @@ public class Prescription {
 		this.patient = patient;
 		this.drug = drug;
 		this.daysOfWeek = new Vector<Integer>();
+		this.initializeAllDayVectors();
 	}
 	
 	public Prescription(Patient patient, Drug drug, int doseType, int doseSize,
@@ -97,6 +98,7 @@ public class Prescription {
 		this.doseSize = doseSize;
 		this.totalUnits = totalUnits;
 		this.daysOfWeek = new Vector<Integer>();
+		this.initializeAllDayVectors();
 	}
 
 	public Patient getPatient() {
@@ -203,42 +205,262 @@ public class Prescription {
 		this._id = _id;
 	}
 
-	public void setScheduled(boolean scheduled) {
+	private void setScheduled(boolean scheduled) {
 		this.scheduled = scheduled;
 	}
 
 	public boolean isScheduled() {
-		return scheduled;
+		return this.areDaysScheduled();
 	}
 	
 	public boolean addTimeEveryDay(String time) {
 		boolean returnValue = false;
 		
+		this.sundayTimes.add(time);
+		this.mondayTimes.add(time);
+		this.tuesdayTimes.add(time);
+		this.wednesdayTimes.add(time);
+		this.thursdayTimes.add(time);
+		this.fridayTimes.add(time);
+		this.saturdayTimes.add(time);
+		
+		// Add all the days to the "scheduled" vector.
+		this.addAllDays();
+		
 		return returnValue;
 	}
 	
 	public boolean addTimeSpecificDay( int dayOfWeek, String time ) {
-		boolean returnValue = false;
+		boolean returnValue = true;
+		
+		switch(dayOfWeek) {
+		case Calendar.SUNDAY:
+			// See if this time already exists on that date...
+			if ( !this.sundayTimes.contains(time) ) {
+				//...it does not, add it.
+				this.sundayTimes.add(time);
+			}
+			// Updated the schedule vector.
+			this.addDay(Calendar.SUNDAY);
+			break;
+		case Calendar.MONDAY:
+			// See if this time already exists on that date...
+			if ( !this.mondayTimes.contains(time) ) {
+				//...it does not, add it.
+				this.mondayTimes.add(time);
+			}
+			// Updated the schedule vector.
+			this.addDay(Calendar.MONDAY);
+			break;
+		case Calendar.TUESDAY:
+			// See if this time already exists on that date...
+			if ( !this.tuesdayTimes.contains(time) ) {
+				//...it does not, add it.
+				this.tuesdayTimes.add(time);
+			}
+			// Updated the schedule vector.
+			this.addDay(Calendar.TUESDAY);
+			break;
+		case Calendar.WEDNESDAY:
+			// See if this time already exists on that date...
+			if ( !this.wednesdayTimes.contains(time) ) {
+				//...it does not, add it.
+				this.wednesdayTimes.add(time);
+			}
+			// Updated the schedule vector.
+			this.addDay(Calendar.WEDNESDAY);
+			break;
+		case Calendar.THURSDAY:
+			// See if this time already exists on that date...
+			if ( !this.thursdayTimes.contains(time) ) {
+				//...it does not, add it.
+				this.thursdayTimes.add(time);
+			}
+			// Updated the schedule vector.
+			this.addDay(Calendar.THURSDAY);
+			break;
+		case Calendar.FRIDAY:
+			// See if this time already exists on that date...
+			if ( !this.fridayTimes.contains(time) ) {
+				//...it does not, add it.
+				this.fridayTimes.add(time);
+			}
+			// Updated the schedule vector.
+			this.addDay(Calendar.FRIDAY);
+			break;
+		case Calendar.SATURDAY:
+			// See if this time already exists on that date...
+			if ( !this.saturdayTimes.contains(time) ) {
+				//...it does not, add it.
+				this.saturdayTimes.add(time);
+			}
+			// Updated the schedule vector.
+			this.addDay(Calendar.SATURDAY);
+			break;
+		default:
+			Log.d(LOG_TAG, "Not sure how we got to the default case in addTimeSpecificDay()");
+			break;
+		}
 		
 		return returnValue;
 	}
 	
 	public boolean removeTimeEveryDay(String time) {
-		boolean returnValue = false;
+		boolean returnValue = true;
+		
+		if ( !this.areDayVectorsEmpty() ) {
+			// Remove the time from the day vector.
+			this.sundayTimes.remove(time);
+			// Check to see if the day vector is now empty...
+			if ( this.sundayTimes.isEmpty()) {
+				//...it is, remove that day from the schedule.
+				this.removeDay(Calendar.SUNDAY);
+			}
+			// Remove the time from the day vector.
+			this.mondayTimes.remove(time);
+			// Check to see if the day vector is now empty...
+			if ( this.mondayTimes.isEmpty()) {
+				//...it is, remove that day from the schedule.
+				this.removeDay(Calendar.MONDAY);
+			}
+			// Remove the time from the day vector.
+			this.tuesdayTimes.remove(time);
+			// Check to see if the day vector is now empty...
+			if ( this.tuesdayTimes.isEmpty()) {
+				//...it is, remove that day from the schedule.
+				this.removeDay(Calendar.TUESDAY);
+			}
+			// Remove the time from the day vector.
+			this.wednesdayTimes.remove(time);
+			// Check to see if the day vector is now empty...
+			if ( this.wednesdayTimes.isEmpty()) {
+				//...it is, remove that day from the schedule.
+				this.removeDay(Calendar.WEDNESDAY);
+			}
+			// Remove the time from the day vector.
+			this.thursdayTimes.remove(time);
+			// Check to see if the day vector is now empty...
+			if ( this.thursdayTimes.isEmpty()) {
+				//...it is, remove that day from the schedule.
+				this.removeDay(Calendar.THURSDAY);
+			}
+			// Remove the time from the day vector.
+			this.fridayTimes.remove(time);
+			// Check to see if the day vector is now empty...
+			if ( this.fridayTimes.isEmpty()) {
+				//...it is, remove that day from the schedule.
+				this.removeDay(Calendar.FRIDAY);
+			}
+			// Remove the time from the day vector.
+			this.saturdayTimes.remove(time);
+			// Check to see if the day vector is now empty...
+			if ( this.saturdayTimes.isEmpty()) {
+				//...it is, remove that day from the schedule.
+				this.removeDay(Calendar.SATURDAY);
+			}
+		}
 		
 		return returnValue;
 	}
 	
 	public boolean removeTimeSpecificDay( int dayOfWeek, String time ) {
-		boolean returnValue = false;
+		boolean returnValue = true;
+		
+		switch( dayOfWeek ) {
+		case Calendar.SUNDAY:
+			// Remove the time from the day vector.
+			this.sundayTimes.remove(time);
+			// Check to see if the day vector is now empty...
+			if ( this.sundayTimes.isEmpty()) {
+				//...it is, remove that day from the schedule.
+				this.removeDay(Calendar.SUNDAY);
+			}
+			break;
+		case Calendar.MONDAY:
+			// Remove the time from the day vector.
+			this.mondayTimes.remove(time);
+			// Check to see if the day vector is now empty...
+			if ( this.mondayTimes.isEmpty()) {
+				//...it is, remove that day from the schedule.
+				this.removeDay(Calendar.MONDAY);
+			}
+			break;
+		case Calendar.TUESDAY:
+			// Remove the time from the day vector.
+			this.tuesdayTimes.remove(time);
+			// Check to see if the day vector is now empty...
+			if ( this.tuesdayTimes.isEmpty()) {
+				//...it is, remove that day from the schedule.
+				this.removeDay(Calendar.TUESDAY);
+			}
+			break;
+		case Calendar.WEDNESDAY:
+			// Remove the time from the day vector.
+			this.wednesdayTimes.remove(time);
+			// Check to see if the day vector is now empty...
+			if ( this.wednesdayTimes.isEmpty()) {
+				//...it is, remove that day from the schedule.
+				this.removeDay(Calendar.WEDNESDAY);
+			}
+			break;
+		case Calendar.THURSDAY:
+			// Remove the time from the day vector.
+			this.thursdayTimes.remove(time);
+			// Check to see if the day vector is now empty...
+			if ( this.thursdayTimes.isEmpty()) {
+				//...it is, remove that day from the schedule.
+				this.removeDay(Calendar.THURSDAY);
+			}
+			break;
+		case Calendar.FRIDAY:
+			// Remove the time from the day vector.
+			this.fridayTimes.remove(time);
+			// Check to see if the day vector is now empty...
+			if ( this.fridayTimes.isEmpty()) {
+				//...it is, remove that day from the schedule.
+				this.removeDay(Calendar.FRIDAY);
+			}
+			break;
+		case Calendar.SATURDAY:
+			// Remove the time from the day vector.
+			this.saturdayTimes.remove(time);
+			// Check to see if the day vector is now empty...
+			if ( this.saturdayTimes.isEmpty()) {
+				//...it is, remove that day from the schedule.
+				this.removeDay(Calendar.SATURDAY);
+			}
+			break;
+		default:
+			Log.d(LOG_TAG, "Not sure how we got to the default case in removeTimeSpecificDay()");
+			break;
+		}
 		
 		return returnValue;
 	}
 	
-	public boolean clearAllTimes() {
-		boolean returnValue = false;
+	public void clearAllTimes() {
+		// Is this the best way to "clear" the values?
 		
-		return returnValue;
+		// Clear any days that might be "scheduled"
+		this.daysOfWeek = new Vector<Integer>();
+		
+		// Reinitialize all the vectors
+		this.initializeAllDayVectors();
+	}
+	
+	private boolean areDayVectorsEmpty() {
+		
+		if ( this.sundayTimes != null && !this.sundayTimes.isEmpty() 
+				&& this.mondayTimes != null && !this.mondayTimes.isEmpty() 
+				&& this.tuesdayTimes != null && !this.tuesdayTimes.isEmpty()
+				&& this.wednesdayTimes != null && !this.wednesdayTimes.isEmpty()
+				&& this.thursdayTimes != null && !this.thursdayTimes.isEmpty()
+				&& this.fridayTimes != null && !this.fridayTimes.isEmpty()
+				&& this.saturdayTimes != null && !this.saturdayTimes.isEmpty()) {
+			return false;
+		}
+		
+		return true;
 	}
 	
 	private void initializeAllDayVectors() {
@@ -296,18 +518,36 @@ public class Prescription {
 		return dayVector;
 	}
 
-	public void addDay(int dayOfWeek) {
+	private void addDay(int dayOfWeek) {
 		if (!this.daysOfWeek.contains((Integer) dayOfWeek)) {
 			this.daysOfWeek.add((Integer) dayOfWeek);
 		}
 	}
 
-	public void removeDay(int dayOfWeek) {
+	private void removeDay(int dayOfWeek) {
 		this.daysOfWeek.remove((Integer) dayOfWeek);
 	}
 
-	public Vector<Integer> getAllDays() {
+	private Vector<Integer> getAllDays() {
 		return this.daysOfWeek;
+	}
+	
+	private boolean areDaysScheduled() {
+		if ( this.daysOfWeek != null && !this.daysOfWeek.isEmpty()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private void addAllDays() {
+		this.addDay(Calendar.SUNDAY);
+		this.addDay(Calendar.MONDAY);
+		this.addDay(Calendar.TUESDAY);
+		this.addDay(Calendar.WEDNESDAY);
+		this.addDay(Calendar.THURSDAY);
+		this.addDay(Calendar.FRIDAY);
+		this.addDay(Calendar.SATURDAY);
 	}
 
 	private static String dayToColumnName(int dayOfWeek) {
@@ -676,4 +916,140 @@ public class Prescription {
 
 		return newPrescription;
 	}
+	
+	public String toString() {
+		String returnString = "";
+		
+		returnString+= "Prescription ID: " + this.get_id() + "\n";
+		returnString+= "Patient ID: " + this.getPatient().get_id() +"\n";
+		returnString+= "Drug ID: " + this.getDrug().get_id() + "\n";
+		returnString+= "Dose Type: " + this.getDoseType() + "\n";
+		returnString+= "Dose Size: " + this.getDoseSize() + "\n";
+		returnString+= "Total Units: " + this.getTotalUnits() + "\n";
+		returnString+= "Scheduled: " + this.isScheduled() + "\n";
+		
+		if ( this.isScheduled() ) {
+			
+			Enumeration<Integer> dayEnum = this.getAllDays().elements();
+			
+			while(dayEnum.hasMoreElements()) {
+				int day =  (Integer) dayEnum.nextElement();
+				
+				switch(day) {
+				case Calendar.SUNDAY:
+					// Sunday has some times scheduled...
+					returnString+= "Schedule - Sunday: ";
+					Enumeration<String> sundayEnum = this.sundayTimes.elements();
+					do {
+						returnString+= sundayEnum.nextElement();
+						
+						if (sundayEnum.hasMoreElements()) {
+							returnString+= ", ";
+						} else {
+							returnString+="\n";
+						}
+					} while(sundayEnum.hasMoreElements());
+					
+					break;
+				case Calendar.MONDAY:
+					// Sunday has some times scheduled...
+					returnString+= "Schedule - Monday: ";
+					Enumeration<String> mondayEnum = this.mondayTimes.elements();
+					do {
+						returnString+= mondayEnum.nextElement();
+						
+						if (mondayEnum.hasMoreElements()) {
+							returnString+= ", ";
+						} else {
+							returnString+="\n";
+						}
+					} while(mondayEnum.hasMoreElements());
+					
+					break;
+				case Calendar.TUESDAY:
+					// Sunday has some times scheduled...
+					returnString+= "Schedule - Tuesday: ";
+					Enumeration<String> tuesdayEnum = this.tuesdayTimes.elements();
+					do {
+						returnString+= tuesdayEnum.nextElement();
+						
+						if (tuesdayEnum.hasMoreElements()) {
+							returnString+= ", ";
+						} else {
+							returnString+="\n";
+						}
+					} while(tuesdayEnum.hasMoreElements());
+					
+					break;
+				case Calendar.WEDNESDAY:
+					// Sunday has some times scheduled...
+					returnString+= "Schedule - Wednesday: ";
+					Enumeration<String> wednesdayEnum = this.wednesdayTimes.elements();
+					do {
+						returnString+= wednesdayEnum.nextElement();
+						
+						if (wednesdayEnum.hasMoreElements()) {
+							returnString+= ", ";
+						} else {
+							returnString+="\n";
+						}
+					} while(wednesdayEnum.hasMoreElements());
+					
+					break;
+				case Calendar.THURSDAY:
+					// Sunday has some times scheduled...
+					returnString+= "Schedule - Thursday: ";
+					Enumeration<String> thursdayEnum = this.thursdayTimes.elements();
+					do {
+						returnString+= thursdayEnum.nextElement();
+						
+						if (thursdayEnum.hasMoreElements()) {
+							returnString+= ", ";
+						} else {
+							returnString+="\n";
+						}
+					} while(thursdayEnum.hasMoreElements());
+					
+					break;
+				case Calendar.FRIDAY:
+					// Sunday has some times scheduled...
+					returnString+= "Schedule - Friday: ";
+					Enumeration<String> fridayEnum = this.fridayTimes.elements();
+					do {
+						returnString+= fridayEnum.nextElement();
+						
+						if (fridayEnum.hasMoreElements()) {
+							returnString+= ", ";
+						} else {
+							returnString+="\n";
+						}
+					} while(fridayEnum.hasMoreElements());
+					
+					break;
+				case Calendar.SATURDAY:
+					// Sunday has some times scheduled...
+					returnString+= "Schedule - Saturday: ";
+					Enumeration<String> saturdayEnum = this.saturdayTimes.elements();
+					do {
+						returnString+= saturdayEnum.nextElement();
+						
+						if (saturdayEnum.hasMoreElements()) {
+							returnString+= ", ";
+						} else {
+							returnString+="\n";
+						}
+					} while(saturdayEnum.hasMoreElements());
+					
+					break;
+				default:
+					Log.e(LOG_TAG, "Not sure why we are at the default case in the toString() method.");
+					break;
+				}
+			}
+		}
+		
+		return returnString;
+	}
+	
+	
 }
