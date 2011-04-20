@@ -73,7 +73,7 @@ public class PatientAdd extends Activity implements OnClickListener, OnItemSelec
 		    .show();
 		}
 		else {
-			Patient patient = new Patient(firstName,lastName,Patient.GENDER_FEMALE);
+			Patient patient = new Patient(firstName,lastName,Patient.GENDER.FEMALE);
 			ContentValues cv = patient.toContentValues();
 			this.getContentResolver().insert(StorageProvider.PatientColumns.CONTENT_URI, cv);
 		}
