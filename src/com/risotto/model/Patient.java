@@ -181,7 +181,7 @@ public class Patient {
 		 * STORE ANY OPTIONAL FIELDS.
 		 */
 		// Store the last name
-		if ( this.getLastName() != null && this.getLastName().equals("NULL")) {
+		if ( this.getLastName() != null && !this.getLastName().equals("NULL")) {
 			patientValues.put(StorageProvider.PatientColumns.PATIENT_LAST_NAME, this.getLastName());
 		}
 		// Store the value gender

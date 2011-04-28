@@ -51,8 +51,10 @@
 	<!-- Prescription Add Strings -->
 	<string name="prescription_add_title">New Prescription info:</string>
 	<string name="prescription_add_patient_selector_title">Select Patient:</string>
+	<string name="prescription_add_drug_selector_title">Select Drug:</string>
 	<string name="prescription_add_patient_first_name_hint">First Name...</string>
 	<string name="prescription_add_patient_last_name_hint">Last Name...</string>
+	<string name="button_ok_prescription_add">Add!</string>
 
 	<!-- Drug Details Strings -->
 	<string name="drug_details_title">Drug Details:</string>

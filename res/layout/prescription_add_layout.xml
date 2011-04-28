@@ -52,7 +52,7 @@
     	android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
     	android:layout_below="@id/prescription_add_drug_spinner_label"
-    	android:prompt="@string/prescription_add_patient_selector_title" /> 
+    	android:prompt="@string/prescription_add_drug_selector_title" /> 
     	
     <EditText android:id="@+id/prescription_add_drug_brand_name" 
     	android:selectAllOnFocus="true"
@@ -75,6 +75,12 @@
         android:layout_height="wrap_content" 
         android:autoText="true"
         android:capitalize="sentences"
-        android:scrollHorizontally="true" /> 
+        android:scrollHorizontally="true" />
+        
+    <Button android:id="@+id/button_prescription_add_ok"
+    	android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="right"
+        android:text="@string/button_ok_prescription_add" />
   
 </RelativeLayout>
