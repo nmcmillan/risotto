@@ -5,10 +5,12 @@ import java.util.Vector;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -66,6 +68,90 @@ public class MainService extends Service {
 		}	
 		return Service.START_STICKY;
 	}
+	
+	private void scheduleNewPrescription() {
+		Log.d(LOG_TAG, "Scheduling a new prescription in the schedule table...");
+	}
+	
+	private boolean isScheduleChanged() {
+		Log.d(LOG_TAG, "The schedule has changed for this prescription.");
+		return false;
+	}
+	
+	private void updateScheduledPrescription() {
+		Log.d(LOG_TAG, "Updating the schedule information for the prescription...");
+	}
+	
+	private void schedulePrescriptions() {
+		/* 1. Get a cursor to all of the prescriptions that have been 'scheduled' */
+		
+		// Create a where clause to only get the prescriptions that are scheduled
+		String prescriptionWhereClause = StorageProvider.PrescriptionColumns.PRESCRIPTION_SCHEDULED + "=" + "'" + Prescription.SCHEDULED + "'";
+		
+		// We only care about the prescription id fields for this query.
+		String[] prescriptionProjection = { StorageProvider.PrescriptionColumns._ID };
+		
+		Log.d(LOG_TAG, "Getting a cursor on the scheduled prescriptions...");
+		
+		// Get all of the prescriptions that are scheduled
+		Cursor prescriptionCursor = this.getApplicationContext().getContentResolver().query(StorageProvider.PrescriptionColumns.CONTENT_URI, prescriptionProjection, prescriptionWhereClause, null, null);
+		
+		if ( prescriptionCursor == null || !prescriptionCursor.moveToFirst()) {
+			// There are no prescriptions to schedule, we are done here.
+			Log.i(LOG_TAG, "No prescriptions to schedule!");
+		} else {
+			
+			/* 2. Run the list of prescription ids against the foreign key prescription ids that have been placed in the schedule table */
+			
+			Log.d(LOG_TAG, "Getting ready to look for prescription ids in the schdeule table...");
+			
+			do {
+				// Get the prescription id
+				int prescriptionId = prescriptionCursor.getInt(prescriptionCursor.getColumnIndex(StorageProvider.PrescriptionColumns._ID));
+				
+				Log.d(LOG_TAG,"Looking for prescription ID: " + prescriptionId );
+				
+				// The where clause for the schedule query
+				String scheduleWhereClause = StorageProvider.ScheduleColumns.SCHEDULES_PRESCRIPTION + "=" + "'" + prescriptionId + "'";
+				
+				Cursor specificScheduleCursor = this.getApplicationContext().getContentResolver().query(StorageProvider.ScheduleColumns.CONTENT_URI, null, scheduleWhereClause, null, null);
+				
+				if ( specificScheduleCursor != null && specificScheduleCursor.moveToFirst()) {
+					// There are entries for this prescription in the schedule table.
+					Log.d(LOG_TAG, "There are entries in the schedule table for prescription ID: " + prescriptionId );
+					
+					/* 3. Check to see if this prescription has changed from it's original scheduling. */
+					if ( this.isScheduleChanged() ) {
+						/* 4. Update any changed prescriptions */
+						Log.d(LOG_TAG, "The schedule for prescription ID: " + prescriptionId + " has changed!");
+						this.updateScheduledPrescription();
+					} else {
+						// The schedule for this prescription has not changed.
+						Log.d(LOG_TAG, "The schedule for prescription ID: " + prescriptionId  + " has not changed.");
+					}
+					
+				} else {
+					/* 5. Schedule any 'new' prescriptions */
+					// There are no entries for this prescription in the schedule table.
+					Log.d(LOG_TAG, "There are no entries for prescription ID: " + prescriptionId + " in the schedule table.");
+					// Create a new schedule for this prescription.
+					this.scheduleNewPrescription();
+				}
+				
+				// Close the specific query for the schedules.
+				specificScheduleCursor.close();
+				
+			} while (prescriptionCursor.moveToNext());
+			
+		}
+		
+		// Close the query for all the prescription ids
+		prescriptionCursor.close();
+
+		/* 6. Listen for any changes that may occur to the prescription URI table */
+		this.getApplicationContext().getContentResolver().registerContentObserver(StorageProvider.DrugColumns.CONTENT_URI, true, new PrescriptionContentObserver(new Handler()));
+	}
+	
 	
 	private void scheduleAlarm() {
 		
@@ -142,7 +228,8 @@ public class MainService extends Service {
 		} else if ( intentAction.equals(ACTION_ALARM_SCHEDULE) ) {
 			// Schedule the alarm...
 			//this.scheduleAlarm();
-			this.scheduleTests();
+			//this.scheduleTests();
+			this.schedulePrescriptions();
 		} else {
 			// How did we get this action? What is this!?
 			Log.d(LOG_TAG, "handleCommand() - Unknown intent: " + intentAction);
@@ -181,9 +268,9 @@ public class MainService extends Service {
 					Log.d(LOG_TAG, "For Drug: " + prescCursor.getString(prescCursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DRUG)));
 
 					// Schedule a timer based on the data in the day column
-					String dataValue = prescCursor.getString(prescCursor.getColumnIndex(dayColumnName));
+					//String dataValue = prescCursor.getString(prescCursor.getColumnIndex(dayColumnName));
 					
-					Log.d(LOG_TAG, "Data @ " + dayColumnName + " : " + dataValue);
+					//Log.d(LOG_TAG, "Data @ " + dayColumnName + " : " + dataValue);
 					
 				}
 				
@@ -194,15 +281,17 @@ public class MainService extends Service {
 			prescCursor.close();
 			
 			// Register for any possible changes to this URI
-			this.getApplicationContext().getContentResolver().registerContentObserver(StorageProvider.DrugColumns.CONTENT_URI, true, new ScheduleContentObserver(new Handler()));
+			this.getApplicationContext().getContentResolver().registerContentObserver(StorageProvider.DrugColumns.CONTENT_URI, true, new PrescriptionContentObserver(new Handler()));
 			
 		}
 		
 	}
 	
-	class ScheduleContentObserver extends ContentObserver {
+	
+	
+	class PrescriptionContentObserver extends ContentObserver {
 
-		public ScheduleContentObserver(Handler handler) {
+		public PrescriptionContentObserver(Handler handler) {
 			super(handler);
 			
 		}

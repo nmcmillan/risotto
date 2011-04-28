@@ -156,7 +156,7 @@ public class StorageProvider extends ContentProvider {
 			db.execSQL("CREATE TABLE " + SCHEDULES_TABLE_NAME + " ("
 					+ ScheduleColumns._ID + " INTEGER PRIMARY KEY,"
 					+ ScheduleColumns.SCHEDULES_PRESCRIPTION + " INTEGER NOT NULL,"
-					+ ScheduleColumns.SCHEDULES_START_TIME + " INTEGER NOT NULL,"
+					+ ScheduleColumns.SCHEDULES_FIRST_TIME + " INTEGER NOT NULL,"
 					+ ScheduleColumns.SCHEDULES_INTERVAL + " INTEGER,"
 					+ ScheduleColumns.SCHEDULES_NEXT_TIME + " INTEGER,"
 					+ ScheduleColumns.SCHEDULES_COUNT_REMAIN + " INTEGER,"
@@ -294,7 +294,7 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final String SCHEDULES_PRESCRIPTION = "prescription";
 		
-	    public static final String SCHEDULES_START_TIME = "start_time";
+	    public static final String SCHEDULES_FIRST_TIME = "first_time";
 	    
 	    public static final String SCHEDULES_INTERVAL = "interval";
 	    
