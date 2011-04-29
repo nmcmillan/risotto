@@ -1,5 +1,6 @@
 package com.risotto.service;
 
+import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Vector;
 import android.app.AlarmManager;
@@ -69,9 +70,81 @@ public class MainService extends Service {
 		return Service.START_STICKY;
 	}
 	
-	private void scheduleNewPrescription() {
+	private void scheduleNewPrescription(int prescriptionId) {
 		Log.d(LOG_TAG, "Scheduling a new prescription in the schedule table...");
+		Log.d(LOG_TAG, "Scheduling prescription id: " + prescriptionId);
+		
+		Uri prescriptionUri = ContentUris.withAppendedId(StorageProvider.PatientColumns.CONTENT_URI, prescriptionId);
+		
+		String[] prescriptionProjection = { 
+				StorageProvider.PrescriptionColumns._ID,
+				StorageProvider.PrescriptionColumns.PRESCRIPTION_PATIENT,
+				StorageProvider.PrescriptionColumns.PRESCRIPTION_DRUG,
+				StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_TYPE,
+				StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SUNDAY,
+				StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_MONDAY,
+				StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_TUESDAY,
+				StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_WEDNESDAY,
+				StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_THURSDAY,
+				StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_FRIDAY,
+				StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY
+				};
+		
+		Prescription prescription = Prescription.fromCursor(this.getApplicationContext().getContentResolver().query(prescriptionUri, prescriptionProjection, null, null, null), this.getApplicationContext());
+		
+		switch (prescription.getDoseType()) {
+			case Prescription.DOSE_TYPE_EVERY_DAY:
+			case Prescription.DOSE_TYPE_EVERY_HOUR:
+				// Pick any day and schedule an alarm for each time with an interval of 24 hours
+				Enumeration<String> sundayTimes = prescription.getScheduledTimes(Calendar.SUNDAY);
+				
+				while(sundayTimes.hasMoreElements()) {
+					// Get the next scheduled time
+					String scheduledTime = sundayTimes.nextElement();
+					
+					// Parse out the hours and minutes from the times
+					String hourValue = scheduledTime.split(":")[0];
+					String minuteValue = scheduledTime.split(":")[1];
+					
+					// Get an instance of the current date/time
+					Calendar rightNow = Calendar.getInstance();
+					
+					// Set the hour/minute in todays date
+					rightNow.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hourValue));
+					rightNow.set(Calendar.MINUTE, Integer.parseInt(minuteValue));
+					
+					// Turn that time into the absolute time on todays date
+					long firstTime = rightNow.getTimeInMillis();
+					
+					// See if we have already passed that time today...
+					if ( firstTime <= System.currentTimeMillis() ) {
+						// If we have, schedule it for 24 hours from now
+					} else {
+						// Else, schedule it for today.
+					}
+					
+					
+					// TODO: See if there is some way that we can calculate the count remaining
+					
+					// Store the schedule!
+					
+				}
+				
+				break;
+			case Prescription.DOSE_TYPE_EVERY_DAY_OF_WEEK:
+			case Prescription.DOSE_TYPE_EVERY_HOUR_DAY_OF_WEEK:
+				// Get the days that are scheduled.
+				// For each of those days get the times
+				// For each of the times schedule an alarm with an interval of 7 days. 
+				break;
+			
+			default:
+				Log.e(LOG_TAG, "Not sure how we ended up here without a dose type...");
+		}
+		
 	}
+	
+	
 	
 	private boolean isScheduleChanged() {
 		Log.d(LOG_TAG, "The schedule has changed for this prescription.");
@@ -82,6 +155,18 @@ public class MainService extends Service {
 		Log.d(LOG_TAG, "Updating the schedule information for the prescription...");
 	}
 	
+	/**
+	 * This method will do the following:
+	 *  - Search for all prescriptions that need to be scheduled.
+	 *  - Check to see if the prescription schedule has changed since last run.
+	 *  - Update and reschedule any changed prescriptions.
+	 *  - Schedule any new prescriptions that have been added to the database.
+	 *  
+	 *  This method will also run when the prescription content uri has been changed 
+	 *  to check for any of the above cases. If this method becomes too processor or 
+	 *  memory intensive, additional optimizations will have to be done.
+	 *  
+	 */
 	private void schedulePrescriptions() {
 		/* 1. Get a cursor to all of the prescriptions that have been 'scheduled' */
 		
@@ -135,7 +220,7 @@ public class MainService extends Service {
 					// There are no entries for this prescription in the schedule table.
 					Log.d(LOG_TAG, "There are no entries for prescription ID: " + prescriptionId + " in the schedule table.");
 					// Create a new schedule for this prescription.
-					this.scheduleNewPrescription();
+					this.scheduleNewPrescription(prescriptionId);
 				}
 				
 				// Close the specific query for the schedules.
@@ -151,6 +236,9 @@ public class MainService extends Service {
 		/* 6. Listen for any changes that may occur to the prescription URI table */
 		this.getApplicationContext().getContentResolver().registerContentObserver(StorageProvider.DrugColumns.CONTENT_URI, true, new PrescriptionContentObserver(new Handler()));
 	}
+	
+	
+	
 	
 	
 	private void scheduleAlarm() {
@@ -256,7 +344,7 @@ public class MainService extends Service {
 				Log.d(LOG_TAG, "DOING!");
 				
 				// Get the list of valid day columns for this prescription
-				Vector<String> validDayColumns = Prescription.getScheduledDays(prescCursor);
+				Vector<String> validDayColumns = Prescription.getScheduledDayColumns(prescCursor);
 				
 				Enumeration<String> daysEnum = validDayColumns.elements();
 				
@@ -300,7 +388,7 @@ public class MainService extends Service {
 		public void onChange(boolean selfChange) {
 			Log.d(LOG_TAG, "ScheduleContentObserver onChange() called...");
 			Log.d(LOG_TAG, "Updating schedules.");
-			MainService.this.scheduleTests();
+			MainService.this.schedulePrescriptions();
 		}
 
 	}
