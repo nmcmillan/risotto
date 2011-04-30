@@ -23,10 +23,10 @@ public class StorageProvider extends ContentProvider {
     
     private static final String DATABASE_NAME = "risotto.db";
     private static final int DATABASE_VERSION = 3;
-    private static final String DRUGS_TABLE_NAME = "drugs";
-    private static final String PATIENTS_TABLE_NAME = "patients";
-    private static final String PRESCRIPTIONS_TABLE_NAME = "prescriptions";
-    private static final String SCHEDULES_TABLE_NAME = "schedules";
+    public static final String DRUGS_TABLE_NAME = "drugs";
+    public static final String PATIENTS_TABLE_NAME = "patients";
+    public static final String PRESCRIPTIONS_TABLE_NAME = "prescriptions";
+    public static final String SCHEDULES_TABLE_NAME = "schedules";
     
     // URI Matching ID's
     private static final int URI_TYPE_DRUGS = 0;
@@ -347,7 +347,7 @@ public class StorageProvider extends ContentProvider {
 		Log.d(LOG_TAG,"prescriptionJoinQuery(before)");
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 		
-		String proj = "*";
+		String proj = "";
 		String sqlQuery = "";
 		int count = 0;
 		//"SELECT * FROM table_a INNER JOIN table_b ON a.id=b.other_id WHERE b.property_id=?";
@@ -355,17 +355,18 @@ public class StorageProvider extends ContentProvider {
 		// Prescription Query
 		// select * from prescriptions, drugs, patients WHERE prescriptions.drug = drugs._id and prescriptions.patient = patients._id;
 		try {
-			/*for(count = 0;count < projection.length - 2;count++) {
+			for(count = 0;count < projection.length - 1;count++) {
 				proj += projection[count] + ",";
 			}
-			count++;
-			proj += projection[count];*/
-			sqlQuery = "select " + proj + " from prescriptions, drugs, patients WHERE prescriptions.drug = drugs._id and prescriptions.patient = patients._id";
+			proj += projection[count];
 
 			Log.d(LOG_TAG,"prescirptionJoinQuery(after)");
 		}catch (Exception e) {
+			proj = "*";
 			e.printStackTrace();
 		}
+		
+		sqlQuery = "select " + proj + " from prescriptions, drugs, patients WHERE prescriptions.drug = drugs._id and prescriptions.patient = patients._id";
 		return db.rawQuery(sqlQuery, null);
 	}
 	

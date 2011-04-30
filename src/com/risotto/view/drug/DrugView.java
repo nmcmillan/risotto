@@ -9,12 +9,16 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.risotto.R;
 import com.risotto.controller.StatusBarNotificationManager;
@@ -208,6 +212,7 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 		else {
 			Log.d(LOG_TAG,"Couldn't find drug in database.");
 		}
+		dCursor.close();
 	}
 
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
@@ -223,6 +228,59 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 			return false;
 		}		
 		return true;
+	}
+	
+	/**
+	 * Method called when a user presses and holds on an item in the list - creates the menu.
+	 */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+	  super.onCreateContextMenu(menu, v, menuInfo);
+	  AdapterContextMenuInfo info = (AdapterContextMenuInfo)menuInfo;
+	  Cursor dCursor = (Cursor) this.getListView().getItemAtPosition(info.position);
+	  
+	  String drugName = dCursor.getString(dCursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME));
+	  String strength = dCursor.getString(dCursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH));
+	  String label = dCursor.getString(dCursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH_LABEL));
+
+	  menu.setHeaderTitle(drugName + " at " + strength + label);
+	  MenuInflater inflater = getMenuInflater();
+	  inflater.inflate(R.layout.drug_view_context_menu_layout, menu);
+	}
+	
+	/**
+	 * Method called when a user presses a button on the context menu.
+	 */
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.drug_view_context_menu_edit:
+				return true;
+			case R.id.drug_view_context_menu_remove:
+				AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+				Cursor dCursor = (Cursor)this.getListView().getItemAtPosition((int)info.position);
+				
+				//Log.d(LOG_TAG,"first: " + pCursor.getString(pCursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_FIRST_NAME)));
+				//Log.d(LOG_TAG,"last: " + pCursor.getString(pCursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_LAST_NAME)));
+				//Log.d(LOG_TAG,"drug: " + pCursor.getString(pCursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)));
+				//Log.d(LOG_TAG, "prescription_patient: " + pCursor.getString(pCursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_PATIENT)));
+				//Log.d(LOG_TAG, "prescription_drug: " + pCursor.getString(pCursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DRUG)));
+				//Log.d(LOG_TAG,"_id: " + pCursor.getInt(pCursor.getColumnIndex(StorageProvider.PrescriptionColumns._ID)));
+				//Log.d(LOG_TAG,"_id : (3) " + _id);
+				
+				int _id = dCursor.getInt(dCursor.getColumnIndex(StorageProvider.DrugColumns._ID));
+				
+				Uri drugUri = StorageProvider.DrugColumns.CONTENT_URI.buildUpon().appendPath(String.valueOf(_id)).build();
+				if(getContentResolver().delete(drugUri,null,null) > 0) {
+					Log.d(LOG_TAG,"delete success.");
+					return true;
+				} else {
+					Log.d(LOG_TAG,"delete fail.");
+					return false;
+				}
+			default:
+				return super.onContextItemSelected(item);
+		}
 	}
 }
 

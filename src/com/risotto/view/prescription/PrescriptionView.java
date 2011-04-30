@@ -1,9 +1,10 @@
 package com.risotto.view.prescription;
 
 import android.app.ListActivity;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -12,34 +13,35 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.risotto.R;
-import com.risotto.model.Drug;
-import com.risotto.service.MainService;
+import com.risotto.model.Prescription;
 import com.risotto.storage.StorageProvider;
-import com.risotto.view.drug.DrugDetailsView;
-import com.risotto.view.drug.DrugView;
 
 public class PrescriptionView extends ListActivity implements SimpleCursorAdapter.ViewBinder {
 	
 	public static final String ACTION_ADD_PRESCRIPTION = "com.risotto.view.prescription.PrescriptionAdd";
 	
+	private Cursor prepCursor;
+	private SimpleCursorAdapter prepAdapter;
+	
 	private static final String[] PRESCRIPTION_PROJECTION = {
 		//Prescription columns
-		StorageProvider.PrescriptionColumns._ID,
+		StorageProvider.PRESCRIPTIONS_TABLE_NAME + "." + StorageProvider.PrescriptionColumns._ID,
 		StorageProvider.PrescriptionColumns.PRESCRIPTION_PATIENT,
 		StorageProvider.PrescriptionColumns.PRESCRIPTION_DATE_EXPIRATION,
 		
 		//Patient columns
-		StorageProvider.PatientColumns._ID,
+		//StorageProvider.PatientColumns._ID,
 		StorageProvider.PatientColumns.PATIENT_FIRST_NAME,
 		StorageProvider.PatientColumns.PATIENT_LAST_NAME,
 		
 		//Drug columns
-		StorageProvider.DrugColumns._ID,
+		//StorageProvider.DrugColumns._ID,
 		StorageProvider.DrugColumns.DRUG_BRAND_NAME,
 		StorageProvider.DrugColumns.DRUG_FORM		
 	};
@@ -74,28 +76,54 @@ public class PrescriptionView extends ListActivity implements SimpleCursorAdapte
 	    }
 	}
 	
+	/**
+	 * Method called when a user presses and holds on an item in the list - creates the menu.
+	 */
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-	                                ContextMenuInfo menuInfo) {
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 	  super.onCreateContextMenu(menu, v, menuInfo);
+	  AdapterContextMenuInfo info = (AdapterContextMenuInfo)menuInfo;
+	  Cursor pCursor = (Cursor) this.getListView().getItemAtPosition(info.position);
+	  
+	  String firstName = pCursor.getString(pCursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_FIRST_NAME));
+	  String drugName = pCursor.getString(pCursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME));
+
+	  menu.setHeaderTitle(firstName + "'s precription for " + drugName);
 	  MenuInflater inflater = getMenuInflater();
-	  inflater.inflate(R.layout.alarm_menu_context_layout, menu);
+	  inflater.inflate(R.layout.prescription_view_context_menu_layout, menu);
 	}
 	
+	/**
+	 * Method called when a user presses a button on the context menu.
+	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.alarm_view_context_menu_edit:
-			System.out.println("Attempting to change notification");
-			//stbm.modify(1, Content.STATUS_BAR, "This is a test.");
-			//nots[0] = "New";
-			//onContentChanged();
-			((ArrayAdapter<String>)(this.getListAdapter())).notifyDataSetChanged();
-			return true;
-		case R.id.alarm_view_context_menu_remove:
-			return true;
-		default:
-			return super.onContextItemSelected(item);
+			case R.id.prescription_view_context_menu_edit:
+				return true;
+			case R.id.prescription_view_context_menu_remove:
+				AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+				Cursor pCursor = (Cursor)this.getListView().getItemAtPosition((int)info.position);
+				
+				//Log.d(LOG_TAG,"first: " + pCursor.getString(pCursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_FIRST_NAME)));
+				//Log.d(LOG_TAG,"last: " + pCursor.getString(pCursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_LAST_NAME)));
+				//Log.d(LOG_TAG,"drug: " + pCursor.getString(pCursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)));
+				//Log.d(LOG_TAG, "prescription_patient: " + pCursor.getString(pCursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_PATIENT)));
+				//Log.d(LOG_TAG, "prescription_drug: " + pCursor.getString(pCursor.getColumnIndex(StorageProvider.PrescriptionColumns.PRESCRIPTION_DRUG)));
+				//Log.d(LOG_TAG,"_id: " + pCursor.getInt(pCursor.getColumnIndex(StorageProvider.PrescriptionColumns._ID)));
+				//Log.d(LOG_TAG,"_id : (3) " + _id);
+				
+				int _id = pCursor.getInt(pCursor.getColumnIndex(StorageProvider.PrescriptionColumns._ID));
+				
+				Uri prepUri = StorageProvider.PrescriptionColumns.CONTENT_URI.buildUpon().appendPath(String.valueOf(_id)).build();
+				if(getContentResolver().delete(prepUri,null,null) > 0) {
+					prepCursor.requery();
+					return true;
+				} else {
+					return false;
+				}
+			default:
+				return super.onContextItemSelected(item);
 		}
 	}
 	
@@ -103,7 +131,7 @@ public class PrescriptionView extends ListActivity implements SimpleCursorAdapte
 	public void onCreate(Bundle savedInstanceState) {
 	  super.onCreate(savedInstanceState);
 	  
-	  Cursor prepCursor = StorageProvider.prescriptionJoinQuery(PRESCRIPTION_PROJECTION);
+	  prepCursor = StorageProvider.prescriptionJoinQuery(PRESCRIPTION_PROJECTION);
 
 	  if (null != prepCursor) {
 			startManagingCursor(prepCursor);
@@ -111,7 +139,7 @@ public class PrescriptionView extends ListActivity implements SimpleCursorAdapte
 			Log.d(LOG_TAG, "count: " + prepCursor.getCount());
 			Log.d(LOG_TAG, "cursor column count: " + prepCursor.getColumnCount());
 			
-			SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+			prepAdapter = new SimpleCursorAdapter(
 					this, // context
 					R.layout.prescription_list_view, // layout
 					prepCursor, // cursor
@@ -122,23 +150,27 @@ public class PrescriptionView extends ListActivity implements SimpleCursorAdapte
 					new int[] { R.id.prescription_list_view_patient_first_name,
 							R.id.prescription_list_view_patient_last_name,
 							R.id.prescription_list_view_drug_name}); // mapping
-							
-			adapter.setViewBinder(this);
-			setListAdapter(adapter);
+			
+			prepAdapter.setViewBinder(this);
+			setListAdapter(prepAdapter);
 	  }
 	  else {
 		  Log.d(LOG_TAG,"prepCursor was null");
+		  finish();
 	  }
 		
 	  registerForContextMenu(getListView());
 	  
 	
 	}
+	
+	@Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+		Log.d(LOG_TAG,"onListItemClick called");
+	}
+	
 
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-		//Log.d(LOG_TAG, "cursor index: " + cursor.getPosition());
-		//Drug newDrug = Drug.fromCursor(cursor);
-
 		if (columnIndex == cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_FIRST_NAME)) {
 			((TextView)view).setText(cursor.getString(columnIndex));
 		} else if (columnIndex == cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_LAST_NAME)) {
@@ -146,7 +178,6 @@ public class PrescriptionView extends ListActivity implements SimpleCursorAdapte
 			//((TextView)view).setTypeface(Typeface.create("null", Typeface.ITALIC));
 			((TextView)view).setText(cursor.getString(columnIndex));
 		} else if(columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)) {
-			Log.d(LOG_TAG,"brand name");
 			((TextView)view).setText(cursor.getString(columnIndex));
 		} else {
 			Log.d(LOG_TAG,"column index passed in: " + columnIndex);

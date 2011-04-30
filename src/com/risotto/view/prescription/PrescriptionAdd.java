@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -48,9 +49,6 @@ public class PrescriptionAdd extends Activity implements OnClickListener, OnItem
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		  super.onCreate(savedInstanceState);
-		  
-		  Patient patient;
-		  Drug drug;
 		  
 		  setContentView(R.layout.prescription_add_layout);
 		  
@@ -108,6 +106,9 @@ public class PrescriptionAdd extends Activity implements OnClickListener, OnItem
 		  
 		  drugSpinner.setOnItemSelectedListener(this);
 		  drugCursor.close();
+		  
+		  Button b = (Button) this.findViewById(R.id.button_prescription_add_ok);
+		  b.setOnClickListener(this);
 		  
 		  
 	}
@@ -206,7 +207,7 @@ public class PrescriptionAdd extends Activity implements OnClickListener, OnItem
 		ContentValues cv = newPrep.toContentValues(getApplicationContext());
 		Uri prescriptionUri = this.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, cv);
 		Log.d(LOG_TAG,"finished adding drug; uri = " + prescriptionUri);
-
+		finish();
 	}
 
 }
