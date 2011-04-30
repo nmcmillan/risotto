@@ -70,6 +70,37 @@ public class Prescription {
 	// DEBUG: LOG_TAG
 	private static final String LOG_TAG = "RISOTTO_PRESCRIPTION";
 
+	/*
+	 * A class to store scheduled day information including the integer 
+	 * value of the day from the Calendar class and a vector of times 
+	 * (in string form) this prescription is scheduled to be taken.
+	 */
+	public class ScheduledDay {
+		int day;
+		Vector<String> times;
+		
+		ScheduledDay(int day, Vector<String> times) {
+			this.day = day;
+			this.times = times;
+		}
+
+		public int getDay() {
+			return day;
+		}
+
+		public void setDay(int day) {
+			this.day = day;
+		}
+
+		public Vector<String> getTimes() {
+			return times;
+		}
+
+		public void setTimes(Vector<String> times) {
+			this.times = times;
+		}
+	}
+
 	public Prescription(Patient patient, Drug drug, int doseType) {
 		this(INVALID_ID, patient, drug, doseType);
 	}
@@ -78,6 +109,7 @@ public class Prescription {
 		this._id = _id;
 		this.patient = patient;
 		this.drug = drug;
+		this.doseType = doseType;
 		this.daysOfWeek = new Vector<Integer>();
 		this.initializeAllDayVectors();
 	}
@@ -442,6 +474,7 @@ public class Prescription {
 		this.initializeAllDayVectors();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Enumeration<Integer> getScheduledDays() {
 		return ((Vector<Integer>) this.daysOfWeek.clone()).elements();
 	}
@@ -454,6 +487,59 @@ public class Prescription {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	public Enumeration<ScheduledDay> getAllScheduledTimeVectors() {
+		Vector<ScheduledDay> scheduledDays = new Vector<ScheduledDay>();
+		
+		Enumeration<Integer> daysEnum = this.daysOfWeek.elements();
+		
+		while (daysEnum.hasMoreElements()) {
+			// Get the value from the enum (integer representation of the
+			// day of the week)
+			Integer value = daysEnum.nextElement();
+			
+			switch (value) {
+			case Calendar.SUNDAY:
+				this.sundayTimes.trimToSize();
+				scheduledDays.add( new ScheduledDay( Calendar.SUNDAY, (Vector<String>)this.sundayTimes.clone()) );
+				break;
+			case Calendar.MONDAY:
+				this.mondayTimes.trimToSize();
+				scheduledDays.add( new ScheduledDay( Calendar.MONDAY, (Vector<String>)this.mondayTimes.clone()) );
+				break;
+			case Calendar.TUESDAY:
+				this.tuesdayTimes.trimToSize();
+				scheduledDays.add( new ScheduledDay( Calendar.TUESDAY, (Vector<String>)this.tuesdayTimes.clone()) );
+				break;
+			case Calendar.WEDNESDAY:
+				this.wednesdayTimes.trimToSize();
+				scheduledDays.add( new ScheduledDay( Calendar.WEDNESDAY, (Vector<String>)this.wednesdayTimes.clone()) );
+				break;
+			case Calendar.THURSDAY:
+				this.thursdayTimes.trimToSize();
+				scheduledDays.add( new ScheduledDay( Calendar.THURSDAY, (Vector<String>)this.thursdayTimes.clone()) );
+				break;
+			case Calendar.FRIDAY:
+				this.fridayTimes.trimToSize();
+				scheduledDays.add( new ScheduledDay( Calendar.FRIDAY, (Vector<String>)this.fridayTimes.clone()) );
+				break;
+			case Calendar.SATURDAY:
+				this.saturdayTimes.trimToSize();
+				scheduledDays.add( new ScheduledDay( Calendar.SATURDAY, (Vector<String>)this.saturdayTimes.clone()) );
+				break;
+			default:
+				// Not sure how we would get to this case, panic...
+				Log.e(LOG_TAG, "Found some data on an unknown day in the getAllScheduledTimes()");
+				break;
+			}
+		}
+		
+		scheduledDays.trimToSize();
+		
+		return scheduledDays.elements();	
+	}
+	
+	@SuppressWarnings("unchecked")
 	public Enumeration<String> getScheduledTimes(int dayOfWeek) throws NullPointerException {
 		
 		switch (dayOfWeek) {
@@ -624,6 +710,7 @@ public class Prescription {
 		this.addDay(Calendar.SATURDAY);
 	}
 
+	@SuppressWarnings("unused")
 	private static String dayToColumnName(int dayOfWeek) {
 		switch (dayOfWeek) {
 		case Calendar.SUNDAY:

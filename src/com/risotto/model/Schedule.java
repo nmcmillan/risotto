@@ -20,6 +20,9 @@ public class Schedule {
 	public static final int TWENTY_FOUR_HRS_IN_MS = MS_IN_ONE_SECOND * SECONDSS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR;
 	public static final int DAYS_IN_ONE_WEEK = 7;
 	public static final int SEVEN_DAYS_IN_MS = TWENTY_FOUR_HRS_IN_MS * DAYS_IN_ONE_WEEK;
+	public static final int TWENTY_FOUR_HOURS_IN_HOURS = 24;
+	public static final int SEVEN_DAYS_IN_DAYS = 7;
+	public static final int ZERO = 0;
 	
 	// Unique ID for storage references
 	private int _id;

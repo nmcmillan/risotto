@@ -42,17 +42,17 @@ public class StorageTester {
 			Patient billClinton = new Patient("Bill", "Clinton", Patient.GENDER.MALE);
 			Patient bObama = new Patient("Barak", "Obama", Patient.GENDER.MALE);
 			
-			Prescription newPrescription = new Prescription(georgeBush, tylenol, 1, 2, 3);
+			Prescription newPrescription = new Prescription(georgeBush, tylenol, Prescription.DOSE_TYPE_EVERY_DAY, 2, 3);
 			log(newPrescription.toString());
 			
-			Prescription anotherPrescription = new Prescription(billClinton, vicadin, 1, 2, 3);
-			anotherPrescription.addTimeEveryDay("7:00");
-			anotherPrescription.addTimeEveryDay("17:00");
+			Prescription anotherPrescription = new Prescription(billClinton, vicadin, Prescription.DOSE_TYPE_EVERY_HOUR, 2, 3);
+			anotherPrescription.addTimeEveryDay("6:15");
+			anotherPrescription.addTimeEveryDay("18:30");
 			log(anotherPrescription.toString());
 			
-			Prescription morePrescription = new Prescription(bObama, crazyPills, 1, 2, 3);
+			Prescription morePrescription = new Prescription(bObama, crazyPills, Prescription.DOSE_TYPE_EVERY_HOUR_DAY_OF_WEEK , 2, 3);
 			morePrescription.addTimeSpecificDay(Calendar.TUESDAY, "7:00");
-			morePrescription.addTimeSpecificDay(Calendar.THURSDAY, "7:00");
+			morePrescription.addTimeSpecificDay(Calendar.THURSDAY, "17:00");
 			log(morePrescription.toString());
 			
 			log("Attempting to store the prescriptions...");

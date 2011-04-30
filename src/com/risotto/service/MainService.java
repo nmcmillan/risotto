@@ -1,6 +1,7 @@
 package com.risotto.service;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
 import android.app.AlarmManager;
@@ -20,6 +21,8 @@ import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
+import com.risotto.model.Prescription.ScheduledDay;
+import com.risotto.model.Schedule;
 import com.risotto.storage.StorageProvider;
 
 public class MainService extends Service {
@@ -74,7 +77,7 @@ public class MainService extends Service {
 		Log.d(LOG_TAG, "Scheduling a new prescription in the schedule table...");
 		Log.d(LOG_TAG, "Scheduling prescription id: " + prescriptionId);
 		
-		Uri prescriptionUri = ContentUris.withAppendedId(StorageProvider.PatientColumns.CONTENT_URI, prescriptionId);
+		Uri prescriptionUri = ContentUris.withAppendedId(StorageProvider.PrescriptionColumns.CONTENT_URI, prescriptionId);
 		
 		String[] prescriptionProjection = { 
 				StorageProvider.PrescriptionColumns._ID,
@@ -90,11 +93,20 @@ public class MainService extends Service {
 				StorageProvider.PrescriptionColumns.PRESCRIPTION_DAY_SATURDAY
 				};
 		
-		Prescription prescription = Prescription.fromCursor(this.getApplicationContext().getContentResolver().query(prescriptionUri, prescriptionProjection, null, null, null), this.getApplicationContext());
+		Cursor prescriptionCursor = this.getApplicationContext().getContentResolver().query(prescriptionUri, prescriptionProjection, null, null, null);
+		
+		prescriptionCursor.moveToFirst();
+		
+		Prescription prescription = Prescription.fromCursor(prescriptionCursor, this.getApplicationContext());
+		
+		Log.d(LOG_TAG, "Prescription dose type: " + prescription.getDoseType());
 		
 		switch (prescription.getDoseType()) {
 			case Prescription.DOSE_TYPE_EVERY_DAY:
 			case Prescription.DOSE_TYPE_EVERY_HOUR:
+				
+				Log.d(LOG_TAG, "Dose type is every day or every hour...");
+				
 				// Pick any day and schedule an alarm for each time with an interval of 24 hours
 				Enumeration<String> sundayTimes = prescription.getScheduledTimes(Calendar.SUNDAY);
 				
@@ -102,25 +114,35 @@ public class MainService extends Service {
 					// Get the next scheduled time
 					String scheduledTime = sundayTimes.nextElement();
 					
+					Log.d(LOG_TAG, "The current time to schedule: " + scheduledTime);
+					
 					// Parse out the hours and minutes from the times
 					String hourValue = scheduledTime.split(":")[0];
 					String minuteValue = scheduledTime.split(":")[1];
 					
 					// Get an instance of the current date/time
-					Calendar rightNow = Calendar.getInstance();
+					Calendar firstDate = Calendar.getInstance();
 					
 					// Set the hour/minute in todays date
-					rightNow.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hourValue));
-					rightNow.set(Calendar.MINUTE, Integer.parseInt(minuteValue));
+					firstDate.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hourValue));
+					firstDate.set(Calendar.MINUTE, Integer.parseInt(minuteValue));
+					firstDate.set(Calendar.SECOND, Schedule.ZERO);
 					
-					// Turn that time into the absolute time on todays date
-					long firstTime = rightNow.getTimeInMillis();
+					Log.d(LOG_TAG, "Current date/time: " + new Date(System.currentTimeMillis()).toString());
+					Log.d(LOG_TAG, "The 'first time' of this schedule: " + new Date(firstDate.getTimeInMillis()).toString() );
 					
-					// See if we have already passed that time today...
-					if ( firstTime <= System.currentTimeMillis() ) {
+					// See if we have already passed the first scheduled time...
+					if ( firstDate.getTimeInMillis() < System.currentTimeMillis() ) {
 						// If we have, schedule it for 24 hours from now
+						firstDate.add(Calendar.HOUR, Schedule.TWENTY_FOUR_HOURS_IN_HOURS);
+						
+						Log.d(LOG_TAG, "Scheduling this prescription on the next date: " + new Date(firstDate.getTimeInMillis()).toString() );
+						
 					} else {
 						// Else, schedule it for today.
+						
+						Log.d(LOG_TAG, "Scheduling the prescription for today at this calendar: " + new Date(firstDate.getTimeInMillis()).toString() );
+						
 					}
 					
 					
@@ -133,9 +155,61 @@ public class MainService extends Service {
 				break;
 			case Prescription.DOSE_TYPE_EVERY_DAY_OF_WEEK:
 			case Prescription.DOSE_TYPE_EVERY_HOUR_DAY_OF_WEEK:
-				// Get the days that are scheduled.
-				// For each of those days get the times
-				// For each of the times schedule an alarm with an interval of 7 days. 
+				
+				Log.d(LOG_TAG, "Dose type is every day of week or every hour day of week...");
+				
+				// Get all the days that are scheduled.
+				
+				Enumeration<ScheduledDay> scheduledDays = prescription.getAllScheduledTimeVectors();
+				
+				// For each of those days...
+				while( scheduledDays.hasMoreElements() ) {
+					
+					// ...get the day.
+					ScheduledDay currentDay = scheduledDays.nextElement();
+					
+					// ...get the times.
+					Enumeration<String> dayTimes = currentDay.getTimes().elements();
+					
+					// For each of the times...
+					while(dayTimes.hasMoreElements()) {
+						// ...schedule an alarm with an interval of 7 days.
+						// Get the next scheduled time
+						String scheduledTime = dayTimes.nextElement();
+						
+						Log.d(LOG_TAG, "The current time to schedule: " + scheduledTime);
+						
+						// Parse out the hours and minutes from the times
+						String hourValue = scheduledTime.split(":")[0];
+						String minuteValue = scheduledTime.split(":")[1];
+						
+						// Get an instance of the current date/time
+						Calendar firstDate = Calendar.getInstance();
+						
+						// Set the hour/minute in todays date
+						firstDate.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hourValue));
+						firstDate.set(Calendar.MINUTE, Integer.parseInt(minuteValue));
+						firstDate.set(Calendar.SECOND, Schedule.ZERO);
+						firstDate.set(Calendar.DAY_OF_WEEK, currentDay.getDay());
+						
+						Log.d(LOG_TAG, "Current date/time: " + new Date(System.currentTimeMillis()).toString());
+						Log.d(LOG_TAG, "The 'first time' of this schedule: " + new Date(firstDate.getTimeInMillis()).toString() );
+						
+						// See if we have already passed the first scheduled time...
+						if ( firstDate.getTimeInMillis() < System.currentTimeMillis() ) {
+							// If we have, schedule it for 7 days from now
+							firstDate.add(Calendar.DATE, Schedule.SEVEN_DAYS_IN_DAYS);
+							
+							Log.d(LOG_TAG, "Scheduling this prescription on the next date: " + new Date(firstDate.getTimeInMillis()).toString() );
+							
+						} else {
+							// Else, schedule it for today.
+							
+							Log.d(LOG_TAG, "Scheduling the prescription for today at this calendar: " + new Date(firstDate.getTimeInMillis()).toString() );
+							
+						}
+					}			
+				}
 				break;
 			
 			default:
@@ -144,7 +218,9 @@ public class MainService extends Service {
 		
 	}
 	
-	
+	private void scheduleGivenDay() {
+		// TODO: Fill in the logic that was copy/pasted in the scheduleNewPrescription() method.
+	}
 	
 	private boolean isScheduleChanged() {
 		Log.d(LOG_TAG, "The schedule has changed for this prescription.");
@@ -188,7 +264,7 @@ public class MainService extends Service {
 			
 			/* 2. Run the list of prescription ids against the foreign key prescription ids that have been placed in the schedule table */
 			
-			Log.d(LOG_TAG, "Getting ready to look for prescription ids in the schdeule table...");
+			Log.d(LOG_TAG, "Getting ready to look for prescription ids in the schedule table...");
 			
 			do {
 				// Get the prescription id
