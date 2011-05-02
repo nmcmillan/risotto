@@ -145,10 +145,27 @@ public class MainService extends Service {
 						
 					}
 					
-					
 					// TODO: See if there is some way that we can calculate the count remaining
 					
 					// Store the schedule!
+					Schedule newSchedule = new Schedule(prescription.get_id(), firstDate.getTimeInMillis(), Schedule.TWENTY_FOUR_HOURS_IN_MS );
+					Uri scheduleUri = this.getApplicationContext().getContentResolver().insert(StorageProvider.ScheduleColumns.CONTENT_URI, newSchedule.toContentValues());
+					
+					// Send the alarm to the alarm manager
+					Intent scheduleIntent = this.buildPrescriptionIntent(prescription.get_id(), Integer.parseInt(scheduleUri.getPathSegments().get(1)));
+					
+					// Get an instance of the AlarmManager
+					AlarmManager am = (AlarmManager)this.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+					
+					// Create a pending intent which will be sent when the alarm is done.
+					PendingIntent pendingIntent = PendingIntent.getService(this, 0, scheduleIntent, PendingIntent.FLAG_ONE_SHOT);
+					
+					// Have the AlarmManager schedule the alarm.
+					
+					Log.d(LOG_TAG, "Setting an alarm for: " + new Date(firstDate.getTimeInMillis()).toString() );
+					Log.d(LOG_TAG, "Repeating every 24 hours.");
+					
+					//am.set(AlarmManager.RTC_WAKEUP, Schedule.TWENTY_FOUR_HOURS_IN_MS, pendingIntent);
 					
 				}
 				
@@ -208,6 +225,29 @@ public class MainService extends Service {
 							Log.d(LOG_TAG, "Scheduling the prescription for today at this calendar: " + new Date(firstDate.getTimeInMillis()).toString() );
 							
 						}
+						
+						// TODO: See if there is some way that we can calculate the count remaining
+						
+						// Store the schedule!
+						Schedule newSchedule = new Schedule(prescription.get_id(), firstDate.getTimeInMillis(), Schedule.SEVEN_DAYS_IN_MS );
+						Uri scheduleUri = this.getApplicationContext().getContentResolver().insert(StorageProvider.ScheduleColumns.CONTENT_URI, newSchedule.toContentValues());
+						
+						// Send the alarm to the alarm manager
+						Intent scheduleIntent = this.buildPrescriptionIntent(prescription.get_id(), Integer.parseInt(scheduleUri.getPathSegments().get(1)));
+						
+						// Get an instance of the AlarmManager
+						AlarmManager am = (AlarmManager)this.getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+						
+						// Create a pending intent which will be sent when the alarm is done.
+						PendingIntent pendingIntent = PendingIntent.getService(this, 0, scheduleIntent, PendingIntent.FLAG_ONE_SHOT);
+						
+						// Have the AlarmManager schedule the alarm.
+						
+						Log.d(LOG_TAG, "Setting an alarm for: " + new Date(firstDate.getTimeInMillis()).toString() );
+						Log.d(LOG_TAG, "Repeating every 7 days.");
+						
+						//am.set(AlarmManager.RTC_WAKEUP, Schedule.SEVEN_DAYS_IN_MS, pendingIntent);
+						
 					}			
 				}
 				break;
@@ -220,6 +260,21 @@ public class MainService extends Service {
 	
 	private void scheduleGivenDay() {
 		// TODO: Fill in the logic that was copy/pasted in the scheduleNewPrescription() method.
+	}
+	
+	private Intent buildPrescriptionIntent(int prescriptionId, int scheduleId) {
+		
+		Log.d(LOG_TAG, "Building intent for prescription " + prescriptionId + " in schedule entry " + scheduleId );
+		
+		// Create an intent that will launch when the trigger is done.
+		Intent newIntent = new Intent(ACTION_ALARM_TRIGGER);
+		
+		newIntent.putExtra("PRESCRIPTION_ID", prescriptionId);
+		newIntent.putExtra("SCHEDULE_ID", scheduleId);
+		
+		newIntent.setClass(this, MainService.class);
+		
+		return newIntent;
 	}
 	
 	private boolean isScheduleChanged() {
@@ -279,6 +334,9 @@ public class MainService extends Service {
 				
 				if ( specificScheduleCursor != null && specificScheduleCursor.moveToFirst()) {
 					// There are entries for this prescription in the schedule table.
+					
+					// Remove them and schedule them as new!
+					
 					Log.d(LOG_TAG, "There are entries in the schedule table for prescription ID: " + prescriptionId );
 					
 					/* 3. Check to see if this prescription has changed from it's original scheduling. */

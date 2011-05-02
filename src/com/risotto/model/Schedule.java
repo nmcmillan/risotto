@@ -15,14 +15,16 @@ public class Schedule {
 	
 	// SCHEDULING CONSTANTS
 	public static final int MS_IN_ONE_SECOND = 1000;
-	public static final int SECONDSS_IN_ONE_MINUTE = 60;
+	public static final int SECONDS_IN_ONE_MINUTE = 60;
 	public static final int MINUTES_IN_ONE_HOUR = 60;
-	public static final int TWENTY_FOUR_HRS_IN_MS = MS_IN_ONE_SECOND * SECONDSS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR;
+	public static final int HOURS_IN_ONE_DAY = 24;
+	public static final int TWENTY_FOUR_HOURS_IN_MS = MS_IN_ONE_SECOND * SECONDS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR * HOURS_IN_ONE_DAY;
 	public static final int DAYS_IN_ONE_WEEK = 7;
-	public static final int SEVEN_DAYS_IN_MS = TWENTY_FOUR_HRS_IN_MS * DAYS_IN_ONE_WEEK;
+	public static final int SEVEN_DAYS_IN_MS = TWENTY_FOUR_HOURS_IN_MS * DAYS_IN_ONE_WEEK;
 	public static final int TWENTY_FOUR_HOURS_IN_HOURS = 24;
 	public static final int SEVEN_DAYS_IN_DAYS = 7;
 	public static final int ZERO = 0;
+	public static final int DEFAULT_COUNT_REMAINING = -1;
 	
 	// Unique ID for storage references
 	private int _id;
@@ -30,6 +32,18 @@ public class Schedule {
 	
 	public Schedule(int prescriptionId, long firstTime, int interval, long nextTime, int countRemain) {
 		this(INVALID_ID, prescriptionId, firstTime, interval, nextTime, countRemain);
+	}
+	
+	public Schedule(int prescriptionId, long firstTime, int interval, long nextTime) {
+		this(INVALID_ID, prescriptionId, firstTime, interval, nextTime, DEFAULT_COUNT_REMAINING);
+	}
+	
+	public Schedule(int prescriptionId, long firstTime, int interval, int countRemain) {
+		this(INVALID_ID, prescriptionId, firstTime, interval, (firstTime + interval), countRemain);
+	}
+	
+	public Schedule(int prescriptionId, long firstTime, int interval) {
+		this(INVALID_ID, prescriptionId, firstTime, interval, (firstTime + interval), DEFAULT_COUNT_REMAINING);
 	}
 	
 	private Schedule(int _id, int prescriptionId, long firstTime, int interval, long nextTime, int countRemain) {
