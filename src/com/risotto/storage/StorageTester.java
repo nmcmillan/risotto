@@ -47,12 +47,14 @@ public class StorageTester {
 			
 			Prescription anotherPrescription = new Prescription(billClinton, vicadin, Prescription.DOSE_TYPE_EVERY_HOUR, 2, 3);
 			anotherPrescription.addTimeEveryDay("6:15");
-			anotherPrescription.addTimeEveryDay("18:30");
+			anotherPrescription.addTimeEveryDay("19:48");
+			anotherPrescription.addTimeEveryDay("19:50");
+			anotherPrescription.addTimeEveryDay("19:52");
 			log(anotherPrescription.toString());
 			
 			Prescription morePrescription = new Prescription(bObama, crazyPills, Prescription.DOSE_TYPE_EVERY_HOUR_DAY_OF_WEEK , 2, 3);
 			morePrescription.addTimeSpecificDay(Calendar.TUESDAY, "7:00");
-			morePrescription.addTimeSpecificDay(Calendar.THURSDAY, "17:00");
+			morePrescription.addTimeSpecificDay(Calendar.MONDAY, "19:51");
 			log(morePrescription.toString());
 			
 			log("Attempting to store the prescriptions...");
