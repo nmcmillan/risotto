@@ -19,7 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class PatientAdd extends Activity implements OnClickListener, OnItemSelectedListener {
+public class PatientAdd extends Activity implements OnClickListener {
 	
 	public static final String ACTION_VIEW_ADD_PATIENT = "com.risotto.view.patient.AddPatientIntent";
 	public static final String LOG_TAG = "com.risotto.view.patient.PatientAdd";
@@ -45,17 +45,6 @@ public class PatientAdd extends Activity implements OnClickListener, OnItemSelec
 		
 		Button b = (Button) this.findViewById(R.id.patient_add_button_ok);
 		b.setOnClickListener(this);
-	}
-
-	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
-			long arg3) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void onNothingSelected(AdapterView<?> arg0) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void onClick(View v) {

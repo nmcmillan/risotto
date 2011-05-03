@@ -2,6 +2,7 @@ package com.risotto.view.prescription;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import com.risotto.model.Drug;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
 import com.risotto.storage.StorageProvider;
+import com.risotto.view.patient.PatientAdd;
 
 public class PrescriptionAdd extends Activity implements OnClickListener, OnItemSelectedListener {
 	
@@ -60,12 +62,12 @@ public class PrescriptionAdd extends Activity implements OnClickListener, OnItem
 				  null,
 				  null);
 		  
+		  startManagingCursor(patientCursor);
+		  
 		  patientSpinner = (Spinner) this.findViewById(R.id.prescription_add_patient_spinner);
 		  ArrayAdapter<CharSequence> patientAdapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item);
 		  patientAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		  patientSpinner.setAdapter(patientAdapter);
-		  
-		  patientAdapter.add(NEW_PATIENT);
 		  
 		  while(patientCursor.moveToNext()) {
 			  patient = Patient.fromCursor(patientCursor);
@@ -74,6 +76,8 @@ public class PrescriptionAdd extends Activity implements OnClickListener, OnItem
 			  CharSequence fullName = firstName + " " + lastName;
 			  patientAdapter.add(fullName);
 		  }
+		  
+		  patientAdapter.add(NEW_PATIENT);
 		  
 		  patientSpinner.setOnItemSelectedListener(this);
 		  patientCursor.close();
@@ -91,6 +95,8 @@ public class PrescriptionAdd extends Activity implements OnClickListener, OnItem
 				  null, 
 				  null, 
 				  null);
+		  
+		  startManagingCursor(drugCursor);
 		  
 		  drugSpinner = (Spinner) this.findViewById(R.id.prescription_add_drug_spinner);
 		  ArrayAdapter<CharSequence> drugAdapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item);
@@ -118,12 +124,19 @@ public class PrescriptionAdd extends Activity implements OnClickListener, OnItem
 		Log.d(LOG_TAG, "in onItemSelected. ");
 		Log.d(LOG_TAG, "viewPosition: " + viewPosition);
 		Log.d(LOG_TAG, "rowId: " + rowId);
+		
+		//r.id value for parent
 		Log.d(LOG_TAG, "parent: " + parent.getId()); 
 		Log.d(LOG_TAG, "id for patientSpinner: " + this.patientSpinner.getId());
 		
 		if(parent.getId() == R.id.prescription_add_patient_spinner) {
-			if(0 == viewPosition) {
-				//new patient was selected
+			if(((CharSequence)parent.getSelectedItem()).equals(NEW_PATIENT)) {
+				//add new patient
+				Log.d(LOG_TAG, "adding patient through prescription spinner selection");
+				Intent addIntent = new Intent();
+				addIntent.setAction(PatientAdd.ACTION_VIEW_ADD_PATIENT);
+				addIntent.setClass(getApplicationContext(), PatientAdd.class);
+				startActivity(addIntent);
 			}
 			else {
 				//attempt to find patient in DB
@@ -162,7 +175,7 @@ public class PrescriptionAdd extends Activity implements OnClickListener, OnItem
 				
 				patientCursor.close();
 			}
-		} else {
+		} /*else {
 			if(0 == viewPosition) {
 				//new patient was selected
 			} else {
@@ -190,7 +203,7 @@ public class PrescriptionAdd extends Activity implements OnClickListener, OnItem
 				drugCursor.close();
 			}
 			
-		}
+		}*/
 		
 		
 			

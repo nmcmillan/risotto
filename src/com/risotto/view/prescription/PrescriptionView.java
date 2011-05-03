@@ -1,7 +1,6 @@
 package com.risotto.view.prescription;
 
 import android.app.ListActivity;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -19,12 +18,16 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.risotto.R;
-import com.risotto.model.Prescription;
+import com.risotto.model.Drug;
 import com.risotto.storage.StorageProvider;
+import com.risotto.view.drug.DrugView;
 
 public class PrescriptionView extends ListActivity implements SimpleCursorAdapter.ViewBinder {
 	
 	public static final String ACTION_ADD_PRESCRIPTION = "com.risotto.view.prescription.PrescriptionAdd";
+	public static final String ACTION_VIEW_PRESCRIPTION_DETAILS = "com.risotto.view.prescription.PrescriptionViewDetails";
+	
+	public static final String PRESCRIPTION_DETAILS_DB_ID = "com.risotto.view.prescription.Prescription_DB_ID";
 	
 	private Cursor prepCursor;
 	private SimpleCursorAdapter prepAdapter;
@@ -160,13 +163,15 @@ public class PrescriptionView extends ListActivity implements SimpleCursorAdapte
 	  }
 		
 	  registerForContextMenu(getListView());
-	  
-	
 	}
 	
 	@Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-		Log.d(LOG_TAG,"onListItemClick called");
+		Intent editIntent = new Intent();
+		editIntent.setAction(PrescriptionView.ACTION_VIEW_PRESCRIPTION_DETAILS);
+		editIntent.setClass(getApplicationContext(), PrescriptionDetailsView.class);
+		editIntent.putExtra(PrescriptionView.ACTION_VIEW_PRESCRIPTION_DETAILS, String.valueOf(id));
+		startActivity(editIntent);
 	}
 	
 

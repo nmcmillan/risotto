@@ -40,7 +40,6 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 	public static final String ACTION_VIEW_DRUG_DETAILS = "com.risotto.view.DrugDetailsViewStart";
 
 	// String to define the name of the extra data being sent in intent to
-	// DrugDetailsView
 	public static final String DRUG_DETAILS_DB_ID = "com.risotto.view.drug.DrugView.DrugDetails_ID";
 	public static final String DRUG_DETAILS_BRAND_NAME = "com.risotto.view.drug.DrugView.DrugDetails_NAME";
 	private ContentResolver contentResolver;

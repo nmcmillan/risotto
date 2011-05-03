@@ -3,12 +3,17 @@ package com.risotto.view.patient;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.SimpleCursorAdapter;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.risotto.R;
 import com.risotto.model.Patient;
@@ -128,6 +133,51 @@ public class PatientView extends ListActivity implements SimpleCursorAdapter.Vie
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		Patient patient = Patient.fromCursor(cursor);
 		return true;
+	}
+	
+	/**
+	 * Method called when a user presses and holds on an item in the list - creates the menu.
+	 */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+	  super.onCreateContextMenu(menu, v, menuInfo);
+	  AdapterContextMenuInfo info = (AdapterContextMenuInfo)menuInfo;
+	  Cursor pCursor = (Cursor) this.getListView().getItemAtPosition(info.position);
+	  
+	  String firstName = pCursor.getString(pCursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_FIRST_NAME)); 
+	  String lastName = pCursor.getString(pCursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_LAST_NAME)); 
+	  
+
+	  menu.setHeaderTitle(firstName + " " + lastName);
+	  MenuInflater inflater = getMenuInflater();
+	  inflater.inflate(R.layout.patient_view_context_menu_layout, menu);
+	}
+	
+	/**
+	 * Method called when a user presses a button on the context menu.
+	 */
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.patient_view_context_menu_edit:
+				return true;
+			case R.id.patient_view_context_menu_remove:
+				AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+				Cursor pCursor = (Cursor)this.getListView().getItemAtPosition((int)info.position);
+				
+				int _id = pCursor.getInt(pCursor.getColumnIndex(StorageProvider.PatientColumns._ID));
+				
+				Uri patientUri = StorageProvider.PatientColumns.CONTENT_URI.buildUpon().appendPath(String.valueOf(_id)).build();
+				if(getContentResolver().delete(patientUri,null,null) > 0) {
+					Log.d(LOG_TAG,"delete success.");
+					return true;
+				} else {
+					Log.d(LOG_TAG,"delete fail.");
+					return false;
+				}
+			default:
+				return super.onContextItemSelected(item);
+		}
 	}
 	
 }
