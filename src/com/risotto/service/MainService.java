@@ -421,7 +421,7 @@ public class MainService extends Service {
 			sbnm.sendMessage(x);
 		}
 		catch(Exception e) {
-			Log.d(LOG_TAG, "THERE WAS AN EXCEPTION!!");
+			Log.d(LOG_TAG, "There was an exception while trying to display a notification.");
 		}
 		
 		// Close the cursors

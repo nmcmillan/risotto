@@ -97,7 +97,7 @@ public class StorageProvider extends ContentProvider {
 					+ DrugColumns.DRUG_STRENGTH_LABEL + " TEXT,"
 					+ DrugColumns.DRUG_COMPOUND_NAME + " TEXT,"
 					+ DrugColumns.DRUG_MANUFACTURER + " TEXT,"
-					+ DrugColumns.DRUG_INTERACTIONS + " BLOB"
+					+ DrugColumns.DRUG_INTERACTIONS + " BLOB,"
 					+ DrugColumns.DRUG_NICK_NAME + " TEXT,"
 					+ DrugColumns.DRUG_FORM + " TEXT,"
 					+ DrugColumns.DRUG_COLOR + " INTEGER,"
