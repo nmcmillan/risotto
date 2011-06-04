@@ -61,5 +61,26 @@
 
 	<!-- Drug Details Strings -->
 	<string name="drug_details_title">Drug Details:</string>
-
+	
+	<!-- Title Bar Strings -->
+	<string name="title_bar_text">Pillbox</string>
+	
+	<!-- Home Screen Strings -->
+	<string name="home_screen_patients">Patients</string>
+	<string name="home_screen_drugs">Drugs</string>
+	<string name="home_screen_schedule">Schedule</string>
+	<string name="home_screen_history">Prescriptions (will be history in the future)</string>
+	<string name="home_menu_about">About</string>
+	<string name="home_menu_settings">Settings</string>
+	
+	<!-- Wizard Strings -->
+	<string name="wizard_when_take_it_text">When will you take this medicine?</string>
+	<string name="button_wizard_choice_spec_time_text">At specific times...(Once a day, twice a day, every other day)</string>
+	<string name="button_wizard_choice_spec_interval_text">At specific intervals...(Every 4 hours, every 12 hours, every other day)</string>
+	
+	<string name="wizard_take_it_every_day_text">Will you take it every day?</string>
+	<string name="button_wizard_choice_take_every_day_yes">Yes, I will take it every day of the week.</string>
+	<string name="button_wizard_choice_take_every_day_no">No, I will not take it every day of the week.</string>
+	<string name="button_wizard_choice_take_every_day_back">Backup.</string>
+	
 </resources>

@@ -21,11 +21,13 @@ import com.risotto.R;
 import com.risotto.model.Drug;
 import com.risotto.storage.StorageProvider;
 import com.risotto.view.drug.DrugView;
+import com.risotto.view.wizard.WhenTakeIt;
 
 public class PrescriptionView extends ListActivity implements SimpleCursorAdapter.ViewBinder {
 	
 	public static final String ACTION_ADD_PRESCRIPTION = "com.risotto.view.prescription.PrescriptionAdd";
 	public static final String ACTION_VIEW_PRESCRIPTION_DETAILS = "com.risotto.view.prescription.PrescriptionViewDetails";
+	public static final String ACTION_WIZARD_START = "com.risotto.view.wizard.WhenTakeIt";
 	
 	public static final String PRESCRIPTION_DETAILS_DB_ID = "com.risotto.view.prescription.Prescription_DB_ID";
 	
@@ -70,8 +72,12 @@ public class PrescriptionView extends ListActivity implements SimpleCursorAdapte
 	    case R.id.prescription_menu_add_prep:
 	    	//send intent to add prescription
 	    	Intent newPrepIntent = new Intent();
-			newPrepIntent.setAction(PrescriptionView.ACTION_ADD_PRESCRIPTION);
-			newPrepIntent.setClass(getApplicationContext(), PrescriptionAdd.class);
+	    	//change to wizard
+			//newPrepIntent.setAction(PrescriptionView.ACTION_ADD_PRESCRIPTION);
+			//newPrepIntent.setClass(getApplicationContext(), PrescriptionAdd.class);
+	    	
+	    	newPrepIntent.setAction(PrescriptionView.ACTION_WIZARD_START);
+	    	newPrepIntent.setClass(getApplicationContext(), WhenTakeIt.class);
 			startActivity(newPrepIntent);
 	        return true;
 	    default:

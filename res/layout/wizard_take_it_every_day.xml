@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/background_wizard_take_it_every_day"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">    
+    <TextView android:id="@+id/wizard_take_it_every_day_view"
+    	android:layout_height="wrap_content"
+    	android:layout_width="wrap_content"  
+    	android:text="@string/wizard_take_it_every_day_text" 
+    	android:textSize="20dip" 
+    	android:layout_marginTop="30dip"
+    	android:layout_centerHorizontal="true"
+    	android:clickable="true"/>
+    
+    <Button android:id="@+id/button_wizard_choice_take_every_day_yes"
+    	android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="right"
+        android:layout_below="@id/wizard_take_it_every_day_view"
+        android:text="@string/button_wizard_choice_take_every_day_yes"/>
+    
+    <Button android:id="@+id/button_wizard_choice_take_every_day_no"
+    	android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="right"
+        android:layout_below="@id/button_wizard_choice_take_every_day_yes"
+        android:text="@string/button_wizard_choice_take_every_day_no"/>
+    
+    <Button android:id="@+id/button_wizard_choice_take_every_day_back"
+    	android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_gravity="right"
+        android:layout_below="@id/button_wizard_choice_take_every_day_no"
+        android:text="@string/button_wizard_choice_take_every_day_back"/>
+</RelativeLayout>

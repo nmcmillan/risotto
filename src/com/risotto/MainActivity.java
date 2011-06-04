@@ -1,18 +1,32 @@
 package com.risotto;
 
-import android.app.TabActivity;
+import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.widget.TabHost;
-import android.widget.TabHost.TabSpec;
+import android.util.Log;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 import com.risotto.storage.StorageTester;
 import com.risotto.view.drug.DrugView;
 import com.risotto.view.patient.PatientView;
 import com.risotto.view.prescription.PrescriptionView;
+import com.risotto.view.wizard.WhenTakeIt;
 
-public class MainActivity extends TabActivity {
+public class MainActivity extends Activity implements OnClickListener {
+	
+	public static final String ACTION_LAUNCH_FROM_HOME_PATIENTS = "com.risotto.view.patient.PatientView";
+	public static final String ACTION_LAUNCH_FROM_HOME_SCHEDULE = "com.risotto.view.wizard.WhenTakeIt";
+	public static final String ACTION_LAUNCH_FROM_HOME_DRUGS = "com.risotto.view.drug.DrugView";
+	//public static final String ACTION_LAUNCH_FROM_HOME_HISTORY = "com.risotto.view.patient.PatientView";
+	public static final String ACTION_LAUNCH_FROM_HOME_PRESCRIPTION = "com.risotto.view.prescription.PrescriptionView";
+	
+	public static final String LOG_TAG = "com.risotto.MainActivity";
+	
+	public static final int MENU_ITEM_ABOUT_POSITION = Menu.FIRST;
+	public static final int MENU_ITEM_SETTINGS_POSITION = Menu.FIRST + 1;
 	
 	/*
 	 * When the device is rotated, Android runs through the full lifecycle of your application.  It calls pause, stop, destroy
@@ -32,42 +46,75 @@ public class MainActivity extends TabActivity {
         //DrugTest.testToContentValues();
         //END DRUG TESTING
         
-        Resources res = getResources(); // Resource object to get Drawables
-        TabHost tabHost = getTabHost();  // The activity TabHost
-        TabSpec spec;  // Reusable TabSpec for each tab
-        Intent intent;  // Reusable Intent for each tab
-
-        // Create tab interface
+        Button patients = (Button) findViewById(R.id.button_home_patients);
+        patients.setOnClickListener(this);
         
-        // Position 0 = Prescription tab
-        /*intent = new Intent().setClass(this, PrescriptionView.class);
-        spec = tabHost.newTabSpec("meds")
-        				.setIndicator("Prescriptions", res.getDrawable(R.drawable.micro_white))
-        				.setContent(intent);
-        tabHost.addTab(spec); */
+        Button drugs = (Button) findViewById(R.id.button_home_drugs);
+        drugs.setOnClickListener(this);
+        
+        Button schedule = (Button) findViewById(R.id.button_home_schedules);
+        schedule.setOnClickListener(this);
+        
+        Button history = (Button) findViewById(R.id.button_home_history);
+        history.setOnClickListener(this);
         
         
-        // Position 1 = People tab
-        intent = new Intent().setClass(this, PatientView.class);
-        spec = tabHost.newTabSpec("people")
-        				.setIndicator("People", res.getDrawable(R.drawable.micro_white))
-        				.setContent(intent);
-        tabHost.addTab(spec);
-        
-        // Position 2 = Schedules tab
-        intent = new Intent().setClass(this, DrugView.class);
-        spec = tabHost.newTabSpec("drugs")
-        				.setIndicator("Drugs", res.getDrawable(R.drawable.micro_white))
-        				.setContent(intent);
-        tabHost.addTab(spec);
-        
-        // Position 3 = Prescription Tab
-        intent = new Intent().setClass(this, PrescriptionView.class);
-        spec = tabHost.newTabSpec("prescriptions")
-        				.setIndicator("Prescriptions", res.getDrawable(R.drawable.micro_gray))
-        				.setContent(intent);
-        tabHost.addTab(spec);        				
-        
-        tabHost.setCurrentTab(0);
     }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	super.onCreateOptionsMenu(menu);
+		/*
+		 * MenuInflater inflater = getMenuInflater();
+		 * inflater.inflate(R.layout.drug_menu_layout, menu); return true;
+		 */
+		menu.add(Menu.FIRST, // group id for doing batch changes
+				MENU_ITEM_ABOUT_POSITION, // position
+				Menu.NONE, // order, see getOrder()
+				R.string.home_menu_about) // name of button - link to XML
+				.setIcon(android.R.drawable.ic_menu_info_details);
+		menu.add(Menu.FIRST, // group id for doing batch changes
+				MENU_ITEM_SETTINGS_POSITION, // position
+				Menu.NONE, // order, see getOrder()
+				R.string.home_menu_settings) // name of button - link to XML
+				.setIcon(android.R.drawable.ic_menu_preferences);
+		return true;
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see android.view.View.OnClickListener#onClick(android.view.View)
+     */
+	public void onClick(View v) {
+		Intent intent = new Intent();
+		switch(v.getId()) {
+			case R.id.button_home_drugs:
+				Log.d(LOG_TAG,"launching drug view");
+				intent.setAction(MainActivity.ACTION_LAUNCH_FROM_HOME_DRUGS);
+		    	intent.setClass(getApplicationContext(), DrugView.class);
+				startActivity(intent);
+				break;
+			case R.id.button_home_history:
+				//will launch prescription view for now
+				Log.d(LOG_TAG,"launching prescription view");
+				intent.setAction(MainActivity.ACTION_LAUNCH_FROM_HOME_PRESCRIPTION);
+				intent.setClass(getApplicationContext(), PrescriptionView.class);
+				startActivity(intent);
+				break;
+			case R.id.button_home_patients:
+				Log.d(LOG_TAG,"launching patient view");
+				intent.setAction(MainActivity.ACTION_LAUNCH_FROM_HOME_PATIENTS);
+				intent.setClass(getApplicationContext(), PatientView.class);
+				startActivity(intent);
+				break;
+			case R.id.button_home_schedules:
+				Log.d(LOG_TAG,"launching wizard");
+				intent.setAction(MainActivity.ACTION_LAUNCH_FROM_HOME_SCHEDULE);
+				intent.setClass(getApplicationContext(), WhenTakeIt.class);
+				startActivity(intent);
+				break;
+			default:
+				break;
+		}
+	}
 }

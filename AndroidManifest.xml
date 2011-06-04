@@ -35,6 +35,14 @@
 		<!-- Drug Details View Activity -->
 		<activity android:name="com.risotto.view.drug.DrugDetailsView"/>
 		
+		<!-- Wizard Activities -->
+		<!-- Start -->
+		<activity android:name="com.risotto.view.wizard.WhenTakeIt"/>
+			<!-- Take every day -->
+			<activity android:name="com.risotto.view.wizard.TakeItEveryDay"/>
+		
+		
+		
 		<!-- Prescription Add Activity -->
 		<activity android:name="com.risotto.view.prescription.PrescriptionAdd"
 			android:label="@string/prescription_add_title"/>

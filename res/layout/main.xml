@@ -1,5 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+	
+	<!-- Define title bar -->
+	<LinearLayout 
+		android:background="#FFFFFF"
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="50dip">
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="match_parent"
+			android:textColor="#EE9241"
+			android:textSize="30dip"
+			android:textStyle="bold" 
+			android:text="@string/title_bar_text"/>
+	</LinearLayout>
+	
+	<!-- Define body -->
+	<LinearLayout
+		android:orientation="vertical"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_weight="1"
+	    android:background="#EE9241"
+	    android:padding="6dip">
+	    
+	    <!-- Define first row of icons -->
+		<LinearLayout
+		    android:orientation="horizontal"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+		    android:padding="6dip">
+				<Button
+					android:id="@+id/button_home_patients"
+					style="@style/HomeButton"
+					android:text="@string/home_screen_patients"
+		            android:drawableTop="@drawable/red_pills"/>
+		        <Button
+		        	android:id="@+id/button_home_drugs"
+		        	style="@style/HomeButton"
+		        	android:text="@string/home_screen_drugs"
+		        	android:drawableTop="@drawable/red_pill_and_tablet"/>
+		</LinearLayout>
+		
+		<!-- Define second row of icons -->
+		<LinearLayout
+		    android:orientation="horizontal"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+		    android:padding="6dip">
+				<Button
+					android:id="@+id/button_home_schedules"
+					style="@style/HomeButton"
+					android:text="@string/home_screen_schedule"
+		            android:drawableTop="@drawable/red_pills"/>
+		        <Button
+		        	android:id="@+id/button_home_history"
+		        	style="@style/HomeButton"
+		        	android:text="@string/home_screen_history"
+		        	android:drawableTop="@drawable/red_pill_and_tablet"/>
+		</LinearLayout>
+	</LinearLayout>
+		
+		
+	
+</LinearLayout>
+<!--<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/tabhost"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
@@ -20,7 +92,7 @@
     </LinearLayout>
 </TabHost>
 
-<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
