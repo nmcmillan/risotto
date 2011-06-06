@@ -31,6 +31,9 @@
 		
 		<!-- Prescription View Activity -->
 		<activity android:name="com.risotto.view.prescription.PrescriptionView"/>
+		
+		<!-- Prescription Details View Activity -->
+		<activity android:name="com.risotto.view.prescription.PrescriptionDetailsView"/>
 			
 		<!-- Drug Details View Activity -->
 		<activity android:name="com.risotto.view.drug.DrugDetailsView"/>

@@ -26,7 +26,7 @@ import com.risotto.view.wizard.WhenTakeIt;
 public class PrescriptionView extends ListActivity implements SimpleCursorAdapter.ViewBinder {
 	
 	public static final String ACTION_ADD_PRESCRIPTION = "com.risotto.view.prescription.PrescriptionAdd";
-	public static final String ACTION_VIEW_PRESCRIPTION_DETAILS = "com.risotto.view.prescription.PrescriptionViewDetails";
+	public static final String ACTION_VIEW_PRESCRIPTION_DETAILS = "com.risotto.view.prescription.PrescriptionDetailsView";
 	public static final String ACTION_WIZARD_START = "com.risotto.view.wizard.WhenTakeIt";
 	
 	public static final String PRESCRIPTION_DETAILS_DB_ID = "com.risotto.view.prescription.Prescription_DB_ID";
