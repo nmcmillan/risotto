@@ -39,11 +39,13 @@
 		<activity android:name="com.risotto.view.drug.DrugDetailsView"/>
 		
 		<!-- Wizard Activities -->
-		<!-- Start -->
+		<!-- Start: When will you take it? -->
 		<activity android:name="com.risotto.view.wizard.WhenTakeIt"/>
-			<!-- Take every day -->
+			<!-- Take at Spec Times: Take it every day? -->
 			<activity android:name="com.risotto.view.wizard.TakeItEveryDay"/>
-		
+				<!-- Yes: Schedule for every day -->
+				<activity android:name="com.risotto.view.wizard.HowOftenSchedule"/>
+				<!-- No: Select Days & Times -->
 		
 		
 		<!-- Prescription Add Activity -->

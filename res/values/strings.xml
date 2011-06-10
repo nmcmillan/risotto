@@ -83,4 +83,7 @@
 	<string name="button_wizard_choice_take_every_day_no">No, I will not take it every day of the week.</string>
 	<string name="button_wizard_choice_take_every_day_back">Backup.</string>
 	
+	<string name="wizard_how_often_schedule_text">Please enter the times you\'ll be taking the drug:</string>
+	
+	
 </resources>

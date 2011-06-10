@@ -11,7 +11,14 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 public class TakeItEveryDay extends Activity implements OnClickListener {
+	
+	//the name of these strings will correspond to the answer that was clicked in this UI
+	//they will reference the activity that is to be started next based on the answer
+	public static final String WIZARD_TAKE_EVERY_DAY = "com.risotto.view.wizard.HowOftenSchedule";
+	public static final String WIZARD_NOT_EVERY_DAY = "com.risotto.view.wizard.SelectTimeAndDays";
+	
 	public static final String LOG_TAG = "com.risotto.view.wizard.TakeItEveryDay";
+	
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -44,22 +51,20 @@ public class TakeItEveryDay extends Activity implements OnClickListener {
 	 * 
 	 */
 	public void onClick(View v) {
+		Intent nextQuestion = new Intent();
 		switch(v.getId()) {
 			case R.id.button_wizard_choice_take_every_day_yes:
-				Log.d(LOG_TAG,"spec_time");
-				//launch will you take it every day
+				Log.d(LOG_TAG,"take every day");
+				nextQuestion.setAction(TakeItEveryDay.WIZARD_TAKE_EVERY_DAY);
+		    	nextQuestion.setClass(getApplicationContext(), HowOftenSchedule.class);
+				startActivity(nextQuestion);
 				break;
 			case R.id.button_wizard_choice_take_every_day_no:
-				Log.d(LOG_TAG,"spec_interval");
+				Log.d(LOG_TAG,"not taken every day");
 				//launch how often will you take this
 				break;
 			
 		}
-		/*Prescription newPrep = new Prescription(patient,drug,Prescription.DOSE_TYPE_EVERY_DAY);
-		ContentValues cv = newPrep.toContentValues(getApplicationContext());
-		Uri prescriptionUri = this.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, cv);
-		Log.d(LOG_TAG,"finished adding drug; uri = " + prescriptionUri);
-		finish();*/
 	}
 	
 }

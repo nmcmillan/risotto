@@ -22,7 +22,10 @@ import android.widget.Button;
  */
 public class WhenTakeIt extends Activity implements OnClickListener {
 
-	public static final String WIZARD_TAKE_EVERY_DAY = "com.risotto.view.wizard.TakeItEveryDay";
+	//the name of these strings will correspond to the answer that was clicked in this UI
+	//they will reference the activity that is to be started next based on the answer
+	public static final String WIZARD_SPEC_TIMES = "com.risotto.view.wizard.TakeItEveryDay";
+	public static final String WIZARD_SPEC_INTERVAL = "com.risotto.view.wizard.TakeItEveryInterval";
 	
 	public static final String LOG_TAG = "com.risotto.view.wizard.WhenTakeIt";
 	/* (non-Javadoc)
@@ -61,7 +64,7 @@ public class WhenTakeIt extends Activity implements OnClickListener {
 			case R.id.button_wizard_choice_spec_time:
 				Log.d(LOG_TAG,"spec_time");
 				//launch will you take it every day
-				nextQuestion.setAction(WhenTakeIt.WIZARD_TAKE_EVERY_DAY);
+				nextQuestion.setAction(WhenTakeIt.WIZARD_SPEC_TIMES);
 		    	nextQuestion.setClass(getApplicationContext(), TakeItEveryDay.class);
 				startActivity(nextQuestion);
 				break;
