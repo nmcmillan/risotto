@@ -27,6 +27,9 @@ public class StorageProvider extends ContentProvider {
     public static final String PATIENTS_TABLE_NAME = "patients";
     public static final String PRESCRIPTIONS_TABLE_NAME = "prescriptions";
     public static final String SCHEDULES_TABLE_NAME = "schedules";
+    public static final String NOTIFICATION_EVENTS_TABLE_NAME = "notification_events";
+    public static final String SYSTEM_EVENTS_TABLE_NAME = "system_events";
+    public static final String SYNC_EVENTS_TABLE_NAME = "sync_events";
     
     // URI Matching ID's
     private static final int URI_TYPE_DRUGS = 0;
@@ -37,6 +40,12 @@ public class StorageProvider extends ContentProvider {
     private static final int URI_TYPE_PRESCRIPTION_ID = 5;
     private static final int URI_TYPE_SCHEDULES = 6;
     private static final int URI_TYPE_SCHEDULE_ID  = 7;
+    private static final int URI_TYPE_NOTIFICATION_EVENTS = 8;
+    private static final int URI_TYPE_NOTIFICATION_EVENT_ID = 9;
+    private static final int URI_TYPE_SYSTEM_EVENTS = 10;
+    private static final int URI_TYPE_SYSTEM_EVENT_ID = 11;
+    private static final int URI_TYPE_SYNC_EVENTS = 12;
+    private static final int URI_TYPE_SYNC_EVENT_ID = 13;
     
 	// Set up the URI matcher
 	private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -49,6 +58,12 @@ public class StorageProvider extends ContentProvider {
 		sUriMatcher.addURI(AUTHORITY, "prescriptions/#", URI_TYPE_PRESCRIPTION_ID);
 		sUriMatcher.addURI(AUTHORITY, "schedules", URI_TYPE_SCHEDULES);
 		sUriMatcher.addURI(AUTHORITY, "schedules/#", URI_TYPE_SCHEDULE_ID);
+		sUriMatcher.addURI(AUTHORITY, "notification_events", URI_TYPE_NOTIFICATION_EVENTS);
+		sUriMatcher.addURI(AUTHORITY, "notification_events/#", URI_TYPE_NOTIFICATION_EVENT_ID);
+		sUriMatcher.addURI(AUTHORITY, "system_events", URI_TYPE_SYSTEM_EVENTS);
+		sUriMatcher.addURI(AUTHORITY, "system_events/#", URI_TYPE_SYSTEM_EVENT_ID);
+		sUriMatcher.addURI(AUTHORITY, "sync_events", URI_TYPE_SYNC_EVENTS);
+		sUriMatcher.addURI(AUTHORITY, "sync_events/#", URI_TYPE_SYNC_EVENT_ID);
 	}
     
 	private class StorageDatabaseHelper extends SQLiteOpenHelper {
@@ -75,6 +90,9 @@ public class StorageProvider extends ContentProvider {
 			this.createPatientsTable(db);
 			this.createPrescriptionsTable(db);
 			this.createSchedulesTable(db);
+			this.createNotificationEventsTable(db);
+			this.createSystemEventsTable(db);
+			this.createSyncEventsTable(db);
 		}
 
 		@Override
@@ -84,6 +102,9 @@ public class StorageProvider extends ContentProvider {
 			db.execSQL("DROP TABLE IF EXISTS " + PATIENTS_TABLE_NAME);
 			db.execSQL("DROP TABLE IF EXISTS " + PRESCRIPTIONS_TABLE_NAME);
 			db.execSQL("DROP TABLE IF EXISTS " + SCHEDULES_TABLE_NAME);
+			db.execSQL("DROP TABLE IF EXISTS " + NOTIFICATION_EVENTS_TABLE_NAME);
+			db.execSQL("DROP TABLE IF EXISTS " + SYSTEM_EVENTS_TABLE_NAME);
+			db.execSQL("DROP TABLE IF EXISTS " + SYNC_EVENTS_TABLE_NAME);
             onCreate(db);
 		}
 		
@@ -165,6 +186,42 @@ public class StorageProvider extends ContentProvider {
 					+ "FOREIGN KEY(" + ScheduleColumns.SCHEDULES_PRESCRIPTION + ") REFERENCES " + PRESCRIPTIONS_TABLE_NAME + "(" + PrescriptionColumns._ID + ")"
 					+ ");");
 		}
+		
+		private void createNotificationEventsTable(SQLiteDatabase db) {
+			Log.d(LOG_TAG, "Creating the " + NOTIFICATION_EVENTS_TABLE_NAME + " table...");
+			db.execSQL("CREATE TABLE " + NOTIFICATION_EVENTS_TABLE_NAME + " ("
+					+ NotificationEventColumns._ID + " INTEGER PRIMARY KEY,"
+					+ NotificationEventColumns.NOTIFICATION_EVENTS_TIMESTAMP + " INTEGER NOT NULL,"
+					+ NotificationEventColumns.NOTIFICATION_EVENTS_EVENT_TYPE + " INTEGER NOT NULL,"
+					+ NotificationEventColumns.NOTIFICATION_EVENTS_PRESCRIPTION + " INTEGER NOT NULL,"
+					
+					// FOREIGN KEY(prescription) REFERENCES prescriptions(_id)
+					+ "FOREIGN KEY(" + NotificationEventColumns.NOTIFICATION_EVENTS_PRESCRIPTION + ") REFERENCES " + PRESCRIPTIONS_TABLE_NAME + "(" + PrescriptionColumns._ID + ")"
+					+ ");");
+		}
+		
+		private void createSystemEventsTable(SQLiteDatabase db) {
+			Log.d(LOG_TAG, "Creating the " + SYSTEM_EVENTS_TABLE_NAME + " table...");
+			db.execSQL("CREATE TABLE " + SYSTEM_EVENTS_TABLE_NAME + " ("
+					+ SystemEventColumns._ID + " INTEGER PRIMARY KEY,"
+					+ SystemEventColumns.SYSTEM_EVENTS_TIMESTAMP + " INTEGER NOT NULL,"
+					+ SystemEventColumns.SYSTEM_EVENTS_EVENT_TYPE + " INTEGER NOT NULL,"
+					+ SystemEventColumns.SYSTEM_EVENTS_EVENT_SUBTYPE + " INTEGER NOT NULL,"
+					+ SystemEventColumns.SYSTEM_EVENTS_EVENT_DATA + " BLOB"
+					+ ");");
+		}
+		
+		private void createSyncEventsTable(SQLiteDatabase db) {
+			Log.d(LOG_TAG, "Creating the " + SYNC_EVENTS_TABLE_NAME + " table...");
+			db.execSQL("CREATE TABLE " + SYNC_EVENTS_TABLE_NAME + " ("
+					+ SyncEventColumns._ID + " INTEGER PRIMARY KEY,"
+					+ SyncEventColumns.SYNC_EVENTS_TIMESTAMP + " INTEGER NOT NULL,"
+					+ SyncEventColumns.SYNC_EVENTS_DIRECTION + " INTEGER NOT NULL,"
+					+ SyncEventColumns.SYNC_EVENTS_EVENT_TYPE + " INTEGER NOT NULL,"
+					+ SyncEventColumns.SYNC_EVENTS_EVENT_FOREIGN_KEY + " INTEGER"
+					+ ");");
+		}
+	
 	}
 	
 	public static final class DrugColumns implements BaseColumns {
@@ -173,7 +230,7 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/drugs");
 		
-		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.risotto.drug";
+		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.risotto.drugs";
 		
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.drug";
 		
@@ -210,7 +267,7 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/patients");
 		
-		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.risotto.patient";
+		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.risotto.patients";
 		
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.patient";
 		
@@ -233,7 +290,7 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/prescriptions");
 		
-		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.risotto.prescription";
+		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.risotto.prescriptions";
 		
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.prescription";
 		
@@ -288,7 +345,7 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/schedules");
 		
-		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.risotto.schedule";
+		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.risotto.schedules";
 		
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.schedule";
 		
@@ -303,6 +360,73 @@ public class StorageProvider extends ContentProvider {
 	    public static final String SCHEDULES_COUNT_REMAIN = "count_remain";
 	    
 	    public static final String DEFAULT_SORT_ORDER = SCHEDULES_NEXT_TIME + " DESC";	
+	}
+	
+	public static final class NotificationEventColumns implements BaseColumns {
+		// This class cannot be instantiated
+		private NotificationEventColumns() {}
+		
+		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/notification_events");
+		
+		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.risotto.notification_events";
+		
+		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.notification_event";
+		
+		public static final String NOTIFICATION_EVENTS_TIMESTAMP = "timestamp";
+		
+		public static final String NOTIFICATION_EVENTS_PRESCRIPTION = "prescription";
+		
+		public static final String NOTIFICATION_EVENTS_EVENT_TYPE = "event_type";
+		
+		// Larger values (times) will be returned first
+	    public static final String DEFAULT_SORT_ORDER = NOTIFICATION_EVENTS_TIMESTAMP + " DESC";
+		
+	}
+	
+	public static final class SystemEventColumns implements BaseColumns {
+		// This class cannot be instantiated
+		private SystemEventColumns() {}
+		
+		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/system_events");
+		
+		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.risotto.system_events";
+		
+		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.system_event";
+		
+		public static final String SYSTEM_EVENTS_TIMESTAMP = "timestamp";
+		
+		public static final String SYSTEM_EVENTS_EVENT_TYPE = "event_type";
+		
+		public static final String SYSTEM_EVENTS_EVENT_SUBTYPE = "event_subtype";
+		
+		public static final String SYSTEM_EVENTS_EVENT_DATA = "event_data";
+		
+		// Larger values (times) will be returned first.
+		public static final String DEFAULT_SORT_ORDER = SYSTEM_EVENTS_TIMESTAMP + " DESC";
+		
+	}
+	
+	public static final class SyncEventColumns implements BaseColumns {
+		// This class cannot be instantiated
+		private SyncEventColumns() {}
+		
+		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/sync_events");
+		
+		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.risotto.sync_events";
+		
+		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.risotto.sync_event";
+		
+		public static final String SYNC_EVENTS_TIMESTAMP = "timestamp";
+		
+		public static final String SYNC_EVENTS_DIRECTION = "direction";
+		
+		public static final String SYNC_EVENTS_EVENT_TYPE = "event_type";
+		
+		public static final String SYNC_EVENTS_EVENT_FOREIGN_KEY = "event_foreign_key";
+
+		// Larger values (times) will be returned first
+		public static final String DEFAULT_SORT_ORDER = SYNC_EVENTS_TIMESTAMP + " DESC";
+		
 	}
 
 	private static StorageDatabaseHelper mOpenHelper;
@@ -338,6 +462,19 @@ public class StorageProvider extends ContentProvider {
 			return ScheduleColumns.CONTENT_TYPE;
 		case URI_TYPE_SCHEDULE_ID:
 			return ScheduleColumns.CONTENT_ITEM_TYPE;
+		case URI_TYPE_NOTIFICATION_EVENTS:
+			return NotificationEventColumns.CONTENT_TYPE;
+		case URI_TYPE_NOTIFICATION_EVENT_ID:
+			return NotificationEventColumns.CONTENT_ITEM_TYPE;
+		case URI_TYPE_SYSTEM_EVENTS:
+			return SystemEventColumns.CONTENT_TYPE;
+		case URI_TYPE_SYSTEM_EVENT_ID:
+			return SystemEventColumns.CONTENT_ITEM_TYPE;
+		case URI_TYPE_SYNC_EVENTS:
+			return SyncEventColumns.CONTENT_TYPE;
+		case URI_TYPE_SYNC_EVENT_ID:
+			return SyncEventColumns.CONTENT_ITEM_TYPE;
+
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri);
 		}
@@ -467,6 +604,76 @@ public class StorageProvider extends ContentProvider {
 		case URI_TYPE_SCHEDULE_ID:
 			Log.d(LOG_TAG, "Use update to modify a row in the schedules table...");
 			throw new IllegalArgumentException("Invalid URI: " + uri);
+			
+		case URI_TYPE_NOTIFICATION_EVENTS:
+			Log.d(LOG_TAG, "Insert into the notification events table...");
+			// Open the database.
+			db = mOpenHelper.getWritableDatabase();
+			// Call for the insert into the database.
+			rowId = db.insert(NOTIFICATION_EVENTS_TABLE_NAME, null, values);
+			
+			// Check to make sure that the insert was successful
+			if (rowId > 0) {
+				// Append the row ID to the content uri
+				Uri notificationEventUri = ContentUris.withAppendedId(NotificationEventColumns.CONTENT_URI, rowId);
+				// Notify the application that the content has changed
+				getContext().getContentResolver().notifyChange(notificationEventUri, null);
+				// Return the uri to the caller
+	            return notificationEventUri;
+			} else {
+				// If the row ID was -1 the insert did not happen...
+				throw new SQLException("Failed to insert row into " + uri);
+			}
+		case URI_TYPE_NOTIFICATION_EVENT_ID:
+			Log.d(LOG_TAG, "Use update to modify a row in the notification events table...");
+			throw new IllegalArgumentException("Invalid URI: " + uri);	
+			
+		case URI_TYPE_SYSTEM_EVENTS:
+			Log.d(LOG_TAG, "Insert into the system events table...");
+			// Open the database.
+			db = mOpenHelper.getWritableDatabase();
+			// Call for the insert into the database.
+			rowId = db.insert(SYSTEM_EVENTS_TABLE_NAME, null, values);
+			
+			// Check to make sure that the insert was successful
+			if (rowId > 0) {
+				// Append the row ID to the content uri
+				Uri systemEventUri = ContentUris.withAppendedId(SystemEventColumns.CONTENT_URI, rowId);
+				// Notify the application that the content has changed
+				getContext().getContentResolver().notifyChange(systemEventUri, null);
+				// Return the uri to the caller
+	            return systemEventUri;
+			} else {
+				// If the row ID was -1 the insert did not happen...
+				throw new SQLException("Failed to insert row into " + uri);
+			}
+		case URI_TYPE_SYSTEM_EVENT_ID:
+			Log.d(LOG_TAG, "Use update to modify a row in the system events table...");
+			throw new IllegalArgumentException("Invalid URI: " + uri);
+			
+		case URI_TYPE_SYNC_EVENTS:
+			Log.d(LOG_TAG, "Insert into the sync events table...");
+			// Open the database.
+			db = mOpenHelper.getWritableDatabase();
+			// Call for the insert into the database.
+			rowId = db.insert(SYNC_EVENTS_TABLE_NAME, null, values);
+			
+			// Check to make sure that the insert was successful
+			if (rowId > 0) {
+				// Append the row ID to the content uri
+				Uri syncEventUri = ContentUris.withAppendedId(SyncEventColumns.CONTENT_URI, rowId);
+				// Notify the application that the content has changed
+				getContext().getContentResolver().notifyChange(syncEventUri, null);
+				// Return the uri to the caller
+	            return syncEventUri;
+			} else {
+				// If the row ID was -1 the insert did not happen...
+				throw new SQLException("Failed to insert row into " + uri);
+			}
+		case URI_TYPE_SYNC_EVENT_ID:
+			Log.d(LOG_TAG, "Use update to modify a row in the sync events table...");
+			throw new IllegalArgumentException("Invalid URI: " + uri);					
+			
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri); 
 		}
@@ -519,6 +726,37 @@ public class StorageProvider extends ContentProvider {
             count = db.delete(SCHEDULES_TABLE_NAME, ScheduleColumns._ID + "=" + scheduleId
                     + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
 			break;
+		case URI_TYPE_NOTIFICATION_EVENTS:
+			Log.d(LOG_TAG, "Deleting the notification events table...");
+			count = db.delete(NOTIFICATION_EVENTS_TABLE_NAME, where, whereArgs);
+			break;
+		case URI_TYPE_NOTIFICATION_EVENT_ID:
+			Log.d(LOG_TAG, "Deleting one notification event entry...");
+			String notificationEventId = uri.getPathSegments().get(1);
+            count = db.delete(NOTIFICATION_EVENTS_TABLE_NAME, NotificationEventColumns._ID + "=" + notificationEventId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+			break;		
+		case URI_TYPE_SYSTEM_EVENTS:
+			Log.d(LOG_TAG, "Deleting the system events table...");
+			count = db.delete(SYSTEM_EVENTS_TABLE_NAME, where, whereArgs);
+			break;
+		case URI_TYPE_SYSTEM_EVENT_ID:
+			Log.d(LOG_TAG, "Deleting one system event entry...");
+			String systemEventId = uri.getPathSegments().get(1);
+            count = db.delete(SYSTEM_EVENTS_TABLE_NAME, ScheduleColumns._ID + "=" + systemEventId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+			break;		
+		case URI_TYPE_SYNC_EVENTS:
+			Log.d(LOG_TAG, "Deleting the sync events table...");
+			count = db.delete(SYNC_EVENTS_TABLE_NAME, where, whereArgs);
+			break;
+		case URI_TYPE_SYNC_EVENT_ID:
+			Log.d(LOG_TAG, "Deleting one sync event entry...");
+			String syncEventId = uri.getPathSegments().get(1);
+            count = db.delete(SYNC_EVENTS_TABLE_NAME, ScheduleColumns._ID + "=" + syncEventId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+			break;
+			
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri); 
 		}
@@ -692,7 +930,125 @@ public class StorageProvider extends ContentProvider {
 	        // Tell the cursor what uri to watch, so it knows when its source data changes
 	        c.setNotificationUri(getContext().getContentResolver(), uri);
 	        return c;
+		
+		case URI_TYPE_NOTIFICATION_EVENTS:
 			
+			Log.d(LOG_TAG, "Query for all notification events...");
+			qb.setTables(NOTIFICATION_EVENTS_TABLE_NAME);
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = NotificationEventColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;
+			
+		case URI_TYPE_NOTIFICATION_EVENT_ID:
+			
+			Log.d(LOG_TAG, "Query for one notification event...");
+			qb.setTables(NOTIFICATION_EVENTS_TABLE_NAME);
+			qb.appendWhere(NotificationEventColumns._ID + "=" + uri.getPathSegments().get(1));
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = NotificationEventColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;
+	        
+		case URI_TYPE_SYSTEM_EVENTS:
+			
+			Log.d(LOG_TAG, "Query for all system events...");
+			qb.setTables(SYSTEM_EVENTS_TABLE_NAME);
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = SystemEventColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;
+			
+		case URI_TYPE_SYSTEM_EVENT_ID:
+			
+			Log.d(LOG_TAG, "Query for one system event...");
+			qb.setTables(SYSTEM_EVENTS_TABLE_NAME);
+			qb.appendWhere(SystemEventColumns._ID + "=" + uri.getPathSegments().get(1));
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = SystemEventColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;     
+	   
+		case URI_TYPE_SYNC_EVENTS:
+			
+			Log.d(LOG_TAG, "Query for all sync events...");
+			qb.setTables(SYNC_EVENTS_TABLE_NAME);
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = SyncEventColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;
+			
+		case URI_TYPE_SYNC_EVENT_ID:
+			
+			Log.d(LOG_TAG, "Query for one sync event...");
+			qb.setTables(SYNC_EVENTS_TABLE_NAME);
+			qb.appendWhere(SyncEventColumns._ID + "=" + uri.getPathSegments().get(1));
+			
+	        if (TextUtils.isEmpty(sortOrder)) {
+	            orderBy = SyncEventColumns.DEFAULT_SORT_ORDER;
+	        } else {
+	            orderBy = sortOrder;
+	        }
+	        
+	        // Get the database and run the query
+	        db = mOpenHelper.getReadableDatabase();
+	        c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+
+	        // Tell the cursor what uri to watch, so it knows when its source data changes
+	        c.setNotificationUri(getContext().getContentResolver(), uri);
+	        return c;     
+	        
+	        
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri); 
 		}
@@ -745,7 +1101,38 @@ public class StorageProvider extends ContentProvider {
 			String scheduleId = uri.getPathSegments().get(1);
             count = db.update(SCHEDULES_TABLE_NAME, values, ScheduleColumns._ID + "=" + scheduleId
                     + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+            break;       
+		case URI_TYPE_NOTIFICATION_EVENTS:
+			Log.d(LOG_TAG, "Updates called on notification events table...");
+			count = db.update(NOTIFICATION_EVENTS_TABLE_NAME, values, where, whereArgs);
             break;
+		case URI_TYPE_NOTIFICATION_EVENT_ID:
+			Log.d(LOG_TAG, "Update called for one notification event...");
+			String notificationEventId = uri.getPathSegments().get(1);
+            count = db.update(NOTIFICATION_EVENTS_TABLE_NAME, values, ScheduleColumns._ID + "=" + notificationEventId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+            break; 
+		case URI_TYPE_SYSTEM_EVENTS:
+			Log.d(LOG_TAG, "Updates called on system events table...");
+			count = db.update(SYSTEM_EVENTS_TABLE_NAME, values, where, whereArgs);
+            break;
+		case URI_TYPE_SYSTEM_EVENT_ID:
+			Log.d(LOG_TAG, "Update called for one system event...");
+			String systemEventId = uri.getPathSegments().get(1);
+            count = db.update(SYSTEM_EVENTS_TABLE_NAME, values, ScheduleColumns._ID + "=" + systemEventId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+            break;       
+		case URI_TYPE_SYNC_EVENTS:
+			Log.d(LOG_TAG, "Updates called on sync events table...");
+			count = db.update(SYNC_EVENTS_TABLE_NAME, values, where, whereArgs);
+            break;
+		case URI_TYPE_SYNC_EVENT_ID:
+			Log.d(LOG_TAG, "Update called for one sync event...");
+			String syncEventId = uri.getPathSegments().get(1);
+            count = db.update(SYNC_EVENTS_TABLE_NAME, values, ScheduleColumns._ID + "=" + syncEventId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+            break;  
+            
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri); 
 		}

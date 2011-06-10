@@ -1,7 +1,9 @@
 package com.risotto.storage;
 
 import java.util.Calendar;
+import java.util.Date;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
@@ -9,6 +11,9 @@ import android.util.Log;
 import com.risotto.model.Drug;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
+import com.risotto.storage.StorageProvider.NotificationEventColumns;
+import com.risotto.storage.StorageProvider.SyncEventColumns;
+import com.risotto.storage.StorageProvider.SystemEventColumns;
 
 public class StorageTester {
 	
@@ -62,10 +67,89 @@ public class StorageTester {
 			context.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, anotherPrescription.toContentValues(context));
 			context.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, morePrescription.toContentValues(context));
 			
-			log("Added some entries to the databases.");
+			log("Added some entries to the databases.");			
 		}
 		
 		myCursor.close();
+		
+		Cursor notificationEventsCursor = context.getContentResolver().query(StorageProvider.NotificationEventColumns.CONTENT_URI, null, null, null, null);
+		
+		// If there are no entries in the notification table...
+		if (!notificationEventsCursor.moveToFirst()) {
+			//...fill some out.
+			
+			ContentValues notificationLogValues1 = new ContentValues();
+			notificationLogValues1.put(NotificationEventColumns.NOTIFICATION_EVENTS_TIMESTAMP, System.currentTimeMillis());
+			notificationLogValues1.put(NotificationEventColumns.NOTIFICATION_EVENTS_PRESCRIPTION, 1);
+			notificationLogValues1.put(NotificationEventColumns.NOTIFICATION_EVENTS_EVENT_TYPE, 1);
+			
+			ContentValues notificationLogValues2 = new ContentValues();
+			notificationLogValues2.put(NotificationEventColumns.NOTIFICATION_EVENTS_TIMESTAMP, System.currentTimeMillis() + 10000);
+			notificationLogValues2.put(NotificationEventColumns.NOTIFICATION_EVENTS_PRESCRIPTION, 2);
+			notificationLogValues2.put(NotificationEventColumns.NOTIFICATION_EVENTS_EVENT_TYPE, 12);
+			
+//			ContentValues notificationLogValues3 = new ContentValues();
+//			notificationLogValues3.put(NotificationEventColumns.NOTIFICATION_EVENTS_TIMESTAMP, System.currentTimeMillis() + 20000);
+//			notificationLogValues3.put(NotificationEventColumns.NOTIFICATION_EVENTS_PRESCRIPTION, 10);
+//			notificationLogValues3.put(NotificationEventColumns.NOTIFICATION_EVENTS_EVENT_TYPE, 3);
+			
+			
+			context.getContentResolver().insert(StorageProvider.NotificationEventColumns.CONTENT_URI, notificationLogValues1);
+			context.getContentResolver().insert(StorageProvider.NotificationEventColumns.CONTENT_URI, notificationLogValues2);
+			//context.getContentResolver().insert(StorageProvider.NotificationEventColumns.CONTENT_URI, notificationLogValues3);	
+		}
+		
+		notificationEventsCursor.close();
+		
+		Cursor systemEventsCursor = context.getContentResolver().query(StorageProvider.NotificationEventColumns.CONTENT_URI, null, null, null, null);
+		
+		// If there are no entries in the notification table...
+		if (!notificationEventsCursor.moveToFirst()) {
+			//...fill some out.
+			
+			ContentValues systemLogValues1 = new ContentValues();
+			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_TIMESTAMP, System.currentTimeMillis());
+			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_TYPE, 40);
+			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_SUBTYPE, 3);
+			byte[] myArray = { (byte)0, (byte)1, (byte)2, (byte)3 };
+			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_DATA, myArray);
+			
+			ContentValues systemLogValues2 = new ContentValues();
+			systemLogValues2.put(SystemEventColumns.SYSTEM_EVENTS_TIMESTAMP, System.currentTimeMillis() + 10000);
+			systemLogValues2.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_TYPE, 42);
+			systemLogValues2.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_SUBTYPE, 2);
+			
+			context.getContentResolver().insert(StorageProvider.SystemEventColumns.CONTENT_URI, systemLogValues1);
+			context.getContentResolver().insert(StorageProvider.SystemEventColumns.CONTENT_URI, systemLogValues2);	
+		}
+		
+		systemEventsCursor.close();
+		
+		Cursor syncEventsCursor = context.getContentResolver().query(StorageProvider.NotificationEventColumns.CONTENT_URI, null, null, null, null);
+		
+		// If there are no entries in the notification table...
+		if (!notificationEventsCursor.moveToFirst()) {
+			//...fill some out.
+			
+			ContentValues syncLogValues1 = new ContentValues();
+			syncLogValues1.put(SyncEventColumns.SYNC_EVENTS_TIMESTAMP, System.currentTimeMillis());
+			syncLogValues1.put(SyncEventColumns.SYNC_EVENTS_DIRECTION, 1);
+			syncLogValues1.put(SyncEventColumns.SYNC_EVENTS_EVENT_TYPE, 56);
+			syncLogValues1.put(SyncEventColumns.SYNC_EVENTS_EVENT_FOREIGN_KEY, 2);
+			
+			ContentValues syncLogValues2 = new ContentValues();
+			syncLogValues2.put(SyncEventColumns.SYNC_EVENTS_TIMESTAMP, System.currentTimeMillis() + 10000);
+			syncLogValues2.put(SyncEventColumns.SYNC_EVENTS_DIRECTION, 0);
+			syncLogValues2.put(SyncEventColumns.SYNC_EVENTS_EVENT_TYPE, 70);
+			syncLogValues2.put(SyncEventColumns.SYNC_EVENTS_EVENT_FOREIGN_KEY, 6);
+			
+			context.getContentResolver().insert(StorageProvider.SyncEventColumns.CONTENT_URI, syncLogValues1);
+			context.getContentResolver().insert(StorageProvider.SyncEventColumns.CONTENT_URI, syncLogValues2);	
+		}
+		
+		syncEventsCursor.close();
+		
+		
 		
 		log("Insert test complete.");
 	}
@@ -121,6 +205,99 @@ public class StorageTester {
 		}
 		
 		prescriptionCursor.close();
+		
+		
+		// Notification Events
+		Cursor notificationEventsCursor = context.getApplicationContext().getContentResolver().query(StorageProvider.NotificationEventColumns.CONTENT_URI, null, null, null, null);		
+		
+		if ( notificationEventsCursor != null ) {
+		
+			log("Notification events cursor is not null.");
+			
+			notificationEventsCursor.moveToFirst();
+			
+			log("Notification events cursor count: " + notificationEventsCursor.getCount());
+			
+			log("Notification events cursor columns: " + notificationEventsCursor.getColumnCount());
+			
+			String[] colNames = notificationEventsCursor.getColumnNames();
+			
+			for ( String name : colNames) {
+				log("Column Name: " + name);
+			}
+			
+			do {
+				long ts = notificationEventsCursor.getInt(notificationEventsCursor.getColumnIndex(StorageProvider.NotificationEventColumns.NOTIFICATION_EVENTS_TIMESTAMP));
+				log("Date: " + new Date(ts).toString());
+			} while (notificationEventsCursor.moveToNext());
+		
+		} else {
+			log("Notification events cursor is null.");
+		}
+		
+		notificationEventsCursor.close();
+		
+		// System Events
+		Cursor systemEventsCursor = context.getApplicationContext().getContentResolver().query(StorageProvider.SystemEventColumns.CONTENT_URI, null, null, null, null);		
+		
+		if ( systemEventsCursor != null ) {
+		
+			log("System events cursor is not null.");
+			
+			systemEventsCursor.moveToFirst();
+			
+			log("System events cursor count: " + systemEventsCursor.getCount());
+			
+			log("System events cursor columns: " + systemEventsCursor.getColumnCount());
+			
+			String[] colNames = systemEventsCursor.getColumnNames();
+			
+			for ( String name : colNames) {
+				log("Column Name: " + name);
+			}
+			
+			do {
+				long ts = systemEventsCursor.getInt(systemEventsCursor.getColumnIndex(StorageProvider.SystemEventColumns.SYSTEM_EVENTS_TIMESTAMP));
+				log("Date: " + new Date(ts).toString());
+			} while (systemEventsCursor.moveToNext());
+		
+		} else {
+			log("System events cursor is null.");
+		}
+		
+		systemEventsCursor.close();
+		
+		// Sync Events
+		Cursor syncEventsCursor = context.getApplicationContext().getContentResolver().query(StorageProvider.SyncEventColumns.CONTENT_URI, null, null, null, null);		
+		
+		if ( syncEventsCursor != null ) {
+		
+			log("Sync events cursor is not null.");
+			
+			syncEventsCursor.moveToFirst();
+			
+			log("Sync events cursor count: " + syncEventsCursor.getCount());
+			
+			log("Sync events cursor columns: " + syncEventsCursor.getColumnCount());
+			
+			String[] colNames = syncEventsCursor.getColumnNames();
+			
+			for ( String name : colNames) {
+				log("Column Name: " + name);
+			}
+			
+			do {
+				long ts = syncEventsCursor.getInt(syncEventsCursor.getColumnIndex(StorageProvider.SyncEventColumns.SYNC_EVENTS_TIMESTAMP));
+				log("Date: " + new Date(ts).toString());
+			} while (syncEventsCursor.moveToNext());
+		
+		} else {
+			log("Sync events cursor is null.");
+		}
+		
+		syncEventsCursor.close();
+		
+		
 		
 		log("Query test complete.");
 	}

@@ -391,6 +391,8 @@ public class MainService extends Service {
 			return;
 		}
 		
+		Log.d(LOG_TAG, "Notification for prescription ID: " + scheduleId);
+		
 		// Get the schedule that triggered
 		Uri scheduleUri = ContentUris.withAppendedId(StorageProvider.ScheduleColumns.CONTENT_URI, scheduleId);
 		String[] scheduleProjection = { StorageProvider.ScheduleColumns._ID, StorageProvider.ScheduleColumns.SCHEDULES_PRESCRIPTION };
