@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.risotto.model.Drug;
+import com.risotto.model.Event;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
 import com.risotto.storage.StorageProvider.NotificationEventColumns;
@@ -94,9 +95,14 @@ public class StorageTester {
 //			notificationLogValues3.put(NotificationEventColumns.NOTIFICATION_EVENTS_EVENT_TYPE, 3);
 			
 			
-			context.getContentResolver().insert(StorageProvider.NotificationEventColumns.CONTENT_URI, notificationLogValues1);
-			context.getContentResolver().insert(StorageProvider.NotificationEventColumns.CONTENT_URI, notificationLogValues2);
-			//context.getContentResolver().insert(StorageProvider.NotificationEventColumns.CONTENT_URI, notificationLogValues3);	
+//			context.getContentResolver().insert(StorageProvider.NotificationEventColumns.CONTENT_URI, notificationLogValues1);
+//			context.getContentResolver().insert(StorageProvider.NotificationEventColumns.CONTENT_URI, notificationLogValues2);
+			//context.getContentResolver().insert(StorageProvider.NotificationEventColumns.CONTENT_URI, notificationLogValues3);
+			
+			Event.logNotificationEvent(context, 1, Event.NotificationEventType.TAKEN);
+			Event.logNotificationEvent(context, new Date(), 2, Event.NotificationEventType.DISMISS);
+			Event.logNotificationEvent(context, System.currentTimeMillis(), 2, Event.NotificationEventType.SKIP);
+			
 		}
 		
 		notificationEventsCursor.close();
@@ -107,20 +113,25 @@ public class StorageTester {
 		if (!notificationEventsCursor.moveToFirst()) {
 			//...fill some out.
 			
-			ContentValues systemLogValues1 = new ContentValues();
-			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_TIMESTAMP, System.currentTimeMillis());
-			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_TYPE, 40);
-			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_SUBTYPE, 3);
+//			ContentValues systemLogValues1 = new ContentValues();
+//			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_TIMESTAMP, System.currentTimeMillis());
+//			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_TYPE, 40);
+//			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_SUBTYPE, 3);
 			byte[] myArray = { (byte)0, (byte)1, (byte)2, (byte)3 };
-			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_DATA, myArray);
+//			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_DATA, myArray);
+//			
+//			ContentValues systemLogValues2 = new ContentValues();
+//			systemLogValues2.put(SystemEventColumns.SYSTEM_EVENTS_TIMESTAMP, System.currentTimeMillis() + 10000);
+//			systemLogValues2.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_TYPE, 42);
+//			systemLogValues2.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_SUBTYPE, 2);
+//			
+//			context.getContentResolver().insert(StorageProvider.SystemEventColumns.CONTENT_URI, systemLogValues1);
+//			context.getContentResolver().insert(StorageProvider.SystemEventColumns.CONTENT_URI, systemLogValues2);	
 			
-			ContentValues systemLogValues2 = new ContentValues();
-			systemLogValues2.put(SystemEventColumns.SYSTEM_EVENTS_TIMESTAMP, System.currentTimeMillis() + 10000);
-			systemLogValues2.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_TYPE, 42);
-			systemLogValues2.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_SUBTYPE, 2);
-			
-			context.getContentResolver().insert(StorageProvider.SystemEventColumns.CONTENT_URI, systemLogValues1);
-			context.getContentResolver().insert(StorageProvider.SystemEventColumns.CONTENT_URI, systemLogValues2);	
+			Event.logSystemEvent(context, Event.SystemEventType.ADD, Event.SystemEventSubtype.DRUG);
+			Event.logSystemEvent(context, Event.SystemEventType.REMOVE, Event.SystemEventSubtype.PATIENT, myArray);
+			Event.logSystemEvent(context, new Date(), Event.SystemEventType.MODIFY, Event.SystemEventSubtype.SCHEDULE, myArray);
+			Event.logSystemEvent(context, System.currentTimeMillis(), Event.SystemEventType.ADD, Event.SystemEventSubtype.PRESCRIPTION, myArray);
 		}
 		
 		systemEventsCursor.close();
