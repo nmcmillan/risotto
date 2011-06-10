@@ -3,18 +3,23 @@ package com.risotto.storage;
 import java.util.Calendar;
 import java.util.Date;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
 import com.risotto.model.Drug;
-import com.risotto.model.Event;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
-import com.risotto.storage.StorageProvider.NotificationEventColumns;
-import com.risotto.storage.StorageProvider.SyncEventColumns;
-import com.risotto.storage.StorageProvider.SystemEventColumns;
+import com.risotto.model.event.Event;
+import com.risotto.model.event.NotificationEvent;
+import com.risotto.model.event.NotificationEvent.NotificationEventType;
+import com.risotto.model.event.SyncEvent;
+import com.risotto.model.event.SyncEvent.SyncEventDirection;
+import com.risotto.model.event.SyncEvent.SyncEventStatus;
+import com.risotto.model.event.SyncEvent.SyncEventType;
+import com.risotto.model.event.SystemEvent;
+import com.risotto.model.event.SystemEvent.SystemEventSubtype;
+import com.risotto.model.event.SystemEvent.SystemEventType;
 
 public class StorageTester {
 	
@@ -79,29 +84,9 @@ public class StorageTester {
 		if (!notificationEventsCursor.moveToFirst()) {
 			//...fill some out.
 			
-			ContentValues notificationLogValues1 = new ContentValues();
-			notificationLogValues1.put(NotificationEventColumns.NOTIFICATION_EVENTS_TIMESTAMP, System.currentTimeMillis());
-			notificationLogValues1.put(NotificationEventColumns.NOTIFICATION_EVENTS_PRESCRIPTION, 1);
-			notificationLogValues1.put(NotificationEventColumns.NOTIFICATION_EVENTS_EVENT_TYPE, 1);
-			
-			ContentValues notificationLogValues2 = new ContentValues();
-			notificationLogValues2.put(NotificationEventColumns.NOTIFICATION_EVENTS_TIMESTAMP, System.currentTimeMillis() + 10000);
-			notificationLogValues2.put(NotificationEventColumns.NOTIFICATION_EVENTS_PRESCRIPTION, 2);
-			notificationLogValues2.put(NotificationEventColumns.NOTIFICATION_EVENTS_EVENT_TYPE, 12);
-			
-//			ContentValues notificationLogValues3 = new ContentValues();
-//			notificationLogValues3.put(NotificationEventColumns.NOTIFICATION_EVENTS_TIMESTAMP, System.currentTimeMillis() + 20000);
-//			notificationLogValues3.put(NotificationEventColumns.NOTIFICATION_EVENTS_PRESCRIPTION, 10);
-//			notificationLogValues3.put(NotificationEventColumns.NOTIFICATION_EVENTS_EVENT_TYPE, 3);
-			
-			
-//			context.getContentResolver().insert(StorageProvider.NotificationEventColumns.CONTENT_URI, notificationLogValues1);
-//			context.getContentResolver().insert(StorageProvider.NotificationEventColumns.CONTENT_URI, notificationLogValues2);
-			//context.getContentResolver().insert(StorageProvider.NotificationEventColumns.CONTENT_URI, notificationLogValues3);
-			
-			Event.logNotificationEvent(context, 1, Event.NotificationEventType.TAKEN);
-			Event.logNotificationEvent(context, new Date(), 2, Event.NotificationEventType.DISMISS);
-			Event.logNotificationEvent(context, System.currentTimeMillis(), 2, Event.NotificationEventType.SKIP);
+			Event.logNotificationEvent(context, 1, NotificationEventType.TAKEN);
+			Event.logNotificationEvent(context, new Date().getTime(), 2, NotificationEventType.DISMISS);
+			Event.logNotificationEvent(context, System.currentTimeMillis(), 2, NotificationEventType.SKIP);
 			
 		}
 		
@@ -112,26 +97,13 @@ public class StorageTester {
 		// If there are no entries in the notification table...
 		if (!notificationEventsCursor.moveToFirst()) {
 			//...fill some out.
+		
+			byte[] myArray = { (byte)0, (byte)1, (byte)2, (byte)3 };	
 			
-//			ContentValues systemLogValues1 = new ContentValues();
-//			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_TIMESTAMP, System.currentTimeMillis());
-//			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_TYPE, 40);
-//			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_SUBTYPE, 3);
-			byte[] myArray = { (byte)0, (byte)1, (byte)2, (byte)3 };
-//			systemLogValues1.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_DATA, myArray);
-//			
-//			ContentValues systemLogValues2 = new ContentValues();
-//			systemLogValues2.put(SystemEventColumns.SYSTEM_EVENTS_TIMESTAMP, System.currentTimeMillis() + 10000);
-//			systemLogValues2.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_TYPE, 42);
-//			systemLogValues2.put(SystemEventColumns.SYSTEM_EVENTS_EVENT_SUBTYPE, 2);
-//			
-//			context.getContentResolver().insert(StorageProvider.SystemEventColumns.CONTENT_URI, systemLogValues1);
-//			context.getContentResolver().insert(StorageProvider.SystemEventColumns.CONTENT_URI, systemLogValues2);	
-			
-			Event.logSystemEvent(context, Event.SystemEventType.ADD, Event.SystemEventSubtype.DRUG);
-			Event.logSystemEvent(context, Event.SystemEventType.REMOVE, Event.SystemEventSubtype.PATIENT, myArray);
-			Event.logSystemEvent(context, new Date(), Event.SystemEventType.MODIFY, Event.SystemEventSubtype.SCHEDULE, myArray);
-			Event.logSystemEvent(context, System.currentTimeMillis(), Event.SystemEventType.ADD, Event.SystemEventSubtype.PRESCRIPTION, myArray);
+			Event.logSystemEvent(context, SystemEventType.ADD, SystemEventSubtype.DRUG);
+			Event.logSystemEvent(context, SystemEventType.REMOVE, SystemEventSubtype.PATIENT, myArray);
+			Event.logSystemEvent(context, new Date().getTime(), SystemEventType.MODIFY, SystemEventSubtype.SCHEDULE, myArray);
+			Event.logSystemEvent(context, System.currentTimeMillis(), SystemEventType.ADD, SystemEventSubtype.PRESCRIPTION, myArray);
 		}
 		
 		systemEventsCursor.close();
@@ -142,25 +114,15 @@ public class StorageTester {
 		if (!notificationEventsCursor.moveToFirst()) {
 			//...fill some out.
 			
-			ContentValues syncLogValues1 = new ContentValues();
-			syncLogValues1.put(SyncEventColumns.SYNC_EVENTS_TIMESTAMP, System.currentTimeMillis());
-			syncLogValues1.put(SyncEventColumns.SYNC_EVENTS_DIRECTION, 1);
-			syncLogValues1.put(SyncEventColumns.SYNC_EVENTS_EVENT_TYPE, 56);
-			syncLogValues1.put(SyncEventColumns.SYNC_EVENTS_EVENT_FOREIGN_KEY, 2);
+			byte[] myArray = { (byte)0, (byte)1, (byte)2, (byte)3 };
 			
-			ContentValues syncLogValues2 = new ContentValues();
-			syncLogValues2.put(SyncEventColumns.SYNC_EVENTS_TIMESTAMP, System.currentTimeMillis() + 10000);
-			syncLogValues2.put(SyncEventColumns.SYNC_EVENTS_DIRECTION, 0);
-			syncLogValues2.put(SyncEventColumns.SYNC_EVENTS_EVENT_TYPE, 70);
-			syncLogValues2.put(SyncEventColumns.SYNC_EVENTS_EVENT_FOREIGN_KEY, 6);
+			Event.logSyncEvent(context, SyncEventDirection.IN, SyncEventType.STANDARD, SyncEventStatus.SUCCESSFUL);
+			Event.logSyncEvent(context, SyncEventDirection.IN, SyncEventType.STANDARD, SyncEventStatus.FAILED, myArray );
+			Event.logSyncEvent(context, System.currentTimeMillis(), SyncEventDirection.IN, SyncEventType.STANDARD, SyncEventStatus.DELAYED, myArray );
 			
-			context.getContentResolver().insert(StorageProvider.SyncEventColumns.CONTENT_URI, syncLogValues1);
-			context.getContentResolver().insert(StorageProvider.SyncEventColumns.CONTENT_URI, syncLogValues2);	
 		}
 		
 		syncEventsCursor.close();
-		
-		
 		
 		log("Insert test complete.");
 	}
@@ -238,8 +200,8 @@ public class StorageTester {
 			}
 			
 			do {
-				long ts = notificationEventsCursor.getInt(notificationEventsCursor.getColumnIndex(StorageProvider.NotificationEventColumns.NOTIFICATION_EVENTS_TIMESTAMP));
-				log("Date: " + new Date(ts).toString());
+				NotificationEvent notificationEvent = NotificationEvent.fromCursor(notificationEventsCursor);
+				log(notificationEvent.toString());
 			} while (notificationEventsCursor.moveToNext());
 		
 		} else {
@@ -268,8 +230,8 @@ public class StorageTester {
 			}
 			
 			do {
-				long ts = systemEventsCursor.getInt(systemEventsCursor.getColumnIndex(StorageProvider.SystemEventColumns.SYSTEM_EVENTS_TIMESTAMP));
-				log("Date: " + new Date(ts).toString());
+				SystemEvent systemEvent = SystemEvent.fromCursor(systemEventsCursor);
+				log(systemEvent.toString());
 			} while (systemEventsCursor.moveToNext());
 		
 		} else {
@@ -298,8 +260,8 @@ public class StorageTester {
 			}
 			
 			do {
-				long ts = syncEventsCursor.getInt(syncEventsCursor.getColumnIndex(StorageProvider.SyncEventColumns.SYNC_EVENTS_TIMESTAMP));
-				log("Date: " + new Date(ts).toString());
+				SyncEvent syncEvent = SyncEvent.fromCursor(syncEventsCursor);
+				log(syncEvent.toString());
 			} while (syncEventsCursor.moveToNext());
 		
 		} else {

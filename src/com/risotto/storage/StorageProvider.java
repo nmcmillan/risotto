@@ -218,7 +218,8 @@ public class StorageProvider extends ContentProvider {
 					+ SyncEventColumns.SYNC_EVENTS_TIMESTAMP + " INTEGER NOT NULL,"
 					+ SyncEventColumns.SYNC_EVENTS_DIRECTION + " INTEGER NOT NULL,"
 					+ SyncEventColumns.SYNC_EVENTS_EVENT_TYPE + " INTEGER NOT NULL,"
-					+ SyncEventColumns.SYNC_EVENTS_EVENT_FOREIGN_KEY + " INTEGER"
+					+ SyncEventColumns.SYNC_EVENTS_EVENT_STATUS + " INTEGER NOT NULL,"
+					+ SyncEventColumns.SYNC_EVENTS_EVENT_DATA + " INTEGER"
 					+ ");");
 		}
 	
@@ -422,7 +423,9 @@ public class StorageProvider extends ContentProvider {
 		
 		public static final String SYNC_EVENTS_EVENT_TYPE = "event_type";
 		
-		public static final String SYNC_EVENTS_EVENT_FOREIGN_KEY = "event_foreign_key";
+		public static final String SYNC_EVENTS_EVENT_STATUS = "event_status";
+		
+		public static final String SYNC_EVENTS_EVENT_DATA = "event_data";
 
 		// Larger values (times) will be returned first
 		public static final String DEFAULT_SORT_ORDER = SYNC_EVENTS_TIMESTAMP + " DESC";
