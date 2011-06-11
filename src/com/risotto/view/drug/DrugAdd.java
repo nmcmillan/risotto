@@ -83,10 +83,8 @@ public class DrugAdd extends Activity implements View.OnClickListener, AdapterVi
 	
 	public void onClick(View v) {
 		//question, if we attach more than one item to the click listener, how do we distinguish?
+		//answer: check v.getId();
 		
-		//will only be called when 'ok' is called because it's the only view attached to a clicklistener
-		
-		//called when button is clicked & when text field is clicked b/c setOnClickListener attached to it
 		Log.d(LOG_TAG,"onClick");
 		
 		//TO DO: sanitize inputs to protect against SQL injection

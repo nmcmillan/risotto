@@ -19,7 +19,7 @@
 			android:text="@string/title_bar_text"/>
 	</LinearLayout>
 	
-	<!-- Define fist falf : the question -->
+	<!-- Define fist half : the question -->
 	
 	<LinearLayout
 		android:layout_width="fill_parent"
@@ -35,49 +35,10 @@
 
 	<!-- Define second half : the times -->
 	<LinearLayout
+		android:id="@+id/wizard_how_often_schedule_timer_container"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_weight="1">
-		
-		<!-- Define row -->
-		<LinearLayout
-			android:layout_width="fill_parent"
-			android:layout_height="45sp"
-			android:orientation="horizontal"
-			android:layout_weight="1">
-			<!-- Button for adding another time -->
-			<Button android:id="@+id/wizard_how_often_schedule_add_time_button"
-		    	android:layout_width="wrap_content" 
-		        android:layout_height="45sp" 
-		        android:background="#000"
-		        android:drawableTop="@android:drawable/ic_menu_add"
-		        android:clickable="true"/>
-		    
-		    <!-- Displays time -->    
-			<TextView android:id="@+id/wizard_how_often_schedule_hour_display"
-				android:layout_height="fill_parent" 
-				android:layout_width="wrap_content"
-				android:gravity="top"
-				android:text="12:00" 
-				android:textSize="45sp"
-				android:clickable="true"
-				android:background="#EE9241"/>
-			
-			<!-- AM / PM -->
-			<RadioGroup 
-				android:id="@+id/wizard_how_often_schedule_radio_group"
-				android:layout_width="wrap_content"
-				android:layout_height="45sp"
-				android:orientation="horizontal">
-				<RadioButton android:id="@+id/wizard_how_often_schedule_am"
-					android:layout_width="wrap_content" 
-					android:layout_height="45sp"
-					android:text="AM" />
-				<RadioButton android:id="@+id/wizard_how_often_schedule_pm"
-					android:layout_width="wrap_content" 
-					android:layout_height="45sp"
-					android:text="PM" />
-			</RadioGroup>	
-		</LinearLayout>
+		android:layout_height="45sp"
+		android:orientation="vertical"
+		android:layout_weight="1">	
 	</LinearLayout>
 </LinearLayout>
