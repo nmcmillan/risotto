@@ -1,5 +1,7 @@
  package com.risotto.view.wizard;
 
+import java.util.Hashtable;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -27,6 +29,8 @@ public class HowOftenSchedule extends Activity implements OnClickListener,TimePi
 	private int setHour;
 	private int setMinute;
 	
+	private Hashtable<Integer,LinearLayout> listOfTimers = new Hashtable<Integer,LinearLayout>();
+	
 	private TextView setTime;
 	private RadioButton am,pm;
 	
@@ -44,6 +48,8 @@ public class HowOftenSchedule extends Activity implements OnClickListener,TimePi
 		
 		Intent intent = getIntent();
 
+		
+		
 		setContentView(R.layout.wizard_how_often_schedule);
 		
 		/*setTime = (TextView) this.findViewById(R.id.wizard_how_often_schedule_hour_display);
@@ -96,6 +102,10 @@ public class HowOftenSchedule extends Activity implements OnClickListener,TimePi
 		LinearLayout container = (LinearLayout)findViewById(R.id.wizard_how_often_schedule_timer_container);
 		
 		LinearLayout row = (LinearLayout)inflater.inflate(R.layout.wizard_how_often_schedule_timer_row, container);
+		
+		this.numTimerRows++;
+		
+		listOfTimers.put(numTimerRows, row);
 		
 		TextView time = (TextView)row.findViewById(R.id.wizard_how_often_schedule_time_display);
 		time.setHint("Click here...");
