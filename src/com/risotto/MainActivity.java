@@ -39,7 +39,7 @@ public class MainActivity extends Activity implements OnClickListener {
         setContentView(R.layout.main);
 
         // START DATABASE TESTING      
-        StorageTester.runTest(this.getApplicationContext());
+        //StorageTester.runTest(this.getApplicationContext());
         // END DATABASE TESTING
         
         //START DRUG TESTING

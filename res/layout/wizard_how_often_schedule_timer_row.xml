@@ -6,7 +6,7 @@
 	android:layout_width="fill_parent"
 	android:layout_height="45sp"
 	android:orientation="horizontal">
-	<!-- Button for adding new timer slot -->   
+	<!-- Button for removing slot -->   
 	<Button android:id="@+id/wizard_how_often_schedule_remove_time_button"
 		android:drawableTop="@android:drawable/ic_menu_delete"
 		android:layout_width="wrap_content"

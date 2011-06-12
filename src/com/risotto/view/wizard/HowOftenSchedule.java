@@ -1,5 +1,9 @@
  package com.risotto.view.wizard;
 
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.Vector;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -25,6 +29,9 @@ public class HowOftenSchedule extends Activity implements OnClickListener,TimePi
 	private static final int ADD_TIME_BUTTON_INDEX = 0;
 	private static final int TIME_DISPLAY_INDEX = 1;
 	private static final int AM_PM_INDEX = 2;
+	
+	private static final int AM_INDEX = 0;
+	private static final int PM_INDEX = 1;
 	
 	static final int TIME_DIALOG_ID = 0;
 	
@@ -59,6 +66,9 @@ public class HowOftenSchedule extends Activity implements OnClickListener,TimePi
 		Button addTimeSlot = (Button)findViewById(R.id.wizard_how_often_schedule_add_time_button);
 		addTimeSlot.setOnClickListener(this);
 		
+		Button scheduleIt = (Button)findViewById(R.id.wizard_how_often_schedule_schedule_it_button);
+		scheduleIt.setOnClickListener(this);
+		
 		addTimerRow();
 	}
 
@@ -68,18 +78,18 @@ public class HowOftenSchedule extends Activity implements OnClickListener,TimePi
 			case R.id.wizard_how_often_schedule_time_display:
 				Log.d(LOG_TAG,"display time picker");
 				rowSelected = (Integer)timerRow.getTag();
-				Log.d(LOG_TAG,"row: " + rowSelected);
+				Log.d(LOG_TAG,"row selected: " + rowSelected);
 				showDialog(TIME_DIALOG_ID);
 				break;
 			case R.id.wizard_how_often_schedule_am:
 				Log.d(LOG_TAG,"am picked");
 				rowSelected = (Integer)timerRow.getTag();
-				Log.d(LOG_TAG,"row: " + rowSelected);
+				Log.d(LOG_TAG,"row selected: " + rowSelected);
 				break;
 			case R.id.wizard_how_often_schedule_pm:
 				Log.d(LOG_TAG,"PM picked.");
 				rowSelected = (Integer)timerRow.getTag();
-				Log.d(LOG_TAG,"row: " + rowSelected);
+				Log.d(LOG_TAG,"row selected: " + rowSelected);
 				break;
 			case R.id.wizard_how_often_schedule_add_time_button:
 				Log.d(LOG_TAG,"Adding timer.");
@@ -88,11 +98,73 @@ public class HowOftenSchedule extends Activity implements OnClickListener,TimePi
 			case R.id.wizard_how_often_schedule_remove_time_button:
 				Log.d(LOG_TAG,"Removing timer.");
 				rowSelected = (Integer)timerRow.getTag();
-				Log.d(LOG_TAG,"row: " + rowSelected);
+				Log.d(LOG_TAG,"row selected: " + rowSelected);
 				removeTimerRow();
+				break;
+			case R.id.wizard_how_often_schedule_schedule_it_button:
+				Log.d(LOG_TAG,"go to review of schedule");
+				Iterator<Calendar> it = getTimes().iterator();
+				Calendar time;
+				String AM_PM;
+				int hour;
+				while(it.hasNext()) {
+					time = it.next();
+					if(time.get(Calendar.AM_PM) == Calendar.AM)
+						AM_PM = "AM";
+					else
+						AM_PM = "PM";
+					
+					if(time.get(Calendar.HOUR) == 0) 
+						hour = 12;
+					else
+						hour = time.get(Calendar.HOUR);
+					Log.d(LOG_TAG,"Time: " + hour +
+							":" + time.get(Calendar.MINUTE) + " " + AM_PM);
+				}
+				//pull all schedule info out of view & add it to intent
+				break;
 			default:
 				
 		}
+	}
+	
+	private Vector<Calendar> getTimes() {
+		Vector<Calendar> times = new Vector<Calendar>();
+		
+		while(numTimerRows > 0) {
+			
+			LinearLayout row = (LinearLayout)container.getChildAt(numTimerRows);
+			
+			//get the time as a string
+			String time = ((TextView)row.getChildAt(TIME_DISPLAY_INDEX)).getText().toString();
+			Log.d(LOG_TAG,"time: " + time);
+			
+			//get the radio group, then the AM button and see if it's checked
+			boolean isAM = ((RadioButton)((RadioGroup)row.getChildAt(AM_PM_INDEX)).getChildAt(AM_INDEX)).isChecked();
+			
+			//time is following format --> hh:mm,
+			//get the hour
+			int hour = Integer.valueOf(time.split(":")[0]);
+			int minute = Integer.valueOf(time.split(":")[1]);
+			
+			Calendar timer = Calendar.getInstance();
+			if(isAM) {
+				timer.set(Calendar.AM_PM, Calendar.AM);
+				Log.d(LOG_TAG,"set AM");
+			}
+			else {
+				timer.set(Calendar.AM_PM, Calendar.PM);
+				Log.d(LOG_TAG,"set PM");
+			}
+			
+			timer.set(Calendar.HOUR, hour);
+			timer.set(Calendar.MINUTE, minute);
+			
+			times.add(timer);
+			
+			numTimerRows--;
+		}
+		return times;
 	}
 	
 	
@@ -109,6 +181,8 @@ public class HowOftenSchedule extends Activity implements OnClickListener,TimePi
 		
 		//add the row - which is one view group specified in the wizard_how_often_schedule_timer_rows file
 		container.addView(row);
+		
+		//increment the number of rows in the view
 		numTimerRows++;
 		
 		Log.d(LOG_TAG,"number of children for container: " + container.getChildCount());
@@ -129,17 +203,30 @@ public class HowOftenSchedule extends Activity implements OnClickListener,TimePi
 		RadioGroup rg = (RadioGroup)newTimerRow.getChildAt(AM_PM_INDEX);
 		rg.setOnClickListener(this);
 		
-		//tag the setTimeRow with the row number so we know where to update the display
+		//tag the newTimerRow with the row number so we know where to update the display
 		newTimerRow.setTag(numTimerRows);
 		Log.d(LOG_TAG,"numTimerRows: " + numTimerRows);
 		Log.d(LOG_TAG,"addTimerRow: specRow tag: " + newTimerRow.getTag());
 
 	}
 	
+	/**
+	 * Removes row from UI, readjusts the tag for all rows following the row removed
+	 * to keep sync
+	 */
 	private void removeTimerRow() {
 		Log.d(LOG_TAG,"Removing timer from row: " + rowSelected);
+		int rowNum = rowSelected;
 		container.removeViewAt(rowSelected);
 		numTimerRows--;
+		while(rowNum <= numTimerRows){
+			int oldTag = (Integer)container.getChildAt(rowNum).getTag();
+			Log.d(LOG_TAG,"changing tag for rowNum: " + rowNum);
+			Log.d(LOG_TAG,"oldTag: " + oldTag);
+			Log.d(LOG_TAG,"newTag: " + (oldTag - 1));
+			container.getChildAt(rowNum).setTag(oldTag - 1);
+			rowNum++;
+		}
 	}
 	
 	//Callback method executed when the user presses okay after
@@ -159,6 +246,8 @@ public class HowOftenSchedule extends Activity implements OnClickListener,TimePi
     	int adjustHour;
     	
     	LinearLayout row = (LinearLayout)container.getChildAt(rowSelected);
+    	
+    	Log.d(LOG_TAG,"updateDisplay for row: " + rowSelected);
     	
     	TextView time = (TextView)row.getChildAt(TIME_DISPLAY_INDEX);
     	RadioGroup rg = (RadioGroup)row.getChildAt(AM_PM_INDEX);
