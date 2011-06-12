@@ -1,12 +1,9 @@
  package com.risotto.view.wizard;
 
-import java.util.Hashtable;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +12,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -24,68 +22,74 @@ public class HowOftenSchedule extends Activity implements OnClickListener,TimePi
 	
 	public static final String LOG_TAG = "com.risotto.view.wizard.HowOftenSchedule";
 	
+	private static final int ADD_TIME_BUTTON_INDEX = 0;
+	private static final int TIME_DISPLAY_INDEX = 1;
+	private static final int AM_PM_INDEX = 2;
+	
 	static final int TIME_DIALOG_ID = 0;
 	
 	private int setHour;
 	private int setMinute;
+	private int rowSelected;
 	
-	private Hashtable<Integer,LinearLayout> listOfTimers = new Hashtable<Integer,LinearLayout>();
+	private LinearLayout container;
 	
-	private TextView setTime;
 	private RadioButton am,pm;
 	
-	private int numTimerRows = 0;
+	private static int numTimerRows = 0;
+	
+	private static final int ROW_NUMBER = 1;
+	
+	
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
 		setDefaultKeyMode(DEFAULT_KEYS_SHORTCUT);
 		
-		Intent intent = getIntent();
+		//Intent intent = getIntent();
 
-		
-		
 		setContentView(R.layout.wizard_how_often_schedule);
 		
-		/*setTime = (TextView) this.findViewById(R.id.wizard_how_often_schedule_hour_display);
-		setTime.setHint(R.string.wizard_how_often_schedule_hint_time_pick);
-		setTime.setOnClickListener(this);
-		
-		am = (RadioButton) this.findViewById(R.id.wizard_how_often_schedule_am);
-		am.setOnClickListener(this);
-		
-		pm = (RadioButton) this.findViewById(R.id.wizard_how_often_schedule_pm);
-		pm.setOnClickListener(this);
-		
-		Button addTime = (Button) this.findViewById(R.id.wizard_how_often_schedule_add_time_button);
-		addTime.setOnClickListener(this);*/
+		//set listener for adding time
+		Button addTimeSlot = (Button)findViewById(R.id.wizard_how_often_schedule_add_time_button);
+		addTimeSlot.setOnClickListener(this);
 		
 		addTimerRow();
-		addTimerRow();
-		
 	}
 
 	public void onClick(View v) {
+		LinearLayout timerRow = (LinearLayout)v.getParent();
 		switch(v.getId()) {
 			case R.id.wizard_how_often_schedule_time_display:
 				Log.d(LOG_TAG,"display time picker");
+				rowSelected = (Integer)timerRow.getTag();
+				Log.d(LOG_TAG,"row: " + rowSelected);
 				showDialog(TIME_DIALOG_ID);
 				break;
 			case R.id.wizard_how_often_schedule_am:
 				Log.d(LOG_TAG,"am picked");
+				rowSelected = (Integer)timerRow.getTag();
+				Log.d(LOG_TAG,"row: " + rowSelected);
 				break;
 			case R.id.wizard_how_often_schedule_pm:
 				Log.d(LOG_TAG,"PM picked.");
+				rowSelected = (Integer)timerRow.getTag();
+				Log.d(LOG_TAG,"row: " + rowSelected);
 				break;
 			case R.id.wizard_how_often_schedule_add_time_button:
-				Log.d(LOG_TAG,"Add time.");
+				Log.d(LOG_TAG,"Adding timer.");
 				addTimerRow();
 				break;
+			case R.id.wizard_how_often_schedule_remove_time_button:
+				Log.d(LOG_TAG,"Removing timer.");
+				rowSelected = (Integer)timerRow.getTag();
+				Log.d(LOG_TAG,"row: " + rowSelected);
+				removeTimerRow();
 			default:
 				
 		}
@@ -96,39 +100,46 @@ public class HowOftenSchedule extends Activity implements OnClickListener,TimePi
 	 * Logic for adding another timer row to the view
 	 */
 	private void addTimerRow() {
+		//get the layout for the second half of the screen in this activity
+		container = (LinearLayout)findViewById(R.id.wizard_how_often_schedule_timer_container);
 		
+		//read the timer row layout, which is a LinearLayout containing a LinearLayout 
 		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LinearLayout row = (LinearLayout)inflater.inflate(R.layout.wizard_how_often_schedule_timer_row, null);
 		
-		LinearLayout container = (LinearLayout)findViewById(R.id.wizard_how_often_schedule_timer_container);
+		//add the row - which is one view group specified in the wizard_how_often_schedule_timer_rows file
+		container.addView(row);
+		numTimerRows++;
 		
-		LinearLayout row = (LinearLayout)inflater.inflate(R.layout.wizard_how_often_schedule_timer_row, container);
+		Log.d(LOG_TAG,"number of children for container: " + container.getChildCount());
 		
-		this.numTimerRows++;
+		//get the newly added row 
+		LinearLayout newTimerRow = (LinearLayout)container.getChildAt(numTimerRows);
 		
-		listOfTimers.put(numTimerRows, row);
-		
-		TextView time = (TextView)row.findViewById(R.id.wizard_how_often_schedule_time_display);
+		//set Hint & listener for time display
+		TextView time = (TextView)newTimerRow.getChildAt(TIME_DISPLAY_INDEX);
 		time.setHint("Click here...");
 		time.setOnClickListener(this);
 		
-		/*
-		 * Bookmark:
-		 * 	- multiple rows are displaying okay, but i've encountered an issue, the same id
-		 * is used everytime a row is added, (time.getId()) prints the same thing every time, so
-		 * I need a new way to distinguish them.
-		 */
+		//set listener for removing time
+		Button removeTimeSlot = (Button)newTimerRow.getChildAt(ADD_TIME_BUTTON_INDEX);
+		removeTimeSlot.setOnClickListener(this);
 		
-		Button addTimeSlot = (Button)row.findViewById(R.id.wizard_how_often_schedule_add_time_button);
-		addTimeSlot.setOnClickListener(this);
+		//set listener for setting AM / PM
+		RadioGroup rg = (RadioGroup)newTimerRow.getChildAt(AM_PM_INDEX);
+		rg.setOnClickListener(this);
 		
-		Log.d(LOG_TAG,"addTimerRow: set hint for view id: " + time.getId());
-		Log.d(LOG_TAG,"row atts: " + row.getChildCount());
-		
-		
-		
-		
-		//container.addView(row);
-		//container.refreshDrawableState();
+		//tag the setTimeRow with the row number so we know where to update the display
+		newTimerRow.setTag(numTimerRows);
+		Log.d(LOG_TAG,"numTimerRows: " + numTimerRows);
+		Log.d(LOG_TAG,"addTimerRow: specRow tag: " + newTimerRow.getTag());
+
+	}
+	
+	private void removeTimerRow() {
+		Log.d(LOG_TAG,"Removing timer from row: " + rowSelected);
+		container.removeViewAt(rowSelected);
+		numTimerRows--;
 	}
 	
 	//Callback method executed when the user presses okay after
@@ -146,6 +157,14 @@ public class HowOftenSchedule extends Activity implements OnClickListener,TimePi
      */
     private void updateDisplay() {
     	int adjustHour;
+    	
+    	LinearLayout row = (LinearLayout)container.getChildAt(rowSelected);
+    	
+    	TextView time = (TextView)row.getChildAt(TIME_DISPLAY_INDEX);
+    	RadioGroup rg = (RadioGroup)row.getChildAt(AM_PM_INDEX);
+		am = (RadioButton)rg.getChildAt(0);
+		pm = (RadioButton)rg.getChildAt(1);
+    	
     	if(setHour <= 12) {
     		if(setHour == 0) {
     			adjustHour = 12;
@@ -163,7 +182,7 @@ public class HowOftenSchedule extends Activity implements OnClickListener,TimePi
     		pm.setChecked(true);
     	}
   
-		setTime.setText(
+		time.setText(
 			new StringBuilder()
 			.append(pad(adjustHour)).append(":")
 			.append(pad(setMinute)));

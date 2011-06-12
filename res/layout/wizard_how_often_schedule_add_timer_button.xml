@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-	<!-- Button for adding another time -->
-	<Button xmlns:android="http://schemas.android.com/apk/res/android" 
-		android:id="@+id/wizard_how_often_schedule_add_time_button"
-		android:drawableTop="@android:drawable/ic_menu_add"
-		android:layout_width="wrap_content"
-		android:layout_height="45sp"
-		android:background="#000"
-		android:clickable="true"/>

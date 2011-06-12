@@ -3,13 +3,28 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:id="@+id/background_wizard_take_it_every_day"
   android:layout_width="match_parent"
-  android:layout_height="match_parent">    
+  android:layout_height="match_parent">
+  <!-- Define title bar -->
+	<LinearLayout 
+		android:id="@+id/title_bar"
+		android:background="#FFFFFF"
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="50dip">
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="match_parent"
+			android:textColor="#EE9241"
+			android:textSize="30dip"
+			android:textStyle="bold" 
+			android:text="@string/title_bar_text"/>
+	</LinearLayout>    
     <TextView android:id="@+id/wizard_take_it_every_day_view"
     	android:layout_height="wrap_content"
     	android:layout_width="wrap_content"  
     	android:text="@string/wizard_take_it_every_day_text" 
     	android:textSize="20dip" 
-    	android:layout_marginTop="30dip"
+    	android:layout_below="@id/title_bar"
     	android:layout_centerHorizontal="true"
     	android:clickable="true"/>
     
