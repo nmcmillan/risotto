@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/relativeLayout1"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	<ImageView android:layout_height="wrap_content" android:id="@+id/imageView1"
+		android:src="@android:drawable/ic_delete" android:layout_width="wrap_content"
+		android:layout_alignParentRight="true" android:layout_centerInParent="true"
+		android:layout_margin="20dp" android:clickable="true"></ImageView>
+	<TextView android:layout_width="wrap_content" android:text="TextView"
+		android:layout_height="wrap_content" android:layout_alignParentLeft="true"
+		android:id="@+id/textView1" android:layout_centerInParent="true"
+		android:layout_toLeftOf="@id/imageView1" android:clickable="true"
+		android:layout_margin="20dp" android:textSize="20sp"></TextView>
+</RelativeLayout>

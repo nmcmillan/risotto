@@ -47,6 +47,8 @@
 				<activity android:name="com.risotto.view.wizard.HowOftenSchedule" android:theme="@android:style/Theme.NoTitleBar"/>
 				<!-- No: Select Days & Times -->
 		
+		<!-- Test Wizard Activity -->
+		<activity android:name="com.risotto.view.wizard.TestActivity" android:theme="@android:style/Theme.NoTitleBar"/>
 		
 		<!-- Prescription Add Activity -->
 		<activity android:name="com.risotto.view.prescription.PrescriptionAdd"
