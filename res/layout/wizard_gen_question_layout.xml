@@ -1,8 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent">
-    
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<RelativeLayout android:id="@+id/title_bar" style="@style/title_bar_style">
+		<TextView android:layout_alignParentLeft="true"
+			android:layout_height="wrap_content" android:layout_width="wrap_content"
+			android:id="@+id/title_bar_logo" android:text="Pillbox"
+			android:background="#EE9241" android:textSize="32sp"
+			android:textColor="#FFFFFF"></TextView>
+		<Button android:layout_alignParentRight="true"
+			android:layout_height="wrap_content" android:layout_width="wrap_content"
+			android:id="@+id/title_bar_button_sync" android:background="@null"
+			android:text="Sync" android:fitsSystemWindows="true"
+			android:layout_alignParentBottom="true"
+			android:layout_alignParentTop="true" android:textSize="18dp"></Button>
+	</RelativeLayout>
+	<RelativeLayout android:id="@+id/wizard_gen_question_layout_question_view"
+		android:layout_width="match_parent" android:layout_below="@id/title_bar"
+		android:layout_height="75sp">
+		<TextView android:id="@+id/wizard_gen_question_layout_question_text"
+			android:textColor="#EE9241" android:layout_height="wrap_content" android:layout_width="wrap_content"
+			android:layout_centerInParent="true" android:text="This is a test question to be asked?"
+			android:background="@null" android:textSize="25sp" android:padding="5dp" android:gravity="center_horizontal">
+			<requestFocus></requestFocus>
+		</TextView>
+	</RelativeLayout>
+	<RelativeLayout android:layout_below="@id/wizard_gen_question_layout_question_view"
+		android:layout_width="match_parent" android:id="@+id/wizard_gen_question_layout_answer_one"
+		android:layout_height="175dp">
+		<Button android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:id="@+id/button_wizard_gen_question_layout_answer_one"
+			android:text="This is the answer to question one." android:textSize="25sp"
+			android:layout_marginLeft="15dp" android:layout_marginRight="15dp"></Button>
+		<TextView android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:layout_width="match_parent" android:layout_below="@id/button_wizard_gen_question_layout_answer_one" android:id="@+id/wizard_gen_question_layout_answer_one_supp_text" android:text="This is supporting text for answer one." android:gravity="center" android:textColor="#EE9241" android:textSize="15sp"></TextView>
+	</RelativeLayout>
+	<RelativeLayout android:id="@+id/relativeLayout1"
+		android:layout_height="wrap_content" android:layout_alignParentBottom="true"
+		android:layout_below="@id/wizard_gen_question_layout_answer_one"
+		android:layout_width="match_parent">
+		<Button android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:id="@+id/button_wizard_gen_question_layout_answer_two"
+			android:text="This is the answer to quesiton two." android:textSize="25sp"
+			android:layout_marginLeft="15dp" android:layout_marginRight="15dp"></Button>
+		<TextView android:layout_height="wrap_content" android:id="@+id/wizard_gen_question_layout_answer_two_supp_text" android:gravity="center" android:text="This is supporting text for answer two." android:textColor="#EE9241" android:layout_alignParentBottom="true" android:layout_width="match_parent" android:layout_below="@id/button_wizard_gen_question_layout_answer_two" android:textSize="15sp"></TextView>
+	</RelativeLayout>
+
 </RelativeLayout>
