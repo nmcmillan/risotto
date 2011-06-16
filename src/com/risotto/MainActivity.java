@@ -46,16 +46,16 @@ public class MainActivity extends Activity implements OnClickListener {
         //DrugTest.testToContentValues();
         //END DRUG TESTING
         
-        Button patients = (Button) findViewById(R.id.button_home_patients);
+        Button patients = (Button) findViewById(R.id.button_main_patients);
         patients.setOnClickListener(this);
         
-        Button drugs = (Button) findViewById(R.id.button_home_drugs);
+        Button drugs = (Button) findViewById(R.id.button_main_drugs);
         drugs.setOnClickListener(this);
         
-        Button schedule = (Button) findViewById(R.id.button_home_schedules);
+        Button schedule = (Button) findViewById(R.id.button_main_schedule);
         schedule.setOnClickListener(this);
         
-        Button history = (Button) findViewById(R.id.button_home_history);
+        Button history = (Button) findViewById(R.id.button_main_history);
         history.setOnClickListener(this);
         
         
@@ -88,26 +88,26 @@ public class MainActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		Intent intent = new Intent();
 		switch(v.getId()) {
-			case R.id.button_home_drugs:
+			case R.id.button_main_drugs:
 				Log.d(LOG_TAG,"launching drug view");
 				intent.setAction(MainActivity.ACTION_LAUNCH_FROM_HOME_DRUGS);
 		    	intent.setClass(getApplicationContext(), DrugView.class);
 				startActivity(intent);
 				break;
-			case R.id.button_home_history:
+			case R.id.button_main_history:
 				//will launch prescription view for now
 				Log.d(LOG_TAG,"launching prescription view");
 				intent.setAction(MainActivity.ACTION_LAUNCH_FROM_HOME_PRESCRIPTION);
 				intent.setClass(getApplicationContext(), PrescriptionView.class);
 				startActivity(intent);
 				break;
-			case R.id.button_home_patients:
+			case R.id.button_main_patients:
 				Log.d(LOG_TAG,"launching patient view");
 				intent.setAction(MainActivity.ACTION_LAUNCH_FROM_HOME_PATIENTS);
 				intent.setClass(getApplicationContext(), PatientView.class);
 				startActivity(intent);
 				break;
-			case R.id.button_home_schedules:
+			case R.id.button_main_schedule:
 				Log.d(LOG_TAG,"launching wizard");
 				intent.setAction(MainActivity.ACTION_LAUNCH_FROM_HOME_SCHEDULE);
 				intent.setClass(getApplicationContext(), WhenTakeIt.class);

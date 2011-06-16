@@ -1,106 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:orientation="vertical">
-	
-	<!-- Define title bar -->
-	<LinearLayout 
-		android:background="#FFFFFF"
-		android:orientation="horizontal"
-		android:layout_width="fill_parent"
-		android:layout_height="50dip">
-		<TextView
-			android:layout_width="fill_parent"
-			android:layout_height="match_parent"
-			android:textColor="#EE9241"
-			android:textSize="30dip"
-			android:textStyle="bold" 
-			android:text="@string/title_bar_text"/>
-	</LinearLayout>
-	
-	<!-- Define body -->
-	<LinearLayout
-		android:orientation="vertical"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_weight="1"
-	    android:background="#EE9241"
-	    android:padding="6dip">
-	    
-	    <!-- Define first row of icons -->
-		<LinearLayout
-		    android:orientation="horizontal"
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:layout_weight="1"
-		    android:padding="6dip">
-				<Button
-					android:id="@+id/button_home_patients"
-					style="@style/HomeButton"
-					android:text="@string/home_screen_patients"
-		            android:drawableTop="@drawable/red_pills"/>
-		        <Button
-		        	android:id="@+id/button_home_drugs"
-		        	style="@style/HomeButton"
-		        	android:text="@string/home_screen_drugs"
-		        	android:drawableTop="@drawable/red_pill_and_tablet"/>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent" android:layout_height="match_parent">
+	<RelativeLayout android:id="@+id/title_bar" style="@style/title_bar_style">
+		<TextView android:layout_alignParentLeft="true"
+			android:layout_height="wrap_content" android:layout_width="wrap_content"
+			android:id="@+id/title_bar_logo" android:text="Pillbox"
+			android:background="#EE9241" android:textSize="32sp"
+			android:textColor="#FFFFFF"></TextView>
+		<Button android:layout_alignParentRight="true"
+			android:layout_height="wrap_content" android:layout_width="wrap_content"
+			android:id="@+id/title_bar_button_sync" android:background="@null"
+			android:text="Sync" android:fitsSystemWindows="true" android:layout_alignParentBottom="true" android:layout_alignParentTop="true" android:textSize="18dp"></Button>
+	</RelativeLayout>
+	<RelativeLayout android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_below="@id/title_bar" android:layout_height="200dp" android:id="@+id/main_icon_area">
+		<LinearLayout android:layout_alignParentTop="true"
+			android:layout_alignParentLeft="true" android:id="@+id/home_button_top_row"
+			android:layout_alignParentRight="true" android:orientation="horizontal"
+			android:layout_height="wrap_content" android:padding="6dp" android:layout_width="fill_parent">
+			<Button android:text="Patients" android:layout_height="wrap_content"
+				android:drawableTop="@drawable/red_pill_and_tablet"
+				android:textColor="#FFFFFF" android:background="@null"
+				android:layout_gravity="center_vertical" android:layout_weight="1"
+				android:layout_width="fill_parent" android:id="@+id/button_main_patients"></Button>
+			<Button android:layout_height="wrap_content" android:text="Drugs"
+				android:drawableTop="@drawable/red_pill_and_tablet"
+				android:background="@null" android:textColor="#FFFFFF"
+				android:layout_width="fill_parent" android:layout_gravity="center_vertical"
+				android:layout_weight="1" android:id="@+id/button_main_drugs"></Button>
 		</LinearLayout>
-		
-		<!-- Define second row of icons -->
-		<LinearLayout
-		    android:orientation="horizontal"
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:layout_weight="1"
-		    android:padding="6dip">
-				<Button
-					android:id="@+id/button_home_schedules"
-					style="@style/HomeButton"
-					android:text="@string/home_screen_schedule"
-		            android:drawableTop="@drawable/red_pills"/>
-		        <Button
-		        	android:id="@+id/button_home_history"
-		        	style="@style/HomeButton"
-		        	android:text="@string/home_screen_history"
-		        	android:drawableTop="@drawable/red_pill_and_tablet"/>
+		<LinearLayout android:layout_width="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentRight="true" android:id="@+id/main_button_row_bottom"
+			android:layout_height="100dp" android:orientation="horizontal">
+			<Button android:layout_height="wrap_content"
+				android:layout_weight="1" android:layout_width="fill_parent"
+				android:layout_gravity="center_vertical" android:background="@null"
+				android:textColor="#FFFFFF" android:drawableTop="@drawable/red_pill_and_tablet"
+				android:text="Schedule" android:id="@+id/button_main_schedule"></Button>
+			<Button android:layout_height="wrap_content"
+				android:layout_width="fill_parent" android:layout_weight="1"
+				android:text="History" android:layout_gravity="center_vertical"
+				android:background="@null" android:textColor="#FFFFFF"
+				android:drawableTop="@drawable/red_pill_and_tablet" android:id="@+id/button_main_history"></Button>
 		</LinearLayout>
-	</LinearLayout>
-		
-		
-	
-</LinearLayout>
-<!--<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/tabhost"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:padding="5dp">
-        <TabWidget
-            android:id="@android:id/tabs"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
-        <FrameLayout
-            android:id="@android:id/tabcontent"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:padding="5dp" />
-    </LinearLayout>
-</TabHost>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/hello"
-    />
-</LinearLayout>
--->
+	</RelativeLayout>
+	<RelativeLayout android:layout_width="match_parent" android:layout_height="200dp" android:background="#CC9E47" android:id="@+id/main_notification_area" android:layout_below="@id/main_icon_area">
+		></RelativeLayout>
+
+</RelativeLayout>
