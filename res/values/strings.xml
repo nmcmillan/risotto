@@ -74,6 +74,27 @@
 	<string name="home_menu_settings">Settings</string>
 	
 	<!-- Wizard Strings -->
+	
+		<!-- WhoWillBeTaking Strings -->
+		<string name="wizard_who_will_be_taking_question">Who is the prescription for?</string>
+		<string name="wizard_who_will_be_taking_me">It\'s for me.</string>
+		<string name="wizard_who_will_be_taking_other">It\'s for someone else.</string>
+		
+		<!-- OverCounterOrPrescription Strings -->
+		<string name="wizard_over_counter_or_prescription_question">What type of medication is it?</string>
+		<string name="wizard_over_counter_or_prescription_otc">Over the counter.</string>
+		<string name="wizard_over_counter_or_prescription_prep">Prescription</string>
+		
+		<!-- EnterDrugDetails Strings -->
+		<string name="wizard_enter_drug_details_instructions">Please enter the drug information...</string>
+		<string-array name="drug_form_label_array">
+			<item>Pills</item>
+			<item>mL</item>
+			<item>mg</item>
+			<item>oz</item>
+			<item>Tablespoons</item>
+		</string-array>
+		
 	<string name="wizard_when_take_it_text">When will you take this medicine?</string>
 	<string name="button_wizard_choice_spec_time_text">At specific times...(Once a day, twice a day, every other day)</string>
 	<string name="button_wizard_choice_spec_interval_text">At specific intervals...(Every 4 hours, every 12 hours, every other day)</string>

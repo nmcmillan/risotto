@@ -1,5 +1,6 @@
 package com.risotto.model;
 
+import java.io.Serializable;
 import java.util.Vector;
 
 import android.content.ContentValues;
@@ -11,7 +12,7 @@ import android.util.Log;
 
 import com.risotto.storage.StorageProvider;
 
-public class Drug {
+public class Drug implements Serializable{
 	
 	// Required Fields
 	private String brandName;

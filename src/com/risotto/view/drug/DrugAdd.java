@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,8 +17,11 @@ import android.widget.Spinner;
 import android.widget.AdapterView;
 
 import com.risotto.R;
+import com.risotto.R.id;
 import com.risotto.model.Drug;
 import com.risotto.storage.StorageProvider;
+import com.risotto.view.wizard.EnterDrugDetails;
+import com.risotto.view.wizard.WizardData;
 
 /**
  * Activity that will edit the details of a drug or add a new drug.
@@ -41,15 +45,11 @@ public class DrugAdd extends Activity implements View.OnClickListener, AdapterVi
 		StorageProvider.DrugColumns.DRUG_BRAND_NAME,
 	};
 	
-	//Return type of queries
-	private Cursor drugCursor;
-	
 	//EditText field - will probably need one of these for each drug attribute
 	private EditText drugNameEditText;
-	private EditText drugStrengthEditText;
-	
-	//Uri for accessing DB
-	private Uri drugUri;
+	private Drug.FORM dForm;
+	private Drug newDrug;
+	private boolean inWizard = false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,98 +59,91 @@ public class DrugAdd extends Activity implements View.OnClickListener, AdapterVi
 		
 		setContentView(R.layout.drug_add_layout);
 		
-		drugNameEditText = (EditText) this.findViewById(R.id.drug_add_field_name);
-		drugNameEditText.setHint(R.string.drug_add_name);
-		//drugNameText.setOnClickListener(this);
+		Bundle extras = getIntent().getExtras();
 		
-		drugStrengthEditText = (EditText) this.findViewById(R.id.drug_add_field_strength);
-		drugStrengthEditText.setHint(R.string.drug_add_strength);
-		//drugStrengthText.setOnClickListener(this);
+		if(extras.containsKey(WizardData.DRUG)) {
+			newDrug = (Drug)extras.getSerializable(WizardData.DRUG);
+			inWizard = true;
+			Log.d(LOG_TAG, newDrug.getType().toString());
+		}
+		else
+			newDrug = new Drug("");
 		
-		Spinner spinner = (Spinner) this.findViewById(R.id.drug_add_type_spinner);
+		drugNameEditText = (EditText) this.findViewById(R.id.drug_add_layout_brand_name_field);
+		
+		Spinner spinner = (Spinner) this.findViewById(R.id.drug_add_layout_form_spinner);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.drug_types_array, android.R.layout.simple_spinner_dropdown_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
+		spinner.setOnItemSelectedListener(this);
 		
-		Button b = (Button) this.findViewById(R.id.button_drug_edit_ok);
+		Button b = (Button) this.findViewById(R.id.button_drug_add_layout_next);
 		b.setOnClickListener(this);
 	}
 	
-	@Override
-	public void onPause() {
-		super.onPause();		
-	}
-	
 	public void onClick(View v) {
-		//question, if we attach more than one item to the click listener, how do we distinguish?
-		//answer: check v.getId();
-		
-		Log.d(LOG_TAG,"onClick");
-		
 		//TO DO: sanitize inputs to protect against SQL injection
 		
-		boolean validStrength = true;
-		boolean validName = true;
-		int enteredStrength = -1;
-		
-		String enteredName = drugNameEditText.getText().toString().trim();
-		
-		if(0 == enteredName.length()) {
-			validName = false;
+		switch(v.getId()) {
+			case R.id.button_drug_add_layout_next:
+				String enteredName = drugNameEditText.getText().toString().trim();
+				if(0 == enteredName.length()) {
+					//name is incorrect - display dialog telling user
+					new AlertDialog.Builder(this)
+				    .setTitle("Drug Name")
+				    .setMessage("The drug name can't be empty, please try again!")
+				    .setPositiveButton("Okay", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) {} })
+				    .show();
+					this.drugNameEditText.requestFocus();
+				}
+				else {
+					newDrug.setBrandName(enteredName);
+					newDrug.setForm(dForm);
+					ContentValues cv = newDrug.toContentValues();
+					Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
+					Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
+					if(inWizard) {
+						Intent intent = new Intent();
+						intent.setClass(getApplicationContext(), EnterDrugDetails.class);
+						intent.putExtra(WizardData.DRUG, newDrug);
+						startActivity(intent);
+					}
+				}
+				break;
+			default:
+				break;
 		}
-		try {
-			enteredStrength = Integer.parseInt(drugStrengthEditText.getEditableText().toString());
-		} catch (NumberFormatException e) {
-			validStrength = false;
-		}
-		if(!validStrength && !validName) {
-			//both are incorrect, display appropriate message
-			new AlertDialog.Builder(this)
-		    .setTitle("Drug Info Incorrect")
-		    .setMessage("Oops - the drug name can't be empty and the drug strength must be a number, try again!")
-		    //don't do anything when the button is clicked
-		    .setPositiveButton("Okay", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) {} })
-		    .show();
-		}
-		else if(!validName) {
-			//just name is incorrect
-			new AlertDialog.Builder(this)
-		    .setTitle("Drug Name")
-		    .setMessage("The drug name can't be empty, please try again!")
-		    .setPositiveButton("Okay", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) {} })
-		    .show();
-			this.drugNameEditText.requestFocus();
-		}
-		else if(!validStrength) {
-			//just strength is incorrect
-			new AlertDialog.Builder(this)
-		    .setTitle("Drug Strength")
-		    .setMessage("It doesn't appear the drug strength you entered is applicable, try entering it again!")
-		    //don't do anything when the button is clicked
-		    .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {}
-			})
-		    .show();
-			this.drugStrengthEditText.requestFocus();
-		}
-		else {
-				Drug newDrug = new Drug(enteredName,Drug.TYPE.DEFAULT,enteredStrength,"");
-				ContentValues cv = newDrug.toContentValues();
-				Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
-				Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
-		}
-		
-		finish();
 	}
 
-	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
-			long arg3) {
+	public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
 		// TODO Auto-generated method stub
+		Log.d(LOG_TAG,"item selected: " + parent.getItemAtPosition(position));
+		String form = (String)parent.getItemAtPosition(position);
+		
+		if(form.equalsIgnoreCase(Drug.FORM.CAPSULES.toString()))
+			dForm = Drug.FORM.CAPSULES;
+		else if(form.equalsIgnoreCase(Drug.FORM.TABLETS.toString()))
+			dForm = Drug.FORM.TABLETS;
+		else if(form.equalsIgnoreCase(Drug.FORM.POWDERS.toString()))
+			dForm = Drug.FORM.POWDERS;
+		else if(form.equalsIgnoreCase(Drug.FORM.DROPS.toString()))
+			dForm = Drug.FORM.DROPS;
+		else if(form.equalsIgnoreCase(Drug.FORM.LIQUIDS.toString()))
+			dForm = Drug.FORM.LIQUIDS;
+		else if(form.equalsIgnoreCase(Drug.FORM.SPRAY.toString()))
+			dForm = Drug.FORM.SPRAY;
+		else if(form.equalsIgnoreCase(Drug.FORM.SKIN.toString()))
+			dForm = Drug.FORM.SKIN;
+		else if(form.equalsIgnoreCase(Drug.FORM.SUPPOSITORIES.toString()))
+			dForm = Drug.FORM.SUPPOSITORIES;
+		else if(form.equalsIgnoreCase(Drug.FORM.OTHER.toString()))
+			dForm = Drug.FORM.OTHER;
+		else
+			throw new IllegalArgumentException("Unknown drug form given.");
+		
+		Log.d(LOG_TAG, "form: " + dForm.toString());
 		
 	}
 
-	public void onNothingSelected(AdapterView<?> arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onNothingSelected(AdapterView<?> arg0) {}
 }

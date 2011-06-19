@@ -14,7 +14,7 @@
 		<!-- Launch Activity -->
 		<activity android:name="com.risotto.MainActivity"
 			android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">
-			
+
 			<intent-filter>
 				<!-- Main entry activity in this application node. -->
 				<action android:name="android.intent.action.MAIN" />
@@ -41,8 +41,13 @@
 		<activity android:name="com.risotto.view.drug.DrugDetailsView" />
 
 		<!-- Wizard Activities -->
-		<!-- Start: When will you take it? -->
+		<!-- Who is it for -->
+		<activity android:name="com.risotto.view.wizard.WhoWillBeTaking"
+			android:theme="@android:style/Theme.NoTitleBar" />
 		<activity android:name="com.risotto.view.wizard.WhenTakeIt"
+			android:theme="@android:style/Theme.NoTitleBar" />
+		<!-- OTC or Prescription -->
+		<activity android:name="com.risotto.view.wizard.OverCounterOrPrescription"
 			android:theme="@android:style/Theme.NoTitleBar" />
 		<!-- Take at Spec Times: Take it every day? -->
 		<activity android:name="com.risotto.view.wizard.TakeItEveryDay"
@@ -82,9 +87,8 @@
 
 		<!-- Drug Add/Edit activity -->
 		<activity android:name="com.risotto.view.drug.DrugAdd"
-			android:label="@string/drug_add_window_title" android:theme="@android:style/Theme.Dialog"
-			android:windowNoTitle="true" android:windowSoftInputMode="stateVisible">
-			<intent-filter>
+			android:label="@string/drug_add_window_title" android:theme="@android:style/Theme.NoTitleBar"/>
+			<!--  <intent-filter>
 				<action android:name="android.intent.action.INSERT" />
 				<category android:name="android.intent.category.DEFAULT" />
 				<data android:mimeType="vnd.android.cursor.dir/vnd.risotto.drug" />
@@ -93,16 +97,12 @@
 			<intent-filter android:label="@string/drug_resolve_title">
 				<action android:name="com.risotto.action.EDIT_DRUG" />
 				<category android:name="android.intent.category.DEFAULT" />
-				<!-- ALTERNATIVE: show as an alternative action when the user is working 
-					with this type of data. -->
+				
 				<category android:name="android.intent.category.ALTERNATIVE" />
-				<!-- SELECTED_ALTERNATIVE: show as an alternative action the user can 
-					perform when selecting this type of data. -->
 				<category android:name="android.intent.category.SELECTED_ALTERNATIVE" />
-				<!-- This is the data type we operate on. -->
 				<data android:mimeType="vnd.android.cursor.item/vnd.google.note" />
-			</intent-filter>
-		</activity>
+			</intent-filter> 
+		</activity> -->
 
 		<!-- Main Service -->
 		<service android:name="com.risotto.service.MainService" />

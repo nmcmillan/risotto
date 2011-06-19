@@ -3,4 +3,9 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
+  
+  <RelativeLayout android:id="@+id/title_bar" style="@style/title_bar_style">
+		<TextView android:id="@+id/title_bar_logo" style="@style/title_bar_logo_style" />
+		<Button android:id="@+id/title_bar_button_sync" style="@style/button_title_bar_sync_style" />
+	</RelativeLayout>
 </LinearLayout>

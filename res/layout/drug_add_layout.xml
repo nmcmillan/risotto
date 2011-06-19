@@ -1,46 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent" android:layout_height="match_parent">
+	<RelativeLayout android:id="@+id/title_bar" style="@style/title_bar_style">
+		<TextView android:layout_alignParentLeft="true"
+			android:layout_height="wrap_content" android:layout_width="wrap_content"
+			android:id="@+id/title_bar_logo" android:text="Pillbox"
+			android:background="#EE9241" android:textSize="32sp"
+			android:textColor="#FFFFFF"></TextView>
+		<Button android:layout_alignParentRight="true"
+			android:layout_height="wrap_content" android:layout_width="wrap_content"
+			android:id="@+id/title_bar_button_sync" android:background="@null"
+			android:text="Sync" android:fitsSystemWindows="true"
+			android:layout_alignParentBottom="true"
+			android:layout_alignParentTop="true" android:textSize="18dp"></Button>
+	</RelativeLayout>
+	<RelativeLayout android:layout_below="@id/title_bar"
+		android:layout_width="match_parent" android:id="@+id/drug_add_layout_instructions_view"
+		android:layout_height="wrap_content" android:layout_margin="15dp">
+		<TextView android:layout_height="wrap_content"
+			android:layout_width="wrap_content" android:layout_centerInParent="true"
+			android:id="@+id/drug_add_layout_instructions" android:text="Please enter the drug details below:"
+			android:textColor="#EE9241" android:textSize="25sp" android:gravity="center"></TextView>
+	</RelativeLayout>
+	<RelativeLayout android:layout_below="@id/drug_add_layout_instructions_view"
+		android:layout_width="match_parent" android:id="@+id/drug_add_layout_required_fields_view" android:layout_height="wrap_content">
+		<EditText android:layout_height="wrap_content"
+			android:id="@+id/drug_add_layout_brand_name_field" android:hint="Drug name..."
+			android:layout_centerHorizontal="true" android:layout_width="250dp">
+			<requestFocus></requestFocus>
+		</EditText>
+		<Spinner android:layout_height="wrap_content"
+			android:id="@+id/drug_add_layout_form_spinner"
+			android:layout_centerHorizontal="true" android:layout_width="251dp" android:layout_below="@id/drug_add_layout_brand_name_field"></Spinner>
+	</RelativeLayout>
+	<Button android:layout_height="wrap_content"
+		android:layout_width="wrap_content" android:layout_alignParentBottom="true"
+		android:id="@+id/button_drug_add_layout_next"
+		android:layout_alignParentRight="true" android:text="Continue..."></Button>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
-  	android:layout_width="wrap_content" 
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    >
-    <!-- commenting out padding for now 
-    android:paddingLeft="6dip"
-    android:paddingRight="6dip"
-    android:paddingBottom="3dip"> -->
-    	
-    <EditText android:id="@+id/drug_add_field_name" 
-    	android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:layout_width="wrap_content"
-      	android:ems="25"
-        android:layout_height="wrap_content" 
-        android:autoText="true"
-        android:capitalize="sentences"
-        android:scrollHorizontally="true" />
-        
-    <EditText android:id="@+id/drug_add_field_strength" 
-    	android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:layout_marginTop="2dip"
-        android:layout_width="wrap_content"
-      	android:ems="25"
-        android:layout_height="wrap_content" 
-        android:autoText="true"
-        android:capitalize="sentences"
-        android:scrollHorizontally="true" />
-        
-    <Spinner android:id="@+id/drug_add_type_spinner"
-    	android:scrollbarStyle="insideInset"
-    	android:layout_width="fill_parent"
-    	android:layout_height="wrap_content"
-    	android:prompt="@string/drug_types" />
-        	
-    <Button android:id="@+id/button_drug_edit_ok"
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content" 
-        android:layout_gravity="right"
-        android:text="@string/button_drug_edit_ok" />
-   		
-</LinearLayout>
+</RelativeLayout>
