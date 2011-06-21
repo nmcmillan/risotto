@@ -5,20 +5,19 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.AdapterView;
 
 import com.risotto.R;
-import com.risotto.R.id;
 import com.risotto.model.Drug;
+import com.risotto.model.Patient;
 import com.risotto.storage.StorageProvider;
 import com.risotto.view.wizard.EnterDrugDetails;
 import com.risotto.view.wizard.WizardData;
@@ -45,10 +44,10 @@ public class DrugAdd extends Activity implements View.OnClickListener, AdapterVi
 		StorageProvider.DrugColumns.DRUG_BRAND_NAME,
 	};
 	
-	//EditText field - will probably need one of these for each drug attribute
 	private EditText drugNameEditText;
 	private Drug.FORM dForm;
 	private Drug newDrug;
+	private Patient newPatient;
 	private boolean inWizard = false;
 	
 	@Override
@@ -61,18 +60,32 @@ public class DrugAdd extends Activity implements View.OnClickListener, AdapterVi
 		
 		Bundle extras = getIntent().getExtras();
 		
-		if(extras.containsKey(WizardData.DRUG)) {
+		/**
+		 * check if drug object was added to intent
+		 *	- we're in the wizard
+		 *	- a drug object is in the intent, pull it out
+		 *
+		 * check if patient object was added to intent
+		 * 	- we came from patient add
+		 * 	- a patient object is in intent, pull it out
+		 */		
+		if(null != extras && extras.containsKey(WizardData.DRUG)) {
 			newDrug = (Drug)extras.getSerializable(WizardData.DRUG);
 			inWizard = true;
 			Log.d(LOG_TAG, newDrug.getType().toString());
-		}
-		else
+		} else
 			newDrug = new Drug("");
+		
+		if(null != extras && extras.containsKey(WizardData.PATIENT)) {
+			newPatient = (Patient)extras.getSerializable(WizardData.PATIENT);
+			inWizard = true;
+			Log.d(LOG_TAG, newPatient.getFirstName());
+		}
 		
 		drugNameEditText = (EditText) this.findViewById(R.id.drug_add_layout_brand_name_field);
 		
 		Spinner spinner = (Spinner) this.findViewById(R.id.drug_add_layout_form_spinner);
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.drug_types_array, android.R.layout.simple_spinner_dropdown_item);
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.drug_types_array, android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
 		spinner.setOnItemSelectedListener(this);
@@ -99,15 +112,17 @@ public class DrugAdd extends Activity implements View.OnClickListener, AdapterVi
 				else {
 					newDrug.setBrandName(enteredName);
 					newDrug.setForm(dForm);
-					ContentValues cv = newDrug.toContentValues();
-					Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
-					Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
 					if(inWizard) {
 						Intent intent = new Intent();
 						intent.setClass(getApplicationContext(), EnterDrugDetails.class);
 						intent.putExtra(WizardData.DRUG, newDrug);
 						startActivity(intent);
+					} else {
+						ContentValues cv = newDrug.toContentValues();
+						Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
+						Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
 					}
+					
 				}
 				break;
 			default:

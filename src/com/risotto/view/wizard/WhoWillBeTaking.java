@@ -12,12 +12,11 @@ import android.widget.TextView;
 
 import com.risotto.R;
 import com.risotto.storage.StorageProvider;
-import com.risotto.view.drug.DrugAdd;
+import com.risotto.view.patient.PatientAdd;
 
 public class WhoWillBeTaking extends Activity implements OnClickListener {
 
 	public static final String LOG_TAG = "com.risotto.view.wizard.WhoWillBeTaking";
-	public static final String DATA_NEW_DRUG_NEEDED = "WhoWillBeTaking_NeedNewDrug";
 	
 	public static final String ACTION_WIZARD_NEW_DRUG = "com.risotto.view.wizard.WhoWillBeTaking.newDrug";
 	
@@ -25,7 +24,14 @@ public class WhoWillBeTaking extends Activity implements OnClickListener {
 		StorageProvider.DrugColumns._ID,
 		StorageProvider.DrugColumns.DRUG_BRAND_NAME,
 		StorageProvider.DrugColumns.DRUG_STRENGTH,
-		StorageProvider.DrugColumns.DRUG_STRENGTH_LABEL};
+		StorageProvider.DrugColumns.DRUG_STRENGTH_LABEL
+	};
+	
+	private static String[] PATIENT_PROJECTION = {
+		StorageProvider.PatientColumns._ID,
+		StorageProvider.PatientColumns.PATIENT_FIRST_NAME,
+		StorageProvider.PatientColumns.PATIENT_LAST_NAME
+	};
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -57,32 +63,50 @@ public class WhoWillBeTaking extends Activity implements OnClickListener {
 		Cursor drugCursor = this.getContentResolver().query(
 				StorageProvider.DrugColumns.CONTENT_URI, DRUG_PROJECTION, null, null, null);
 		boolean goToNewDrug = true;
+		
+		Cursor patientCursor = this.getContentResolver().query(
+				StorageProvider.PatientColumns.CONTENT_URI, PATIENT_PROJECTION, null, null, null);
+		boolean goToNewPatient = true;
 	
 		//returned at least one result, so don't create new drug
 		if(drugCursor != null && drugCursor.getCount() > 0) {
 			goToNewDrug = false;
 		}
+		//check if we need to go to patient add if user selects it's for someone else
+		//and there are no patients in database
+		if(patientCursor != null && patientCursor.getCount() > 0) {
+			goToNewPatient = false;
+		}
 		
 		Intent intent = new Intent();
 		
-		intent.putExtra(DATA_NEW_DRUG_NEEDED, goToNewDrug);
+		intent.putExtra(WizardData.CREATE_NEW_DRUG, goToNewDrug);
 		
 		switch(v.getId()) {
 			case R.id.button_wizard_gen_question_layout_answer_one:
 				Log.d(LOG_TAG,"selected me.");
 				if(goToNewDrug) {
 					//launch new drug activity
-					Log.d(LOG_TAG,"new drug.");
+					Log.d(LOG_TAG,"new drug - select OTC or prep.");
 					intent.setClass(getApplicationContext(), OverCounterOrPrescription.class);
 					startActivity(intent);
 				} else {
 					//launch select drug activity
-					Log.d(LOG_TAG,"select drug.");
+					Log.d(LOG_TAG,"select drug from list.");
 				}
 				break;
 			case R.id.button_wizard_gen_question_layout_answer_two:
 				Log.d(LOG_TAG,"selected other");
-				//pass goToNewDrug to select other activity
+				if(goToNewPatient) {
+					Log.d(LOG_TAG,"new patient.");
+					intent.setClass(getApplicationContext(), PatientAdd.class);
+					startActivity(intent);
+				} else {
+					//launch select patient activity
+					Log.d(LOG_TAG,"select patient from list.");
+					intent.setClass(getApplicationContext(), PatientSelect.class);
+					startActivity(intent);
+				}
 				break;
 			default:
 				break;

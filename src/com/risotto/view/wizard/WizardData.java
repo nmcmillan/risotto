@@ -7,5 +7,6 @@ public class WizardData {
 	public static final String PATIENT = "com.risotto.view.wizard.wizard_patient_object";
 	public static final String PRESCRIPTION = "com.risotto.view.wizard.wizard_prescription_object";
 	public static final String DRUG = "com.risotto.view.wizard.wizard_drug_object";
+	public static final String CREATE_NEW_DRUG = "com.risotto.view.wizard.create_new_drug";
 	
 }

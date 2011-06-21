@@ -1,39 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="wrap_content"
-  android:layout_height="wrap_content">
-  
-  	<EditText android:id="@+id/patient_add_field_first_name" 
-    	android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:layout_width="wrap_content"
-      	android:ems="25"
-        android:layout_height="wrap_content" 
-        android:autoText="true"
-        android:capitalize="sentences"
-        android:scrollHorizontally="true" />
-        
-    <EditText android:id="@+id/patient_add_field_last_name" 
-    	android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:layout_marginTop="2dip"
-        android:layout_width="wrap_content"
-      	android:ems="25"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/patient_add_field_first_name" 
-        android:autoText="true"
-        android:capitalize="sentences"
-        android:scrollHorizontally="true" />
-        	
-    <Button android:id="@+id/patient_add_button_ok"
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content"
-        android:layout_below="@id/patient_add_field_last_name"
-        android:layout_alignRight="@id/patient_add_field_last_name"
-        android:text="@string/patient_add_button_string" />
-  
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent" android:layout_height="match_parent">
+	<RelativeLayout android:id="@+id/title_bar" style="@style/title_bar_style">
+		<TextView android:id="@+id/title_bar_logo" style="@style/title_bar_logo_style" />
+		<Button android:id="@+id/title_bar_button_sync" style="@style/button_title_bar_sync_style" />
+	</RelativeLayout>
+	<RelativeLayout android:layout_below="@id/title_bar"
+		android:id="@+id/patient_add_instructions_view" android:layout_width="match_parent"
+		android:layout_height="100dp">
+		<TextView android:layout_height="wrap_content"
+			android:layout_width="wrap_content" android:id="@+id/textView1"
+			android:layout_centerInParent="true" android:text="@string/patient_add_instructions"
+			android:textSize="25sp" android:textColor="#EE9241"></TextView>
+	</RelativeLayout>
+	<EditText android:layout_height="wrap_content"
+		android:scrollHorizontally="true" android:id="@+id/patient_add_field_first_name"
+		android:hint="@string/patient_add_first_name"
+		android:selectAllOnFocus="true" android:layout_below="@id/patient_add_instructions_view"
+		android:layout_centerHorizontal="true" android:layout_alignParentLeft="true"
+		android:layout_width="175dp" android:layout_marginLeft="3dp" android:imeOptions="actionNext" android:inputType="text|textCapSentences"></EditText>
+	<EditText android:layout_height="wrap_content"
+		android:scrollHorizontally="true" android:id="@+id/patient_add_field_last_name"
+		android:hint="@string/patient_add_last_name" android:selectAllOnFocus="true"
+		android:layout_below="@id/patient_add_field_first_name"
+		android:layout_centerHorizontal="true" android:layout_alignParentLeft="true"
+		android:layout_width="175dp" android:layout_marginLeft="3dp" android:inputType="text|textCapSentences" android:imeOptions="actionDone">
+	</EditText>
+	<RelativeLayout android:id="@+id/patient_add_picture_view"
+		android:layout_below="@id/patient_add_instructions_view"
+		android:layout_toRightOf="@id/patient_add_field_first_name"
+		android:layout_alignParentRight="true" android:layout_alignBottom="@id/patient_add_field_last_name" android:layout_width="wrap_content" android:layout_height="wrap_content">
+		<ImageView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:src="@android:drawable/ic_menu_gallery"
+			android:id="@+id/patient_add_picture" android:layout_centerInParent="true"></ImageView>
+	</RelativeLayout>
+	<Button android:layout_height="wrap_content"
+		android:layout_width="wrap_content" android:id="@+id/patient_add_button_ok"
+		android:text="@string/patient_add_button_string"
+		android:layout_alignParentRight="true"
+		android:layout_alignParentBottom="true"></Button>
+
 </RelativeLayout>
-<!-- 
-		
- -->

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<RelativeLayout android:id="@+id/title_bar" style="@style/title_bar_style">
+		<TextView android:id="@+id/title_bar_logo" style="@style/title_bar_logo_style" />
+		<Button android:id="@+id/title_bar_button_sync" style="@style/button_title_bar_sync_style" />
+	</RelativeLayout>
+	<RelativeLayout android:layout_alignParentRight="true"
+		android:layout_below="@id/title_bar" android:layout_width="match_parent"
+		android:layout_height="100dp" android:id="@+id/wizard_patient_select_instructions_view">
+		<TextView android:layout_height="wrap_content"
+			android:layout_width="wrap_content" android:layout_centerInParent="true"
+			android:text="@string/wizard_patient_select_instructions"
+			android:textSize="25sp" android:gravity="center"
+			android:id="@+id/wizard_patient_select_instructions_text"></TextView>
+	</RelativeLayout>
+	<ListView android:layout_height="wrap_content"
+		android:layout_width="match_parent" android:layout_alignParentRight="true"
+		android:id="@android:id/list"
+		android:layout_below="@id/wizard_patient_select_instructions_view"></ListView>
+
+
+</RelativeLayout>

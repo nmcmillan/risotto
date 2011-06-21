@@ -2,17 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent" android:layout_height="match_parent">
 	<RelativeLayout android:id="@+id/title_bar" style="@style/title_bar_style">
-		<TextView android:layout_alignParentLeft="true"
-			android:layout_height="wrap_content" android:layout_width="wrap_content"
-			android:id="@+id/title_bar_logo" android:text="Pillbox"
-			android:background="#EE9241" android:textSize="32sp"
-			android:textColor="#FFFFFF"></TextView>
-		<Button android:layout_alignParentRight="true"
-			android:layout_height="wrap_content" android:layout_width="wrap_content"
-			android:id="@+id/title_bar_button_sync" android:background="@null"
-			android:text="Sync" android:fitsSystemWindows="true"
-			android:layout_alignParentBottom="true"
-			android:layout_alignParentTop="true" android:textSize="18dp"></Button>
+		<TextView android:id="@+id/title_bar_logo" style="@style/title_bar_logo_style" />
+		<Button android:id="@+id/title_bar_button_sync" style="@style/button_title_bar_sync_style" />
 	</RelativeLayout>
 	<RelativeLayout android:layout_below="@id/title_bar"
 		android:layout_width="match_parent" android:id="@+id/drug_add_layout_instructions_view"
@@ -23,15 +14,17 @@
 			android:textColor="#EE9241" android:textSize="25sp" android:gravity="center"></TextView>
 	</RelativeLayout>
 	<RelativeLayout android:layout_below="@id/drug_add_layout_instructions_view"
-		android:layout_width="match_parent" android:id="@+id/drug_add_layout_required_fields_view" android:layout_height="wrap_content">
+		android:layout_width="match_parent" android:id="@+id/drug_add_layout_required_fields_view"
+		android:layout_height="wrap_content">
 		<EditText android:layout_height="wrap_content"
 			android:id="@+id/drug_add_layout_brand_name_field" android:hint="Drug name..."
-			android:layout_centerHorizontal="true" android:layout_width="250dp">
-			<requestFocus></requestFocus>
+			android:layout_centerHorizontal="true" android:layout_width="250dp"
+			android:inputType="text|textCapSentences" android:imeOptions="actionDone">
 		</EditText>
 		<Spinner android:layout_height="wrap_content"
 			android:id="@+id/drug_add_layout_form_spinner"
-			android:layout_centerHorizontal="true" android:layout_width="251dp" android:layout_below="@id/drug_add_layout_brand_name_field"></Spinner>
+			android:layout_centerHorizontal="true" android:layout_width="251dp"
+			android:layout_below="@id/drug_add_layout_brand_name_field"></Spinner>
 	</RelativeLayout>
 	<Button android:layout_height="wrap_content"
 		android:layout_width="wrap_content" android:layout_alignParentBottom="true"

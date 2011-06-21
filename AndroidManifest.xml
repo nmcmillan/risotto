@@ -41,14 +41,26 @@
 		<activity android:name="com.risotto.view.drug.DrugDetailsView" />
 
 		<!-- Wizard Activities -->
+		
 		<!-- Who is it for -->
 		<activity android:name="com.risotto.view.wizard.WhoWillBeTaking"
 			android:theme="@android:style/Theme.NoTitleBar" />
-		<activity android:name="com.risotto.view.wizard.WhenTakeIt"
-			android:theme="@android:style/Theme.NoTitleBar" />
+			
+		<!-- Patient select -->
+		<activity android:name="com.risotto.view.wizard.PatientSelect"
+			android:theme="@android:style/Theme.NoTitleBar"/>
+			
 		<!-- OTC or Prescription -->
 		<activity android:name="com.risotto.view.wizard.OverCounterOrPrescription"
 			android:theme="@android:style/Theme.NoTitleBar" />
+		
+		<!-- Drug details (after drug add) -->
+		<activity android:name="com.risotto.view.wizard.EnterDrugDetails"
+			android:theme="@android:style/Theme.NoTitleBar"/>
+		
+		<activity android:name="com.risotto.view.wizard.WhenTakeIt"
+			android:theme="@android:style/Theme.NoTitleBar" />
+		
 		<!-- Take at Spec Times: Take it every day? -->
 		<activity android:name="com.risotto.view.wizard.TakeItEveryDay"
 			android:theme="@android:style/Theme.NoTitleBar" />
@@ -80,15 +92,15 @@
 			</intent-filter>
 		</receiver>
 
-		<!-- Drug Add activity -->
+		<!-- Patient Add activity -->
 		<activity android:name="com.risotto.view.patient.PatientAdd"
-			android:label="@string/patient_add_window_title" android:theme="@android:style/Theme.Dialog"
-			android:windowSoftInputMode="stateVisible" />
+			android:theme="@android:style/Theme.NoTitleBar" />
 
 		<!-- Drug Add/Edit activity -->
 		<activity android:name="com.risotto.view.drug.DrugAdd"
-			android:label="@string/drug_add_window_title" android:theme="@android:style/Theme.NoTitleBar"/>
-			<!--  <intent-filter>
+			android:label="@string/drug_add_window_title" android:theme="@android:style/Theme.NoTitleBar"
+			android:windowSoftInputMode="adjustPan"/>
+			<!--<intent-filter>
 				<action android:name="android.intent.action.INSERT" />
 				<category android:name="android.intent.category.DEFAULT" />
 				<data android:mimeType="vnd.android.cursor.dir/vnd.risotto.drug" />

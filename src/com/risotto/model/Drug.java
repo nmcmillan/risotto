@@ -39,6 +39,11 @@ public class Drug implements Serializable{
 	// DEBUG: LOG_TAG
 	private static final String LOG_TAG = "RISOTTO_DRUG";
 	
+	// Supported labels for notification
+	public enum LABEL {
+		PILLS,ML,MG,OZ,TABLESPOONS,OTHER
+	}
+	
 	// Possible drug types.
 	public enum TYPE {
 		OVER_THE_COUNTER, PRESCRIPTION, DEFAULT

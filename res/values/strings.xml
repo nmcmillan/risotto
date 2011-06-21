@@ -16,10 +16,11 @@
 	<string name="patient_view_menu_add">Add Patient...</string>
 	
 	<!-- Patient Add Strings -->
-	<string name="patient_add_window_title">New Patient Info:</string>
-	<string name="patient_add_button_string">Add Patient...</string>
-	<string name="patient_add_first_name">First Name...</string>
-	<string name="patient_add_last_name">Last Name...</string>
+	<string name="patient_add_button_string">Add Patient!</string>
+	<string name="patient_add_button_string_wizard">Next...</string>
+	<string name="patient_add_first_name">First Name</string>
+	<string name="patient_add_last_name">Last Name</string>
+	<string name="patient_add_instructions">Enter new patient info:</string>
 	
 	<!-- Drug Edit Strings -->
 	<string name="drug_resolve_title">Drug Information:</string>
@@ -37,15 +38,15 @@
 	<string name="button_drug_edit_ok">Add!</string>
 	<string name="drug_types">Drug Types:</string>
 	<string-array name="drug_types_array">
-		<item>CAPSULES</item>
-		<item>TABLETS</item>
-		<item>POWDERS</item>
-		<item>DROPS</item>
-		<item>LIQUIDS</item>
-		<item>SPRAY</item>
-		<item>SKIN</item>
-		<item>SUPPOSITORIES</item>
-		<item>OTHER</item>
+		<item>Capsules</item>
+		<item>Tablets</item>
+		<item>Powders</item>
+		<item>Drops</item>
+		<item>Liquids</item>
+		<item>Spray</item>
+		<item>Skin</item>
+		<item>Suppositories</item>
+		<item>Other</item>
 	</string-array>
 	
 	<!-- Prescription Add Strings -->
@@ -88,12 +89,16 @@
 		<!-- EnterDrugDetails Strings -->
 		<string name="wizard_enter_drug_details_instructions">Please enter the drug information...</string>
 		<string-array name="drug_form_label_array">
-			<item>Pills</item>
+			<item>pills</item>
 			<item>mL</item>
 			<item>mg</item>
 			<item>oz</item>
-			<item>Tablespoons</item>
+			<item>tablespoons</item>
+			<item>other</item>
 		</string-array>
+		
+		<!-- Patient Select Strings -->
+		<string name="wizard_patient_select_instructions">Please select who the reminder is for...</string>
 		
 	<string name="wizard_when_take_it_text">When will you take this medicine?</string>
 	<string name="button_wizard_choice_spec_time_text">At specific times...(Once a day, twice a day, every other day)</string>

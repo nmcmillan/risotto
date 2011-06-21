@@ -21,7 +21,7 @@
 		android:layout_below="@id/wizard_enter_drug_details_layout_instructions_view"
 		android:id="@+id/wizard_enter_drug_details_layout_dose_size"
 		android:inputType="number" android:hint="Size of one dose..."
-		android:layout_marginTop="20dp"/>
+		android:layout_marginTop="20dp" android:imeOptions="actionDone"/>
 	<Spinner android:layout_alignParentRight="true"
 		android:id="@+id/wizard_enter_drug_details_layout_spinner"
 		android:layout_height="wrap_content" android:layout_width="wrap_content"
@@ -32,7 +32,7 @@
 		android:layout_width="wrap_content" android:layout_below="@+id/wizard_enter_drug_details_layout_dose_size"
 		android:layout_centerInParent="true" android:layout_marginTop="30dp"
 		android:id="@+id/wizard_enter_drug_details_layout_total_quantity"
-		android:hint="Total quantity..." android:inputType="number"/>
+		android:hint="Total quantity..." android:inputType="number" android:imeOptions="actionDone"/>
 
 	<Button android:layout_height="wrap_content"
 		android:layout_width="wrap_content" android:layout_alignParentBottom="true"

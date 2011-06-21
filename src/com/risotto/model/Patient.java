@@ -5,7 +5,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Hashtable;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -15,7 +17,7 @@ import android.util.Log;
 
 import com.risotto.storage.StorageProvider;
 
-public class Patient {
+public class Patient implements Serializable {
 	
 	// Required Fields
 	private String firstName;
