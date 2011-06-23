@@ -1,5 +1,7 @@
 package com.risotto.view.wizard;
 
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,12 +19,21 @@ public class OverCounterOrPrescription extends Activity implements OnClickListen
 
 	public static final String LOG_TAG = "com.risotto.view.wizard.OverCounterOrPrescriptiong";
 	
+	private HashMap<String,Object> wizardData = new HashMap<String,Object>();
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.wizard_gen_question_layout);
+		setContentView(R.layout.wizard_gen_question);
+		
+		try {
+			  this.wizardData = WizardData.getData(getIntent().getExtras());
+		  } catch (Exception e) {
+			  Log.d(LOG_TAG,"No data found in intent.");
+			  e.printStackTrace();
+		}
 		
 		Button me = (Button)findViewById(R.id.button_wizard_gen_question_layout_answer_one);
 		me.setText(R.string.wizard_over_counter_or_prescription_otc);
@@ -43,7 +54,7 @@ public class OverCounterOrPrescription extends Activity implements OnClickListen
 
 	public void onClick(View v) {
 		
-		Drug wizardDrug = new Drug("");
+		Drug drug = new Drug("");
 		
 		Intent intent = new Intent();
 		intent.setClass(getApplicationContext(), DrugAdd.class);
@@ -51,20 +62,20 @@ public class OverCounterOrPrescription extends Activity implements OnClickListen
 		switch(v.getId()) {
 			case R.id.button_wizard_gen_question_layout_answer_one:
 				Log.d(LOG_TAG,"selected otc");
-				wizardDrug.setType(Drug.TYPE.OVER_THE_COUNTER);
-				intent.putExtra(WizardData.DRUG, wizardDrug);
-				startActivity(intent);
+				drug.setType(Drug.TYPE.OVER_THE_COUNTER);
 				break;
 			case R.id.button_wizard_gen_question_layout_answer_two:
 				Log.d(LOG_TAG,"selected prep");
-				wizardDrug.setType(Drug.TYPE.PRESCRIPTION);
-				intent.putExtra(WizardData.DRUG, wizardDrug);
-				startActivity(intent);
+				drug.setType(Drug.TYPE.PRESCRIPTION);
 				break;
 			default:
 				break;
 		
 		}
+		
+		wizardData.put(WizardData.DRUG, drug);
+		intent.putExtra(WizardData.CONTENTS, wizardData);
+		startActivity(intent);
 		
 	}
 	

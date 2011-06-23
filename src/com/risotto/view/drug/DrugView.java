@@ -123,9 +123,11 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 		case MENU_ITEM_ADD_POSITION:
 			Log.d(LOG_TAG, "MENU_ITEM_ADD clicked");
 
-			// TO DO: pop up dialog
-			startActivity(new Intent(Intent.ACTION_INSERT, getIntent()
-					.getData()));
+			Intent intent = new Intent();
+			
+			intent.setClass(getApplicationContext(), DrugAdd.class);
+			startActivity(intent);
+			
 			return true;
 		case MENU_ITEM_REMOVE_ALL_POSITION:
 			Log.d(MainService.LOG_TAG, "You clicked remove all drugs");

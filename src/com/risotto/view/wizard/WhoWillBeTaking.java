@@ -1,5 +1,7 @@
 package com.risotto.view.wizard;
 
+import java.util.Hashtable;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.risotto.R;
+import com.risotto.model.Patient;
 import com.risotto.storage.StorageProvider;
 import com.risotto.view.patient.PatientAdd;
 
@@ -18,7 +21,9 @@ public class WhoWillBeTaking extends Activity implements OnClickListener {
 
 	public static final String LOG_TAG = "com.risotto.view.wizard.WhoWillBeTaking";
 	
-	public static final String ACTION_WIZARD_NEW_DRUG = "com.risotto.view.wizard.WhoWillBeTaking.newDrug";
+	//public static final String ACTION_WIZARD_NEW_DRUG = "com.risotto.view.wizard.WhoWillBeTaking.newDrug";
+	
+	private Hashtable<String,Object> wizardData = new Hashtable<String,Object>();
 	
 	private static String[] DRUG_PROJECTION = {
 		StorageProvider.DrugColumns._ID,
@@ -38,7 +43,7 @@ public class WhoWillBeTaking extends Activity implements OnClickListener {
 		
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.wizard_gen_question_layout);
+		setContentView(R.layout.wizard_gen_question);
 		
 		Button me = (Button)findViewById(R.id.button_wizard_gen_question_layout_answer_one);
 		me.setText(R.string.wizard_who_will_be_taking_me);
@@ -64,27 +69,22 @@ public class WhoWillBeTaking extends Activity implements OnClickListener {
 				StorageProvider.DrugColumns.CONTENT_URI, DRUG_PROJECTION, null, null, null);
 		boolean goToNewDrug = true;
 		
-		Cursor patientCursor = this.getContentResolver().query(
-				StorageProvider.PatientColumns.CONTENT_URI, PATIENT_PROJECTION, null, null, null);
-		boolean goToNewPatient = true;
-	
 		//returned at least one result, so don't create new drug
 		if(drugCursor != null && drugCursor.getCount() > 0) {
 			goToNewDrug = false;
 		}
-		//check if we need to go to patient add if user selects it's for someone else
-		//and there are no patients in database
-		if(patientCursor != null && patientCursor.getCount() > 0) {
-			goToNewPatient = false;
-		}
 		
 		Intent intent = new Intent();
 		
-		intent.putExtra(WizardData.CREATE_NEW_DRUG, goToNewDrug);
+		wizardData.put(WizardData.CREATE_NEW_DRUG, goToNewDrug);
+		intent.putExtra(WizardData.CONTENTS, wizardData);
 		
 		switch(v.getId()) {
 			case R.id.button_wizard_gen_question_layout_answer_one:
 				Log.d(LOG_TAG,"selected me.");
+				Patient patient = new Patient("You");
+				wizardData.put(WizardData.PATIENT, patient);
+				intent.putExtra(WizardData.CONTENTS, wizardData);
 				if(goToNewDrug) {
 					//launch new drug activity
 					Log.d(LOG_TAG,"new drug - select OTC or prep.");
@@ -93,11 +93,17 @@ public class WhoWillBeTaking extends Activity implements OnClickListener {
 				} else {
 					//launch select drug activity
 					Log.d(LOG_TAG,"select drug from list.");
+					intent.setClass(getApplicationContext(), DrugSelect.class);
+					startActivity(intent);
 				}
 				break;
 			case R.id.button_wizard_gen_question_layout_answer_two:
 				Log.d(LOG_TAG,"selected other");
-				if(goToNewPatient) {
+				//Check if patient db has any patients
+				Cursor patientCursor = this.getContentResolver().query(
+						StorageProvider.PatientColumns.CONTENT_URI, PATIENT_PROJECTION, null, null, null);
+		
+				if(patientCursor != null && patientCursor.getCount() < 1) {
 					Log.d(LOG_TAG,"new patient.");
 					intent.setClass(getApplicationContext(), PatientAdd.class);
 					startActivity(intent);

@@ -49,6 +49,10 @@
 		<!-- Patient select -->
 		<activity android:name="com.risotto.view.wizard.PatientSelect"
 			android:theme="@android:style/Theme.NoTitleBar"/>
+		
+		<!-- Drug select -->
+		<activity android:name="com.risotto.view.wizard.DrugSelect"
+			android:theme="@android:style/Theme.NoTitleBar"/>
 			
 		<!-- OTC or Prescription -->
 		<activity android:name="com.risotto.view.wizard.OverCounterOrPrescription"

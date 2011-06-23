@@ -29,6 +29,6 @@
 	<Button android:layout_height="wrap_content"
 		android:layout_width="wrap_content" android:layout_alignParentBottom="true"
 		android:id="@+id/button_drug_add_layout_next"
-		android:layout_alignParentRight="true" android:text="Continue..."></Button>
+		android:layout_alignParentRight="true" android:text="Add drug!"></Button>
 
 </RelativeLayout>

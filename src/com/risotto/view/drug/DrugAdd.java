@@ -1,5 +1,7 @@
 package com.risotto.view.drug;
 
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -36,6 +38,7 @@ public class DrugAdd extends Activity implements View.OnClickListener, AdapterVi
 	public static final String EDIT_DRUG_ACTION="com.risotto.action.EDIT_DRUG";
 	
 	private static final String LOG_TAG = "DrugAdd";
+	private HashMap<String,Object> wizardData = new HashMap<String,Object>();
 	
 	//Declare a PROJECTION - a 'filter' to the content provider to only
 	//return specific fields during a query
@@ -58,29 +61,32 @@ public class DrugAdd extends Activity implements View.OnClickListener, AdapterVi
 		
 		setContentView(R.layout.drug_add_layout);
 		
-		Bundle extras = getIntent().getExtras();
-		
 		/**
 		 * check if drug object was added to intent
 		 *	- we're in the wizard
-		 *	- a drug object is in the intent, pull it out
+		 *	- a drug object with only the type (OTC / prep) is in the data, extract
 		 *
 		 * check if patient object was added to intent
 		 * 	- we came from patient add
 		 * 	- a patient object is in intent, pull it out
-		 */		
-		if(null != extras && extras.containsKey(WizardData.DRUG)) {
-			newDrug = (Drug)extras.getSerializable(WizardData.DRUG);
-			inWizard = true;
-			Log.d(LOG_TAG, newDrug.getType().toString());
-		} else
-			newDrug = new Drug("");
-		
-		if(null != extras && extras.containsKey(WizardData.PATIENT)) {
-			newPatient = (Patient)extras.getSerializable(WizardData.PATIENT);
-			inWizard = true;
-			Log.d(LOG_TAG, newPatient.getFirstName());
+		 */	
+		try {
+			  this.wizardData = WizardData.getData(getIntent().getExtras());
+			  inWizard = true;
+			  if(wizardData.containsKey(WizardData.DRUG)) {
+					newDrug = (Drug)wizardData.get(WizardData.DRUG);
+					Log.d(LOG_TAG, newDrug.getType().toString());
+			  } else
+					newDrug = new Drug("");
+				
+			  if(wizardData.containsKey(WizardData.PATIENT)) {
+					newPatient = (Patient)wizardData.get(WizardData.PATIENT);
+					Log.d(LOG_TAG, newPatient.getFirstName());
+			  }
+		  } catch (Exception e) {
+			  Log.d(LOG_TAG,"No data found in intent.");
 		}
+		
 		
 		drugNameEditText = (EditText) this.findViewById(R.id.drug_add_layout_brand_name_field);
 		
@@ -92,41 +98,36 @@ public class DrugAdd extends Activity implements View.OnClickListener, AdapterVi
 		
 		Button b = (Button) this.findViewById(R.id.button_drug_add_layout_next);
 		b.setOnClickListener(this);
+		if(inWizard)
+			b.setText("Next...");
 	}
 	
 	public void onClick(View v) {
-		//TO DO: sanitize inputs to protect against SQL injection
-		
-		switch(v.getId()) {
-			case R.id.button_drug_add_layout_next:
-				String enteredName = drugNameEditText.getText().toString().trim();
-				if(0 == enteredName.length()) {
-					//name is incorrect - display dialog telling user
-					new AlertDialog.Builder(this)
-				    .setTitle("Drug Name")
-				    .setMessage("The drug name can't be empty, please try again!")
-				    .setPositiveButton("Okay", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) {} })
-				    .show();
-					this.drugNameEditText.requestFocus();
-				}
-				else {
-					newDrug.setBrandName(enteredName);
-					newDrug.setForm(dForm);
-					if(inWizard) {
-						Intent intent = new Intent();
-						intent.setClass(getApplicationContext(), EnterDrugDetails.class);
-						intent.putExtra(WizardData.DRUG, newDrug);
-						startActivity(intent);
-					} else {
-						ContentValues cv = newDrug.toContentValues();
-						Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
-						Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
-					}
-					
-				}
-				break;
-			default:
-				break;
+		String enteredName = drugNameEditText.getText().toString().trim();
+		if(0 == enteredName.length()) {
+			//name is incorrect - display dialog telling user
+			new AlertDialog.Builder(this)
+		    .setTitle("Drug Name")
+		    .setMessage("The drug name can't be empty, please try again!")
+		    .setPositiveButton("Okay", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) {} })
+		    .show();
+			this.drugNameEditText.requestFocus();
+		}
+		else {
+			newDrug = new Drug(enteredName);
+			newDrug.setForm(dForm);
+			if(inWizard) {
+				Intent intent = new Intent();
+				intent.setClass(getApplicationContext(), EnterDrugDetails.class);
+				wizardData.put(WizardData.DRUG, newDrug);
+				startActivity(intent);
+			} else {
+				ContentValues cv = newDrug.toContentValues();
+				Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
+				Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
+				finish();
+			}
+			
 		}
 	}
 

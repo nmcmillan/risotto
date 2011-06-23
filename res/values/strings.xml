@@ -100,6 +100,9 @@
 		<!-- Patient Select Strings -->
 		<string name="wizard_patient_select_instructions">Please select who the reminder is for...</string>
 		
+		<!-- Drug Select Strings -->
+		<string name="wizard_drug_select_instructions">Recently Taken:</string>
+		
 	<string name="wizard_when_take_it_text">When will you take this medicine?</string>
 	<string name="button_wizard_choice_spec_time_text">At specific times...(Once a day, twice a day, every other day)</string>
 	<string name="button_wizard_choice_spec_interval_text">At specific intervals...(Every 4 hours, every 12 hours, every other day)</string>

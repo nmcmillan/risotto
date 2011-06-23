@@ -1,5 +1,7 @@
 package com.risotto.view.wizard;
 
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,13 +15,14 @@ import android.widget.Spinner;
 
 import com.risotto.R;
 import com.risotto.model.Drug;
-import com.risotto.model.Prescription;
+import com.risotto.model.Patient;
 
 public class EnterDrugDetails extends Activity implements OnClickListener,OnItemSelectedListener{
 
 	public static final String LOG_TAG = "com.risotto.view.wizard.EnterDrugDetails";
 	
-	private static final String[] DRUG_LABEL_POSITIONS = { "Pills","mL","mg","oz","Tablespoons" }; 
+	private static final String[] DRUG_LABEL_POSITIONS = { "Pills","mL","mg","oz","Tablespoons" };
+	private HashMap<String,Object> wizardData = new HashMap<String,Object>();
 	
 	private Drug newDrug;
 	
@@ -27,10 +30,23 @@ public class EnterDrugDetails extends Activity implements OnClickListener,OnItem
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		Bundle extras = getIntent().getExtras();
-		newDrug = (Drug)extras.getSerializable(WizardData.DRUG);
+		try {
+			  this.wizardData = WizardData.getData(getIntent().getExtras());
+		  } catch (Exception e) {
+			  Log.d(LOG_TAG,"No data found in intent.");
+		  }
+		setContentView(R.layout.wizard_drug_details);
 		
-		setContentView(R.layout.wizard_drug_details_layout);
+		newDrug = (Drug)wizardData.get(WizardData.DRUG);
+		
+		Patient p = (Patient)wizardData.get(WizardData.PATIENT);
+		
+		//Print out what the information received so far is:
+		Log.d(LOG_TAG,"Drug info: Name : " + newDrug.getBrandName());
+		Log.d(LOG_TAG,"Drug info: Name : " + newDrug.getForm());
+		
+		Log.d(LOG_TAG,"Patient info: First Name : " + p.getFirstName());
+		Log.d(LOG_TAG,"Patient info: Last : " + p.getLastName());
 		
 		Spinner spinner = (Spinner) this.findViewById(R.id.wizard_enter_drug_details_layout_spinner);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.drug_form_label_array, android.R.layout.simple_spinner_item);

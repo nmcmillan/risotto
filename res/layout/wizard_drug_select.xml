@@ -8,14 +8,14 @@
 	</RelativeLayout>
 	<RelativeLayout android:layout_alignParentRight="true"
 		android:layout_below="@id/title_bar" android:layout_width="match_parent"
-		android:layout_height="100dp" android:id="@+id/wizard_patient_select_instructions_view">
+		android:layout_height="100dp" android:id="@+id/wizard_drug_select_instructions_view">
 		<TextView android:layout_height="wrap_content"
-			android:layout_width="wrap_content" android:text="@string/wizard_patient_select_instructions"
-			android:textSize="25sp" android:id="@+id/wizard_patient_select_instructions_text"
+			android:layout_width="wrap_content" android:text="@string/wizard_drug_select_instructions"
+			android:textSize="25sp" android:id="@+id/wizard_drug_select_instructions_text"
 			android:layout_centerVertical="true" android:layout_alignParentLeft="true"
 			android:paddingLeft="10dp"></TextView>
 		<Button android:layout_width="wrap_content"
-			android:id="@+id/button_wizard_patient_select_add_new_patient"
+			android:id="@+id/button_wizard_drug_select_add_new_drug"
 			android:textSize="20sp" android:drawableTop="@android:drawable/ic_input_add"
 			android:background="@null" android:layout_height="wrap_content"
 			android:layout_alignParentRight="true" android:layout_centerVertical="true"
@@ -23,6 +23,5 @@
 	</RelativeLayout>
 	<ListView android:layout_height="wrap_content"
 		android:layout_width="match_parent" android:layout_alignParentRight="true"
-		android:id="@android:id/list" android:layout_below="@id/wizard_patient_select_instructions_view"></ListView>
-
+		android:id="@android:id/list" android:layout_below="@id/wizard_drug_select_instructions_view"></ListView>
 </RelativeLayout>
