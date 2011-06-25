@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	android:layout_width="match_parent" android:layout_height="match_parent">
 	<RelativeLayout android:id="@+id/title_bar" style="@style/title_bar_style">
 		<TextView android:id="@+id/title_bar_logo" style="@style/title_bar_logo_style" />
 		<Button android:id="@+id/title_bar_button_sync" style="@style/button_title_bar_sync_style" />
@@ -14,7 +13,6 @@
 			android:layout_width="wrap_content" android:layout_centerInParent="true"
 			android:text="This is a test question to be asked?"
 			android:background="@null" android:textSize="25sp" android:gravity="center_horizontal">
-			<requestFocus></requestFocus>
 		</TextView>
 	</RelativeLayout>
 	<RelativeLayout android:layout_below="@id/wizard_gen_question_layout_question_view"
@@ -23,13 +21,12 @@
 		<Button android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:id="@+id/button_wizard_gen_question_layout_answer_one"
-			android:text="This is the answer to question one." android:textSize="25sp" android:layout_centerInParent="true"></Button>
+			android:text="This is the answer to question one." android:textSize="25sp" android:layout_centerHorizontal="true"></Button>
 		<TextView android:layout_height="wrap_content"
 			android:layout_alignParentBottom="true" android:layout_width="match_parent"
 			android:layout_below="@id/button_wizard_gen_question_layout_answer_one"
 			android:id="@+id/wizard_gen_question_layout_answer_one_supp_text"
-			android:gravity="center" android:textColor="#EE9241"
-			android:textSize="15sp"></TextView>
+			android:textColor="#EE9241" android:textSize="20sp" android:gravity="center_horizontal" android:paddingTop="8dp"></TextView>
 	</RelativeLayout>
 	<RelativeLayout android:id="@+id/wizard_gen_question_layout_answer_two"
 		android:layout_height="wrap_content" android:layout_alignParentBottom="true"
@@ -42,11 +39,10 @@
 			android:layout_centerHorizontal="true"></Button>
 		<TextView android:layout_height="wrap_content"
 			android:id="@+id/wizard_gen_question_layout_answer_two_supp_text"
-			android:gravity="center"
-			android:textColor="#EE9241" android:layout_alignParentBottom="true"
-			android:layout_width="match_parent"
+			android:textColor="#EE9241"
+			android:layout_alignParentBottom="true" android:layout_width="match_parent"
 			android:layout_below="@id/button_wizard_gen_question_layout_answer_two"
-			android:textSize="15sp"></TextView>
+			android:gravity="center_horizontal" android:textSize="20sp" android:paddingTop="8dp"></TextView>
 	</RelativeLayout>
 
 </RelativeLayout>

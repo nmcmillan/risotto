@@ -114,14 +114,17 @@ public class DrugAdd extends Activity implements View.OnClickListener, AdapterVi
 			this.drugNameEditText.requestFocus();
 		}
 		else {
-			newDrug = new Drug(enteredName);
-			newDrug.setForm(dForm);
 			if(inWizard) {
+				newDrug.setBrandName(enteredName);
+				newDrug.setForm(dForm);
 				Intent intent = new Intent();
 				intent.setClass(getApplicationContext(), EnterDrugDetails.class);
 				wizardData.put(WizardData.DRUG, newDrug);
+				intent.putExtra(WizardData.CONTENTS, wizardData);
 				startActivity(intent);
 			} else {
+				newDrug = new Drug(enteredName);
+				newDrug.setForm(dForm);
 				ContentValues cv = newDrug.toContentValues();
 				Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, cv);
 				Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);

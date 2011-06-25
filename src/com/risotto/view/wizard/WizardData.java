@@ -37,6 +37,7 @@ public class WizardData {
 	public static final String DRUG = "com.risotto.view.wizard.wizard_drug_object";
 	public static final String CREATE_NEW_DRUG = "com.risotto.view.wizard.create_new_drug";
 	public static final String CONTENTS = "com.risotto.view.wizard.hashtable";
+	public static final String TIMES = "com.risotto.view.wizard.times";
 	
 	/**
 	 * Helper method for pulling wizard data out of bundle.

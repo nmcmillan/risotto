@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -19,7 +20,7 @@ import android.util.Log;
 
 import com.risotto.storage.StorageProvider;
 
-public class Prescription {
+public class Prescription implements Serializable {
 
 	// Required fields
 	private Patient patient;
@@ -62,6 +63,8 @@ public class Prescription {
 	public static final int DOSE_TYPE_EVERY_HOUR_DAY_OF_WEEK = 2;
 	// Ex: ONCE a day EVERY day
 	public static final int DOSE_TYPE_EVERY_DAY = 3;
+	// Other
+	public static final int DOSE_TYPE_OTHER = 4;
 
 	// Unique ID for storage references
 	private int _id;

@@ -2,41 +2,31 @@
 
 <!-- Define row -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/wizard_how_often_schedule_timer_row_add"
-	android:layout_width="fill_parent"
-	android:layout_height="45sp"
+	android:id="@+id/wizard_how_often_schedule_timer_row"
+	android:layout_width="fill_parent" android:layout_height="45sp"
 	android:orientation="horizontal">
-	<!-- Button for removing slot -->   
-	<Button android:id="@+id/wizard_how_often_schedule_remove_time_button"
+	<!-- Button for removing slot -->
+	<Button android:id="@+id/button_wizard_how_often_schedule_remove_time"
 		android:drawableTop="@android:drawable/ic_menu_delete"
-		android:layout_width="wrap_content"
-		android:layout_height="45sp"
-		android:background="#000"
-		android:clickable="true"/>
-		
-    <!-- Displays time -->    
+		android:layout_width="wrap_content" android:layout_height="45sp"
+		android:background="#000" android:clickable="true" />
+
+	<!-- Displays time -->
 	<TextView android:id="@+id/wizard_how_often_schedule_time_display"
-		android:layout_width="wrap_content"
-		android:layout_height="fill_parent"
-		android:textSize="25sp"
-		android:textColor="#000"
-		android:background="#EE9242"
-		android:gravity="center_vertical|center_horizontal"
-		android:clickable="true"/>
-	
+		android:layout_width="wrap_content" android:layout_height="fill_parent"
+		android:textSize="25sp" android:textColor="#000" android:background="#EE9242"
+		android:text="@string/wizard_how_often_schedule_hint_time_pick" android:gravity="center_vertical|center_horizontal"
+		android:clickable="true" />
+
 	<!-- AM / PM -->
-	<RadioGroup 
-		android:id="@+id/wizard_how_often_schedule_radio_group"
-		android:layout_width="wrap_content"
-		android:layout_height="45sp"
+	<RadioGroup android:id="@+id/wizard_how_often_schedule_radio_group"
+		android:layout_width="wrap_content" android:layout_height="45sp"
 		android:orientation="horizontal">
 		<RadioButton android:id="@+id/wizard_how_often_schedule_am"
-			android:layout_width="wrap_content" 
-			android:layout_height="45sp"
+			android:layout_width="wrap_content" android:layout_height="45sp"
 			android:text="AM" />
 		<RadioButton android:id="@+id/wizard_how_often_schedule_pm"
-			android:layout_width="wrap_content" 
-			android:layout_height="45sp"
+			android:layout_width="wrap_content" android:layout_height="45sp"
 			android:text="PM" />
 	</RadioGroup>
 </LinearLayout>

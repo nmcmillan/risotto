@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	
 	<!-- Application Strings -->
 	<string name="hello">Hello World, HelloWorld!</string>
 	<string name="app_name">Risotto</string>
@@ -97,23 +96,31 @@
 			<item>other</item>
 		</string-array>
 		
-		<!-- Patient Select Strings -->
+		<!-- PatientSelect Strings -->
 		<string name="wizard_patient_select_instructions">Please select who the reminder is for...</string>
 		
-		<!-- Drug Select Strings -->
+		<!-- DrugSelect Strings -->
 		<string name="wizard_drug_select_instructions">Recently Taken:</string>
 		
-	<string name="wizard_when_take_it_text">When will you take this medicine?</string>
-	<string name="button_wizard_choice_spec_time_text">At specific times...(Once a day, twice a day, every other day)</string>
-	<string name="button_wizard_choice_spec_interval_text">At specific intervals...(Every 4 hours, every 12 hours, every other day)</string>
+		<!-- WhenTakeIt Strings -->
+		<string name="wizard_when_take_it_text">When will you take this medicine?</string>
+		<string name="wizard_when_take_it_spec_time">At specific times...</string>
+		<string name="wizard_when_take_it_spec_time_support">For example: once a day, twice a day, three times a day, with a meal, etc.</string>
+		<string name="wizard_when_take_it_spec_interval">At specific intervals...</string>
+		<string name="wizard_when_take_it_spec_interval_support">For example: every 4 hours, every 12 hours, every other day, etc.</string>
 	
-	<string name="wizard_take_it_every_day_text">Will you take it every day?</string>
-	<string name="button_wizard_choice_take_every_day_yes">Yes, I will take it every day of the week.</string>
-	<string name="button_wizard_choice_take_every_day_no">No, I will not take it every day of the week.</string>
-	<string name="button_wizard_choice_take_every_day_back">Backup.</string>
+		<!-- TakeItEveryDay Strings -->
+		<string name="wizard_take_it_every_day_question">Will you take it every day?</string>
+		<string name="wizard_take_it_every_day_yes">Yes, I will take it every day of the week.</string>
+		<string name="wizard_take_it_every_day_no">No, I will not take it every day of the week.</string>
 	
-	<string name="wizard_how_often_schedule_text">Please enter the times you\'ll be taking the drug:</string>
-	<string name="wizard_how_often_schedule_hint_time_pick">Click here...</string>
+		<!-- HowOftenSchedule Strings -->
+		<string name="wizard_how_often_schedule_text">Please enter the times you\'ll be taking the drug:</string>
+		<string name="wizard_how_often_schedule_hint_time_pick">Select time...</string>
+		
+		<!-- WhatDaysTake Strings -->
+		<string name="wizard_what_days_take_instructions">What days will you be taking the medicine?</string>
+		
 	
 	
 </resources>

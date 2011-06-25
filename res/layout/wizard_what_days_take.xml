@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<RelativeLayout android:id="@+id/title_bar" style="@style/title_bar_style">
+		<TextView android:id="@+id/title_bar_logo" style="@style/title_bar_logo_style" />
+		<Button android:id="@+id/title_bar_button_sync" style="@style/button_title_bar_sync_style" />
+	</RelativeLayout>
+	<RelativeLayout android:layout_alignParentLeft="true"
+		android:layout_below="@id/title_bar" android:layout_width="match_parent"
+		android:layout_height="100dp" android:id="@+id/wizard_what_days_take_instructions_view">
+		<TextView android:layout_height="wrap_content"
+			android:layout_width="wrap_content" android:layout_centerInParent="true"
+			android:id="@+id/wizard_what_days_take_med_instructions"
+			android:text="@string/wizard_what_days_take_instructions"
+			android:textSize="25sp" android:gravity="center"></TextView>
+	</RelativeLayout>
+	<CheckBox android:layout_height="wrap_content"
+		android:layout_width="wrap_content" android:layout_below="@id/wizard_what_days_take_instructions_view"
+		android:id="@+id/checkbox_wizard_what_days_take_sunday" android:text="Sunday"></CheckBox>
+	<CheckBox android:layout_height="wrap_content"
+		android:layout_below="@+id/checkbox_wizard_what_days_take_sunday"
+		android:layout_width="wrap_content" android:layout_alignLeft="@+id/checkbox_wizard_what_days_take_sunday"
+		android:id="@+id/checkbox_wizard_what_days_take_tuesday" android:text="Tuesday"></CheckBox>
+	<CheckBox android:layout_height="wrap_content"
+		android:layout_width="wrap_content" android:layout_below="@+id/checkbox_wizard_what_days_take_tuesday"
+		android:layout_alignLeft="@+id/checkbox_wizard_what_days_take_tuesday"
+		android:id="@+id/checkbox_wizard_what_days_take_thursday"
+		android:text="Thursday"></CheckBox>
+	<CheckBox android:id="@+id/checkbox_wizard_what_days_take_satruday"
+		android:layout_height="wrap_content" android:layout_width="wrap_content"
+		android:text="Saturday" android:layout_below="@+id/checkbox_wizard_what_days_take_thursday"
+		android:layout_alignLeft="@+id/checkbox_wizard_what_days_take_thursday"
+		android:layout_alignRight="@+id/checkbox_wizard_what_days_take_thursday"></CheckBox>
+	<CheckBox android:layout_height="wrap_content"
+		android:layout_width="wrap_content" android:id="@+id/checkbox_wizard_what_days_take_monday"
+		android:text="Monday" android:layout_alignParentRight="true"
+		android:layout_alignBottom="@id/checkbox_wizard_what_days_take_sunday"
+		android:layout_alignTop="@id/checkbox_wizard_what_days_take_sunday"></CheckBox>
+	<CheckBox android:layout_height="wrap_content"
+		android:layout_width="wrap_content" android:text="Wednesday"
+		android:layout_below="@id/checkbox_wizard_what_days_take_monday"
+		android:id="@+id/checkbox_wizard_what_days_take_wednesday"
+		android:layout_alignParentRight="true"></CheckBox>
+	<CheckBox android:layout_height="wrap_content"
+		android:layout_width="wrap_content" android:id="@+id/checkbox_wizard_what_days_take_friday"
+		android:text="Friday" android:layout_alignLeft="@id/checkbox_wizard_what_days_take_wednesday"
+		android:layout_alignRight="@id/checkbox_wizard_what_days_take_wednesday"
+		android:layout_below="@id/checkbox_wizard_what_days_take_wednesday"></CheckBox>
+
+
+</RelativeLayout>

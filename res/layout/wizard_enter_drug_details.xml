@@ -9,33 +9,33 @@
 	<RelativeLayout android:layout_below="@id/title_bar"
 		android:layout_width="match_parent" android:layout_height="wrap_content"
 		android:padding="15dp"
-		android:id="@+id/wizard_enter_drug_details_layout_instructions_view">
+		android:id="@+id/wizard_enter_drug_details_instructions_view">
 		<TextView android:layout_height="wrap_content"
 			android:layout_width="wrap_content" android:layout_centerInParent="true"
 			android:text="@string/wizard_enter_drug_details_instructions"
 			android:textSize="25sp" android:gravity="center"
-			android:id="@+id/wizard_enter_drug_details_layout_instructions_text"></TextView>
+			android:id="@+id/wizard_enter_drug_details_instructions_text"></TextView>
 	</RelativeLayout>
 	<EditText android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
-		android:layout_below="@id/wizard_enter_drug_details_layout_instructions_view"
-		android:id="@+id/wizard_enter_drug_details_layout_dose_size"
+		android:layout_below="@id/wizard_enter_drug_details_instructions_view"
+		android:id="@+id/wizard_enter_drug_details_dose_size"
 		android:inputType="number" android:hint="Size of one dose..."
 		android:layout_marginTop="20dp" android:imeOptions="actionDone"/>
 	<Spinner android:layout_alignParentRight="true"
-		android:id="@+id/wizard_enter_drug_details_layout_spinner"
+		android:id="@+id/wizard_enter_drug_details_spinner"
 		android:layout_height="wrap_content" android:layout_width="wrap_content"
-		android:layout_below="@id/wizard_enter_drug_details_layout_instructions_view"
-		android:layout_toRightOf="@+id/wizard_enter_drug_details_layout_dose_size"
+		android:layout_below="@id/wizard_enter_drug_details_instructions_view"
+		android:layout_toRightOf="@+id/wizard_enter_drug_details_dose_size"
 		android:layout_marginTop="20dp"></Spinner>
 	<EditText android:layout_height="wrap_content"
-		android:layout_width="wrap_content" android:layout_below="@+id/wizard_enter_drug_details_layout_dose_size"
+		android:layout_width="wrap_content" android:layout_below="@+id/wizard_enter_drug_details_dose_size"
 		android:layout_centerInParent="true" android:layout_marginTop="30dp"
-		android:id="@+id/wizard_enter_drug_details_layout_total_quantity"
+		android:id="@+id/wizard_enter_drug_details_total_quantity"
 		android:hint="Total quantity..." android:inputType="number" android:imeOptions="actionDone"/>
 
 	<Button android:layout_height="wrap_content"
 		android:layout_width="wrap_content" android:layout_alignParentBottom="true"
-		android:id="@+id/button_enter_drug_details_layout_next"
+		android:id="@+id/button_enter_drug_details_next"
 		android:layout_alignParentRight="true" android:text="Continue..."></Button>
 </RelativeLayout>
