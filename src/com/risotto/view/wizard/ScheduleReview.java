@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import android.app.Activity;
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +19,7 @@ import com.risotto.R;
 import com.risotto.model.Drug;
 import com.risotto.model.Patient;
 import com.risotto.model.Prescription;
+import com.risotto.storage.StorageProvider;
 
 public class ScheduleReview extends Activity implements OnClickListener {
 	
@@ -55,10 +58,14 @@ public class ScheduleReview extends Activity implements OnClickListener {
 		Log.d(LOG_TAG,"class: " + wizardData.get(WizardData.TIMES).getClass());
 		
 		TextView who = (TextView) this.findViewById(R.id.wizard_schedule_review_who);
-		who.setText(patient.getFirstName() + patient.getLastName());
+		String last = patient.getLastName();
+		if(last.equals("NULL"))
+			last = "";
+		
+		who.setText(patient.getFirstName() + last);
 		
 		TextView what = (TextView) this.findViewById(R.id.wizard_schedule_review_what);
-		what.setText(drug.getBrandName());
+		what.setText(drug.getBrandName() + " " + drug.getForm().toString());
 		
 		TextView when = (TextView) this.findViewById(R.id.wizard_schedule_review_when);
 		Iterator<Calendar> iterator = times.iterator();
@@ -86,7 +93,7 @@ public class ScheduleReview extends Activity implements OnClickListener {
 			else
 				hour = (time.get(Calendar.HOUR_OF_DAY) - 12);
 			
-			list =  list + hour + ":" + pad(time.get(Calendar.MINUTE)) + " " + AM_PM + ",";
+			list =  list + hour + ":" + pad(time.get(Calendar.MINUTE)) + " " + AM_PM + "\n";
 		}
 		when.setText(list);	
 		
@@ -103,7 +110,33 @@ public class ScheduleReview extends Activity implements OnClickListener {
     }
 
 	public void onClick(View v) {
+		ContentValues drugCV = drug.toContentValues();
+		Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, drugCV);
+		Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
 		
+		ContentValues patientCV = patient.toContentValues();
+		Uri newPatientUri = this.getContentResolver().insert(StorageProvider.PatientColumns.CONTENT_URI, patientCV);
+		Log.d(LOG_TAG,"finished adding drug; uri = " + newPatientUri);
+		
+		Iterator<Calendar> it = times.iterator();
+		
+		while(it.hasNext()) {
+			Calendar t = it.next();
+			String time = pad(t.get(Calendar.HOUR_OF_DAY));
+			time += ":";
+			time += pad(t.get(Calendar.MINUTE));
+			Log.d(LOG_TAG,"adding time: " + time);
+			prep.addTimeEveryDay(time);
+		}
+		
+		prep.setPatient(patient);
+		prep.setDrug(drug);
+		
+		ContentValues prescriptionCV = prep.toContentValues(getApplicationContext());
+		Uri newPrepUri = this.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, prescriptionCV);
+		Log.d(LOG_TAG,"finished adding drug; uri = " + newPrepUri);
+		
+		finish();
 	}
 
 }

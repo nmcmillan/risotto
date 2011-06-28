@@ -12,14 +12,14 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.risotto.R;
+import com.risotto.model.Prescription;
 
 public class TakeItEveryDay extends Activity implements OnClickListener {
 	
-	//the name of these strings will correspond to the answer that was clicked in this UI
-	//they will reference the activity that is to be started next based on the answer
-	
 	public static final String LOG_TAG = "com.risotto.view.wizard.TakeItEveryDay";
 	private HashMap<String,Object> wizardData = new HashMap<String,Object>();
+	
+	Prescription prep;
 	
 	/* (non-Javadoc)
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -34,6 +34,7 @@ public class TakeItEveryDay extends Activity implements OnClickListener {
 		
 		try {
 			  this.wizardData = WizardData.getData(getIntent().getExtras());
+			  prep = (Prescription)wizardData.get(WizardData.PRESCRIPTION);
 		  } catch (Exception e) {
 			  Log.d(LOG_TAG,"No data found in intent.");
 		}
@@ -59,17 +60,20 @@ public class TakeItEveryDay extends Activity implements OnClickListener {
 	 * 
 	 */
 	public void onClick(View v) {
-		Intent nextQuestion = new Intent();
-		nextQuestion.putExtra(WizardData.CONTENTS, wizardData);
+		Intent nextQuestion = new Intent();		
 		switch(v.getId()) {
 			case R.id.button_wizard_gen_question_layout_answer_one:
 				Log.d(LOG_TAG,"take every day");
+				prep.setDoseType(Prescription.DOSE_TYPE_EVERY_DAY);
 		    	nextQuestion.setClass(getApplicationContext(), HowOftenSchedule.class);
+		    	nextQuestion.putExtra(WizardData.CONTENTS, wizardData);
 				startActivity(nextQuestion);
 				break;
 			case R.id.button_wizard_gen_question_layout_answer_two:
 				Log.d(LOG_TAG,"not taken every day");
+				prep.setDoseType(Prescription.DOSE_TYPE_EVERY_DAY_OF_WEEK);
 				nextQuestion.setClass(getApplicationContext(), WhatDaysTake.class);
+				nextQuestion.putExtra(WizardData.CONTENTS, wizardData);
 				startActivity(nextQuestion);
 				//launch how often will you take this
 				break;

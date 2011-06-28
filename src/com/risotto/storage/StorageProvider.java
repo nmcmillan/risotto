@@ -15,6 +15,10 @@ import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.risotto.model.Drug;
+import com.risotto.model.Patient;
+import com.risotto.model.Prescription;
+
 public class StorageProvider extends ContentProvider {
 	
     protected static final String LOG_TAG = "StorageProvider";
@@ -483,6 +487,38 @@ public class StorageProvider extends ContentProvider {
 		}
 	}
 
+	/**
+	 * Convenience method for determining whether the object already exists in the database.
+	 * 
+	 * Patient is the only object type implemented thus far.
+	 * 
+	 * @param Object to check
+	 * @return whether or not the object already exists in the db.
+	 */
+	public static boolean isInDatabase(Object o) {
+		String query = "";
+		String[] args = null;
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		boolean isPresent = false;
+		
+		if(o instanceof Drug) {
+			return false;
+		} else if(o instanceof Patient) {
+			args = new String[2];
+			args[0] = ((Patient)o).getFirstName();
+			args[1] = ((Patient)o).getLastName();
+			//ensure we do a case insensitive search (i.e JOE BLACK is the same as Joe Black)
+			query = "SELECT first_name, last_name FROM patients WHERE first_name=? AND last_name=? COLLATE NOCASE";
+			Cursor result = db.rawQuery(query, args);
+			isPresent = result.moveToFirst();
+			result.close();
+			return isPresent;
+		} else if(o instanceof Prescription) {
+			return false;
+		} else
+			return false;
+	}
+	
 	public static Cursor prescriptionJoinQuery(String[] projection) {
 		Log.d(LOG_TAG,"prescriptionJoinQuery(before)");
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();

@@ -26,8 +26,7 @@
 		<TextView android:layout_toRightOf="@id/wizard_schedule_review_when_label"
 			android:layout_height="wrap_content" android:layout_width="wrap_content"
 			android:text="TextView" android:layout_alignTop="@id/wizard_schedule_review_when_label"
-			android:layout_alignBottom="@id/wizard_schedule_review_when_label"
-			android:textSize="25sp" android:id="@+id/wizard_schedule_review_when"></TextView>
+			android:textSize="25sp" android:id="@+id/wizard_schedule_review_when" android:inputType="text|textMultiLine"></TextView>
 		<TextView android:layout_toRightOf="@id/wizard_schedule_review_what_label"
 			android:layout_height="wrap_content" android:layout_width="wrap_content"
 			android:text="TextView" android:layout_alignTop="@id/wizard_schedule_review_what_label"

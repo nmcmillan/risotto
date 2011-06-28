@@ -20,7 +20,6 @@ import com.risotto.view.patient.PatientAdd;
 
 public class PatientSelect extends ListActivity implements View.OnClickListener {
 	public static final String LOG_TAG = "com.risotto.view.wizard.PatientSelect";
-	
 	private HashMap<String,Object> wizardData = new HashMap<String,Object>();
 	
 	private static String[] PATIENT_PROJECTION = {
@@ -79,25 +78,13 @@ public class PatientSelect extends ListActivity implements View.OnClickListener 
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent();
 		
-		Uri patientUri = StorageProvider.PatientColumns.CONTENT_URI.buildUpon().appendPath(String.valueOf(id)).build();
+		//get the cursor that the user clicked on and create patient object
+		Cursor pat = (Cursor)getListView().getItemAtPosition(position);
+		Patient patient = Patient.fromCursor(pat);
+		wizardData.put(WizardData.PATIENT, patient);
+		intent.putExtra(WizardData.CONTENTS,wizardData);
 		
-		Cursor pCursor = getContentResolver().query(
-				patientUri, 
-				PATIENT_PROJECTION, 
-				null, 
-				null, 
-				null);
-		
-		if(null != pCursor) {
-			pCursor.moveToFirst();
-			Patient patient = Patient.fromCursor(pCursor);
-			wizardData.put(WizardData.PATIENT, patient);
-			intent.putExtra(WizardData.CONTENTS,wizardData);
-		}
-		else {
-			Log.d(LOG_TAG,"Couldn't find patient in database.");
-		}
-		pCursor.close();
+		Log.d(LOG_TAG,"First name: " + patient.getFirstName());
 		
 		if((Boolean)wizardData.get(WizardData.CREATE_NEW_DRUG))
 			intent.setClass(getApplicationContext(), OverCounterOrPrescription.class);
@@ -108,13 +95,10 @@ public class PatientSelect extends ListActivity implements View.OnClickListener 
 	}
 
 	public void onClick(View v) {
-		//only one button in this class, so no need to check view id
-		
 		Intent intent = new Intent();
 		intent.putExtra(WizardData.CONTENTS, wizardData);
 		intent.setClass(getApplicationContext(), PatientAdd.class);
 		startActivity(intent);
-		
 	}
 		  
 }

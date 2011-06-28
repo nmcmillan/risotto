@@ -96,13 +96,20 @@ public class PatientAdd extends Activity implements OnClickListener {
 				
 				startActivity(intent);
 			} else {
-				ContentValues cv = patient.toContentValues();
-				this.getContentResolver().insert(StorageProvider.PatientColumns.CONTENT_URI, cv);
+				if(!StorageProvider.isInDatabase(patient)) {
+					ContentValues cv = patient.toContentValues();
+					this.getContentResolver().insert(StorageProvider.PatientColumns.CONTENT_URI, cv);
+				} else {
+					new AlertDialog.Builder(this)
+				    .setTitle("Patient already in database")
+				    .setMessage("Oops - that patient already exists, please enter a new patient!")
+				    //don't do anything when the button is clicked
+				    .setPositiveButton("Okay", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) {} })
+				    .show();
+				}
 			}
 			
 		}
-		finish();
-
 	}
 
 }
