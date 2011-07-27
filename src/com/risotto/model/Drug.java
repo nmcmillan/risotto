@@ -56,11 +56,17 @@ public class Drug implements Serializable{
 
 	// The many forms which the drug can be.
 	public enum FORM {
-		CAPSULES, TABLETS, POWDERS, DROPS, LIQUIDS, SPRAY, SKIN, SUPPOSITORIES, NONE, OTHER, DEFAULT
+		CAPSULES, TABLETS, POWDERS, DROPS, LIQUIDS, SPRAY, SKIN, SUPPOSITORIES, NONE, OTHER, DEFAULT;
+	
+		public String toString() {
+			String form = super.toString();
+			form = form.toLowerCase();
+			return (form.substring(0, 1).toUpperCase() + form.substring(1));
+		}
 	}
 
 	//For UI
-	public static final String Capsules = "Capsules";
+	/*public static final String Capsules = "Capsules";
 	public static final String Tablets = "Tablets";
 	public static final String Powders = "Capsules";
 	public static final String Drops = "Drops";
@@ -69,7 +75,7 @@ public class Drug implements Serializable{
 	public static final String Skin = "Skin";
 	public static final String Suppositories = "Suppositories";
 	public static final String None = "None";
-	public static final String Other = "Other";
+	public static final String Other = "Other";*/
 
 	// Possible sizes of solid drugs.
 	public enum SIZE {

@@ -20,7 +20,6 @@ import com.risotto.view.drug.DrugAdd;
 
 public class DrugSelect extends ListActivity implements View.OnClickListener {
 	public static final String LOG_TAG = "com.risotto.view.wizard.DrugSelect";
-	
 	private HashMap<String,Object> wizardData = new HashMap<String,Object>();
 	
 	private static String[] DRUG_PROJECTION = {

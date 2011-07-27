@@ -135,9 +135,9 @@ public class DrugAdd extends Activity implements View.OnClickListener, AdapterVi
 	}
 
 	public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
-		// TODO Auto-generated method stub
 		Log.d(LOG_TAG,"item selected: " + parent.getItemAtPosition(position));
 		String form = (String)parent.getItemAtPosition(position);
+		Log.d(LOG_TAG, Drug.FORM.CAPSULES.toString());
 		
 		if(form.equalsIgnoreCase(Drug.FORM.CAPSULES.toString()))
 			dForm = Drug.FORM.CAPSULES;
@@ -158,7 +158,7 @@ public class DrugAdd extends Activity implements View.OnClickListener, AdapterVi
 		else if(form.equalsIgnoreCase(Drug.FORM.OTHER.toString()))
 			dForm = Drug.FORM.OTHER;
 		else
-			throw new IllegalArgumentException("Unknown drug form given.");
+			throw new IllegalArgumentException("Unknown drug form given.: " + form);
 		
 		Log.d(LOG_TAG, "form: " + dForm.toString());
 		

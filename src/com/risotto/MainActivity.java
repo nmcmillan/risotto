@@ -9,11 +9,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.risotto.storage.StorageTester;
 import com.risotto.view.drug.DrugView;
 import com.risotto.view.patient.PatientView;
 import com.risotto.view.prescription.PrescriptionView;
-import com.risotto.view.wizard.WhenTakeIt;
 import com.risotto.view.wizard.WhoWillBeTaking;
 
 public class MainActivity extends Activity implements OnClickListener {

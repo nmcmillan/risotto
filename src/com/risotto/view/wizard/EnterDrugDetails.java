@@ -112,6 +112,7 @@ public class EnterDrugDetails extends Activity implements OnClickListener,OnItem
 	public void onClick(View v) {
 		Log.d(LOG_TAG,"in onclick");
 		
+		//check if dose size is empty, if it is, propmt user that it can't be left empty
 		if(sizeOneDose.getText().toString().trim().equals("")) {
 			new AlertDialog.Builder(this)
 		    .setTitle("Dose size empty!")
@@ -120,6 +121,9 @@ public class EnterDrugDetails extends Activity implements OnClickListener,OnItem
 		    .setPositiveButton("Okay", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) {} })
 		    .show();
 		} else if (totalQuantity.getText().toString().trim().equals("") && drug.getType().equals(Drug.TYPE.PRESCRIPTION)){
+			//check if total quantity is empty, if it is, prompt user that it can't be left empty
+			//this should probably be taken out, we shouldn't force end date for prescription drugs
+			//for example, i have  prescription pain med that i take when needed
 			new AlertDialog.Builder(this)
 		    .setTitle("Total quantity empty!")
 		    .setMessage("Oops - the total quantity of the drug can't be empty!")
@@ -129,35 +133,46 @@ public class EnterDrugDetails extends Activity implements OnClickListener,OnItem
 		} else {
 			int size = -1;
 			int total = -1;
+			//if it's OTC and empty for total quantity, warn user that we won't know when to stop the reminders
+			//show two buttons, continue & edit
 			if (totalQuantity.getText().toString().trim().equals("") && drug.getType().equals(Drug.TYPE.OVER_THE_COUNTER)){
 				new AlertDialog.Builder(this)
 			    .setTitle("Cancel Reminder")
 			    .setMessage("Since you haven't entered a total quanity, we won't know when to stop the reminders, so you'll have to cancel them manually.")
-			    //don't do anything when the button is clicked
-			    .setPositiveButton("Okay", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) {} })
+			    .setPositiveButton("Continue.", new DialogInterface.OnClickListener() {
+					
+					public void onClick(DialogInterface dialog, int which) {
+						int total = 0;
+						int size = Integer.parseInt(sizeOneDose.getText().toString().trim());
+						
+						prep = new Prescription(patient,drug,Prescription.DOSE_TYPE_OTHER,size,total);
+						wizardData.put(WizardData.PRESCRIPTION, prep);
+						
+						Intent intent = new Intent();
+						intent.putExtra(WizardData.CONTENTS, wizardData);
+						intent.setClass(getApplicationContext(), WhenTakeIt.class);
+						startActivity(intent);
+						
+					}
+				})
+				.setNegativeButton("Edit.",null)
 			    .show();
-				total = 0;
+				
 			} else {
 				total = Integer.parseInt(totalQuantity.getText().toString().trim());
-			}
-			
-			size = Integer.parseInt(sizeOneDose.getText().toString().trim());
-			
-			prep = new Prescription(patient,drug,Prescription.DOSE_TYPE_OTHER,size,total);
-			wizardData.put(WizardData.PRESCRIPTION, prep);
-			
-			Intent intent = new Intent();
-			intent.putExtra(WizardData.CONTENTS, wizardData);
-			intent.setClass(getApplicationContext(), WhenTakeIt.class);
-			startActivity(intent);
-		}
-		
+				size = Integer.parseInt(sizeOneDose.getText().toString().trim());
 				
+				prep = new Prescription(patient,drug,Prescription.DOSE_TYPE_OTHER,size,total);
+				wizardData.put(WizardData.PRESCRIPTION, prep);
+				
+				Intent intent = new Intent();
+				intent.putExtra(WizardData.CONTENTS, wizardData);
+				intent.setClass(getApplicationContext(), WhenTakeIt.class);
+				startActivity(intent);
+			}
+		}		
 	}
 
-	public void onNothingSelected(AdapterView<?> arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onNothingSelected(AdapterView<?> arg0) {}
 	
 }

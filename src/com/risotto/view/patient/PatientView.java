@@ -66,7 +66,7 @@ public class PatientView extends ListActivity implements SimpleCursorAdapter.Vie
 		  if(null != cursor) {
 			  startManagingCursor(cursor);
 			  
-			  Log.d(LOG_TAG,"count: " + cursor.getCount());
+		  Log.d(LOG_TAG,"count: " + cursor.getCount());
 		  Log.d(LOG_TAG,"cursor column count: " + cursor.getColumnCount());
 		  
 		  //note: the cursor originally points to a null row, needs to move before trying to print data
