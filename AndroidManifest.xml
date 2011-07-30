@@ -68,30 +68,33 @@
 			<!-- Take at Spec Times: Take it every day? -->
 			<activity android:name="com.risotto.view.wizard.TakeItEveryDay"
 				android:theme="@android:style/Theme.NoTitleBar" />
-				
+
 			<!-- Yes: Schedule for every day -->
 			<activity android:name="com.risotto.view.wizard.HowOftenSchedule"
 				android:theme="@android:style/Theme.NoTitleBar" />
-				
+
 			<!-- Select Specific Days -->
 			<activity android:name="com.risotto.view.wizard.WhatDaysTake"
 				android:theme="@android:style/Theme.NoTitleBar" />
-				
+
 			<!-- Schedule Review -->
 			<activity android:name="com.risotto.view.wizard.ScheduleReview"
 				android:theme="@android:style/Theme.NoTitleBar" />
-				
+
 			<!-- Prescription Add Activity -->
 			<activity android:name="com.risotto.view.prescription.PrescriptionAdd"
 				android:label="@string/prescription_add_title" />
-	
+
 			<!-- Patient View Activity -->
 			<activity android:name="com.risotto.view.patient.PatientView" />
-	
+
 			<!-- Dialog Activity -->
 			<activity android:name="com.risotto.DialogActivity"
 				android:theme="@android:style/Theme.Dialog"
 				android:excludeFromRecents="true" />
+		
+		<!-- Test Wizard Activity -->
+		<activity android:name="com.risotto.view.wizard.TestActivity" android:theme="@android:style/Theme.NoTitleBar"/>	
 
 		<!-- Receiver Node -->
 		<receiver android:name="com.risotto.service.MainServiceManager">

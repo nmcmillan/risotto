@@ -13,6 +13,7 @@ import com.risotto.storage.StorageTester;
 import com.risotto.view.drug.DrugView;
 import com.risotto.view.patient.PatientView;
 import com.risotto.view.prescription.PrescriptionView;
+import com.risotto.view.wizard.TestActivity;
 import com.risotto.view.wizard.WhenTakeIt;
 import com.risotto.view.wizard.WhoWillBeTaking;
 
@@ -111,7 +112,8 @@ public class MainActivity extends Activity implements OnClickListener {
 			case R.id.button_main_schedule:
 				Log.d(LOG_TAG,"launching wizard");
 				intent.setAction(MainActivity.ACTION_LAUNCH_FROM_HOME_SCHEDULE);
-				intent.setClass(getApplicationContext(), WhoWillBeTaking.class);
+				//intent.setClass(getApplicationContext(), WhoWillBeTaking.class);
+				intent.setClass(getApplicationContext(), TestActivity.class);
 				startActivity(intent);
 				break;
 			default:
