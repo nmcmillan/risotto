@@ -1,33 +1,34 @@
 package com.risotto.view.patient;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.SimpleCursorAdapter;
 
 import com.risotto.R;
 import com.risotto.model.Patient;
-import com.risotto.service.MainService;
+import com.risotto.model.Prescription;
 import com.risotto.storage.StorageProvider;
-import com.risotto.view.drug.DrugDetailsView;
-import com.risotto.view.drug.DrugView;
 
 public class PatientView extends ListActivity implements SimpleCursorAdapter.ViewBinder {
 
 	public static final String LOG_TAG = "com.risotto.view.drug.PatientView";
 	public static final int MENU_ITEM_ADD_POSITION = Menu.FIRST;
 	
-	private static String[] PROJECTION = {
+	private static String[] PATIENT_PROJECTION = {
 		StorageProvider.PatientColumns._ID,
 		StorageProvider.PatientColumns.PATIENT_FIRST_NAME,
 		StorageProvider.PatientColumns.PATIENT_LAST_NAME,
@@ -61,7 +62,7 @@ public class PatientView extends ListActivity implements SimpleCursorAdapter.Vie
 		
 		  getListView().setOnCreateContextMenuListener(this);
 		  
-		  Cursor cursor = this.getContentResolver().query(getIntent().getData(), PROJECTION, null, null, null);
+		  Cursor cursor = this.getContentResolver().query(getIntent().getData(), PATIENT_PROJECTION, null, null, null);
 		  
 		  if(null != cursor) {
 			  startManagingCursor(cursor);
@@ -166,14 +167,42 @@ public class PatientView extends ListActivity implements SimpleCursorAdapter.Vie
 				Cursor pCursor = (Cursor)this.getListView().getItemAtPosition((int)info.position);
 				
 				int _id = pCursor.getInt(pCursor.getColumnIndex(StorageProvider.PatientColumns._ID));
+				String fName = pCursor.getString(pCursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_FIRST_NAME));
 				
 				Uri patientUri = StorageProvider.PatientColumns.CONTENT_URI.buildUpon().appendPath(String.valueOf(_id)).build();
-				if(getContentResolver().delete(patientUri,null,null) > 0) {
-					Log.d(LOG_TAG,"delete success.");
-					return true;
-				} else {
-					Log.d(LOG_TAG,"delete fail.");
-					return false;
+				
+				Log.d(LOG_TAG,"attempting to remove patient with db id of : " + _id);
+				
+				try{
+					if(getContentResolver().delete(patientUri,null,null) > 0) {
+						Log.d(LOG_TAG,"delete success.");
+						return true;
+					} else {
+						Log.d(LOG_TAG,"delete fail.");
+						return false;
+					}
+				} catch(SQLiteConstraintException foreignKey){
+					//if this exception was thrown, that means this patient is scheduled for a prescription, get that information
+					Log.d(LOG_TAG,"Attempting to delete patient who has assoicated prescription - caught exception.");
+					Cursor prepCursor = getContentResolver().query(StorageProvider.PrescriptionColumns.CONTENT_URI, 
+							Prescription.DEFAULT_PRESCRIPTION_PROJECTION, 
+							"patient=?", 
+							new String[] {String.valueOf(_id)}, 
+							null);
+					if(prepCursor.moveToFirst()){
+						Prescription p = Prescription.fromCursor(prepCursor, getApplicationContext());
+						new AlertDialog.Builder(this)
+					    .setTitle("Scheduled prescription found for " + fName)
+					    .setMessage(fName + " is scheduled to take " + p.getDrug().getBrandName() 
+					    		+ ".  Please delete the scheduled prescription before deleting the user.")
+					    //TODO: need to provide option to delete both from here
+					    //don't do anything when the button is clicked
+					    .setPositiveButton("Okay", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) {} })
+					    .show();
+					}else {
+						Log.d(LOG_TAG,"Foreign key exception thrown, but no record found in prescription table for patient.");
+						//TODO: what to do if this case encountered
+					}
 				}
 			default:
 				return super.onContextItemSelected(item);

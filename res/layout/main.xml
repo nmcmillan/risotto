@@ -35,7 +35,7 @@
 				android:text="Schedule" android:id="@+id/button_main_schedule"></Button>
 			<Button android:layout_height="wrap_content"
 				android:layout_width="fill_parent" android:layout_weight="1"
-				android:text="History" android:layout_gravity="center_vertical"
+				android:text="Prescriptions" android:layout_gravity="center_vertical"
 				android:background="@null" android:textColor="#FFFFFF"
 				android:drawableTop="@drawable/red_pill_and_tablet" android:id="@+id/button_main_history"></Button>
 		</LinearLayout>

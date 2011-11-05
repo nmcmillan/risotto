@@ -72,6 +72,14 @@ public class Prescription implements Serializable {
 
 	// DEBUG: LOG_TAG
 	private static final String LOG_TAG = "RISOTTO_PRESCRIPTION";
+	
+	//default prescription projection to be used with fromCursor
+	public static final String[] DEFAULT_PRESCRIPTION_PROJECTION = {
+		StorageProvider.PrescriptionColumns._ID,
+		StorageProvider.PrescriptionColumns.PRESCRIPTION_DRUG,
+		StorageProvider.PrescriptionColumns.PRESCRIPTION_PATIENT,
+		StorageProvider.PrescriptionColumns.PRESCRIPTION_DOSE_TYPE,
+	};
 
 	/*
 	 * A class to store scheduled day information including the integer 
@@ -984,11 +992,11 @@ public class Prescription implements Serializable {
 	 * This function will take a cursor and parse the information found within returning 
 	 * a Prescription object. If you are using this function you must have the following 
 	 * columns in your cursor query projection:
-	 * 
-	 * PrescriptionColumns._ID
-	 * PrescriptionColumns.PRESCRIPTION_PATIENT
-	 * PrescriptionColumns.PRESCRIPTION_DRUG
-	 * PrescriptionColumns.PRESCRIPTION_DOSE_TYPE
+	 * <br><br>
+	 * <li>PrescriptionColumns._ID <br>
+	 * <li>PrescriptionColumns.PRESCRIPTION_PATIENT <br>
+	 * <li>PrescriptionColumns.PRESCRIPTION_DRUG <br>
+	 * <li>PrescriptionColumns.PRESCRIPTION_DOSE_TYPE <br>
 	 * 
 	 * @param cursor the cursor to process
 	 * @param context the application context (needed for ContentResolver queries)

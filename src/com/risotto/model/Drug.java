@@ -207,11 +207,21 @@ public class Drug implements Serializable{
 		this._id = _id;
 	}
 	
-	/*
-	 * Some helper functions for the view.
+	/**
+	 * Returns a string with a display friendly version of the drug strength.  Will return an empty string if both fields are 
+	 * empty or if the strength field is empty
+	 * 
+	 * @return string formatted for pritning on screen
 	 */
 	public String getPrintableStrength() {
-		return "" + this.getStrength() + "" + this.getStrengthLabel();
+		int stren = this.getStrength();
+		String label = this.getStrengthLabel();
+		if(label.equalsIgnoreCase("null"))
+			label = "";
+		if(stren == -1)
+			return "";
+		else 
+			return "" + stren + "" + label;
 	}
 	
 	public int storeDrug(Context context) {
@@ -351,7 +361,7 @@ public class Drug implements Serializable{
 			
 			// Get the form
 			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_FORM))) {
-				newDrug.setForm(FORM.valueOf(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_FORM))));
+				newDrug.setForm(FORM.valueOf(cursor.getString(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_FORM)).toUpperCase()));
 			}
 			
 			// Get the color

@@ -36,9 +36,12 @@ public class PrescriptionView extends ListActivity implements SimpleCursorAdapte
 	
 	private static final String[] PRESCRIPTION_PROJECTION = {
 		//Prescription columns
+		//has a dot b/c it's used in prescriptionJoinQuery, which will put these fields directly into
+		//the SQL query
 		StorageProvider.PRESCRIPTIONS_TABLE_NAME + "." + StorageProvider.PrescriptionColumns._ID,
 		StorageProvider.PrescriptionColumns.PRESCRIPTION_PATIENT,
 		StorageProvider.PrescriptionColumns.PRESCRIPTION_DATE_EXPIRATION,
+		StorageProvider.PrescriptionColumns.PRESCRIPTION_SCHEDULED,
 		
 		//Patient columns
 		//StorageProvider.PatientColumns._ID,

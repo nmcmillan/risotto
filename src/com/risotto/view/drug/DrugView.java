@@ -1,28 +1,30 @@
 package com.risotto.view.drug;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.ContentResolver;
-import android.content.ContentUris;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.risotto.R;
-import com.risotto.controller.StatusBarNotificationManager;
 import com.risotto.model.Drug;
+import com.risotto.model.Prescription;
 import com.risotto.service.MainService;
 import com.risotto.storage.StorageProvider;
 
@@ -223,8 +225,10 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 		if (columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_BRAND_NAME)) {
 			((TextView)view).setText(newDrug.getBrandName());
 		} else if (columnIndex == cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_STRENGTH)) {
-			((TextView)view).setText(newDrug.getPrintableStrength());
-			((TextView)view).setTypeface(Typeface.create("null", Typeface.ITALIC));
+			if(!newDrug.getPrintableStrength().equals("")){
+				((TextView)view).setText(newDrug.getPrintableStrength());
+				((TextView)view).setTypeface(Typeface.create("null", Typeface.ITALIC));
+			}
 		} else {
 			return false;
 		}		
@@ -272,12 +276,37 @@ public class DrugView extends ListActivity implements SimpleCursorAdapter.ViewBi
 				int _id = dCursor.getInt(dCursor.getColumnIndex(StorageProvider.DrugColumns._ID));
 				
 				Uri drugUri = StorageProvider.DrugColumns.CONTENT_URI.buildUpon().appendPath(String.valueOf(_id)).build();
-				if(getContentResolver().delete(drugUri,null,null) > 0) {
-					Log.d(LOG_TAG,"delete success.");
-					return true;
-				} else {
-					Log.d(LOG_TAG,"delete fail.");
-					return false;
+				
+				try{
+					if(getContentResolver().delete(drugUri,null,null) > 0) {
+						Log.d(LOG_TAG,"delete success.");
+						return true;
+					} else {
+						Log.d(LOG_TAG,"delete fail.");
+						return false;
+					}
+				} catch(SQLiteConstraintException foreignKey){
+					//if this exception was thrown, that means this drug is scheduled for a prescription, get that information
+					Log.d(LOG_TAG,"Attempting to delete patient who has assoicated prescription - caught exception.");
+					Cursor prepCursor = getContentResolver().query(StorageProvider.PrescriptionColumns.CONTENT_URI, 
+							Prescription.DEFAULT_PRESCRIPTION_PROJECTION, 
+							"drug=?", 
+							new String[] {String.valueOf(_id)}, 
+							null);
+					if(prepCursor.moveToFirst()){
+						Prescription p = Prescription.fromCursor(prepCursor, getApplicationContext());
+						new AlertDialog.Builder(this)
+					    .setTitle("Scheduled prescription found for " + p.getDrug().getBrandName())
+					    .setMessage(p.getPatient().getFirstName() + " is scheduled to take " + p.getDrug().getBrandName() 
+					    		+ ".  Please delete the scheduled prescription before deleting the user.")
+					    //TODO: need to provide option to delete both from here
+					    //don't do anything when the button is clicked
+					    .setPositiveButton("Okay", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) {} })
+					    .show();
+					}else {
+						Log.d(LOG_TAG,"Foreign key exception thrown, but no record found in prescription table for patient.");
+						//TODO: what to do if this case encountered
+					}
 				}
 			default:
 				return super.onContextItemSelected(item);
