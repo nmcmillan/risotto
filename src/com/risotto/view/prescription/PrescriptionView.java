@@ -18,10 +18,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.risotto.R;
-import com.risotto.model.Drug;
 import com.risotto.storage.StorageProvider;
-import com.risotto.view.drug.DrugView;
-import com.risotto.view.wizard.WhenTakeIt;
+import com.risotto.view.wizard.WhoWillBeTaking;
 
 public class PrescriptionView extends ListActivity implements SimpleCursorAdapter.ViewBinder {
 	
@@ -73,14 +71,11 @@ public class PrescriptionView extends ListActivity implements SimpleCursorAdapte
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
 	    case R.id.prescription_menu_add_prep:
-	    	//send intent to add prescription
+	    	//send intent to schedule prescription
 	    	Intent newPrepIntent = new Intent();
-	    	//change to wizard
-			//newPrepIntent.setAction(PrescriptionView.ACTION_ADD_PRESCRIPTION);
-			//newPrepIntent.setClass(getApplicationContext(), PrescriptionAdd.class);
 	    	
 	    	newPrepIntent.setAction(PrescriptionView.ACTION_WIZARD_START);
-	    	newPrepIntent.setClass(getApplicationContext(), WhenTakeIt.class);
+	    	newPrepIntent.setClass(getApplicationContext(), WhoWillBeTaking.class);
 			startActivity(newPrepIntent);
 	        return true;
 	    default:
@@ -179,11 +174,14 @@ public class PrescriptionView extends ListActivity implements SimpleCursorAdapte
 		Intent editIntent = new Intent();
 		editIntent.setAction(PrescriptionView.ACTION_VIEW_PRESCRIPTION_DETAILS);
 		editIntent.setClass(getApplicationContext(), PrescriptionDetailsView.class);
-		editIntent.putExtra(PrescriptionView.ACTION_VIEW_PRESCRIPTION_DETAILS, String.valueOf(id));
+		editIntent.putExtra(PrescriptionView.PRESCRIPTION_DETAILS_DB_ID, String.valueOf(id));
+		Log.d(LOG_TAG,"viewing details for prescription with id: " + id);
 		startActivity(editIntent);
 	}
 	
-
+	/**
+	 * Method for mapping column indices -> views
+	 */
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		if (columnIndex == cursor.getColumnIndex(StorageProvider.PatientColumns.PATIENT_FIRST_NAME)) {
 			((TextView)view).setText(cursor.getString(columnIndex));

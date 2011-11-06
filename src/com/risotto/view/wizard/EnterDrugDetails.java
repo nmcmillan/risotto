@@ -112,7 +112,13 @@ public class EnterDrugDetails extends Activity implements OnClickListener,OnItem
 	public void onClick(View v) {
 		Log.d(LOG_TAG,"in onclick");
 		
-		//check if dose size is empty, if it is, propmt user that it can't be left empty
+		boolean totalQuantityEmpty = false;
+		if(totalQuantity.getText().toString().trim().equals("")){
+			Log.d(LOG_TAG,"total quanity entered is empty.");
+			totalQuantityEmpty = true;
+		}
+		
+		//check if dose size is empty, if it is, prompt user that it can't be left empty
 		if(sizeOneDose.getText().toString().trim().equals("")) {
 			new AlertDialog.Builder(this)
 		    .setTitle("Dose size empty!")
@@ -120,7 +126,7 @@ public class EnterDrugDetails extends Activity implements OnClickListener,OnItem
 		    //don't do anything when the button is clicked
 		    .setPositiveButton("Okay", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) {} })
 		    .show();
-		} else if (totalQuantity.getText().toString().trim().equals("") && drug.getType().equals(Drug.TYPE.PRESCRIPTION)){
+		} else if (totalQuantityEmpty && drug.getType().equals(Drug.TYPE.PRESCRIPTION)){
 			//check if total quantity is empty, if it is, prompt user that it can't be left empty
 			//this should probably be taken out, we shouldn't force end date for prescription drugs
 			//for example, i have  prescription pain med that i take when needed
@@ -134,8 +140,9 @@ public class EnterDrugDetails extends Activity implements OnClickListener,OnItem
 			int size = -1;
 			int total = -1;
 			//if it's OTC and empty for total quantity, warn user that we won't know when to stop the reminders
-			//show two buttons, continue & edit
-			if (totalQuantity.getText().toString().trim().equals("") && drug.getType().equals(Drug.TYPE.OVER_THE_COUNTER)){
+			//show two buttons, continue & edit 
+			//11/06 edit: no longer checking type of drug, b/c both OTC & default will do the same action, remind user they need to cancel manually
+			if (totalQuantityEmpty){
 				new AlertDialog.Builder(this)
 			    .setTitle("Cancel Reminder")
 			    .setMessage("Since you haven't entered a total quanity, we won't know when to stop the reminders, so you'll have to cancel them manually.")

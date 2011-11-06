@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:text="@string/drug_details_title"
-  android:id="@+id/prescription_details_view_title"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent">
-  
-  <TextView
-  	android:id="@+id/prescription_details_view_patient_first_name"
-  	android:layout_width="fill_parent"
-  	android:layout_height="wrap_content" />
-  	
-  <TextView
-  	android:id="@+id/prescription_details_view_patient_last_name"
-  	android:layout_width="fill_parent"
-  	android:layout_height="wrap_content" 
-  	android:layout_below="@id/prescription_details_view_patient_first_name"/>
-  	
-  <TextView
-  	android:id="@+id/prescription_details_view_drug"
-  	android:layout_width="fill_parent"
-  	android:layout_height="fill_parent"
-  	android:layout_below="@id/prescription_details_view_patient_last_name" />
-  	
-  
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:text="@string/drug_details_title" android:id="@+id/prescription_details_view_title"
+	android:layout_width="fill_parent" android:layout_height="fill_parent">
+
+	<TextView android:id="@+id/prescription_details_view_patient_first_name"
+		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+
+	<TextView android:id="@+id/prescription_details_view_patient_last_name"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:layout_below="@id/prescription_details_view_patient_first_name" />
+
+	<TextView android:id="@+id/prescription_details_view_drug_name"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:layout_below="@id/prescription_details_view_patient_last_name" />
+
+	<TextView android:id="@+id/prescription_details_view_time_one"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:layout_below="@id/prescription_details_view_drug_name" />
+
+	<TextView android:id="@+id/prescription_details_view_time_two"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:layout_below="@id/prescription_details_view_time_one" />
+
 </RelativeLayout>

@@ -74,6 +74,12 @@ public class MainService extends Service {
 		return Service.START_STICKY;
 	}
 	
+	/**
+	 * 
+	 * 
+	 * 
+	 * @param prescriptionId id of prescription that needs to be scheduled
+	 */
 	private void scheduleNewPrescription(int prescriptionId) {
 		Log.d(LOG_TAG, "Scheduling a new prescription in the schedule table...");
 		Log.d(LOG_TAG, "Scheduling prescription id: " + prescriptionId);
@@ -328,6 +334,7 @@ public class MainService extends Service {
 		
 		// Get all of the prescriptions that are scheduled
 		Cursor prescriptionCursor = this.getApplicationContext().getContentResolver().query(StorageProvider.PrescriptionColumns.CONTENT_URI, prescriptionProjection, prescriptionWhereClause, null, null);
+		Log.d(LOG_TAG, "Number of prescriptions to schedule: " + prescriptionCursor.getCount());
 		
 		if ( prescriptionCursor == null || !prescriptionCursor.moveToFirst()) {
 			// There are no prescriptions to schedule, we are done here.
@@ -397,7 +404,9 @@ public class MainService extends Service {
 		Uri scheduleUri = ContentUris.withAppendedId(StorageProvider.ScheduleColumns.CONTENT_URI, scheduleId);
 		String[] scheduleProjection = { StorageProvider.ScheduleColumns._ID, StorageProvider.ScheduleColumns.SCHEDULES_PRESCRIPTION };
 		Cursor scheduleCursor = this.getApplicationContext().getContentResolver().query(scheduleUri, scheduleProjection, null, null, null);
-		scheduleCursor.moveToFirst();
+		
+		if(!scheduleCursor.moveToFirst())
+			Log.d(LOG_TAG,"Schedule cursor is empty.");
 		
 		// Get the prescription associated with this alarm
 		Uri prescriptionUri = ContentUris.withAppendedId(StorageProvider.PrescriptionColumns.CONTENT_URI, scheduleCursor.getInt(scheduleCursor.getColumnIndex(StorageProvider.ScheduleColumns.SCHEDULES_PRESCRIPTION)));

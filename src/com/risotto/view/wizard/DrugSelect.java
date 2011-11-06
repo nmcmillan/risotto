@@ -87,7 +87,7 @@ public class DrugSelect extends ListActivity implements View.OnClickListener {
 	
 	
 	/**
-	 * When user selects a patient from the list, it needs to be added to the intent.
+	 * When user selects a drug from the list, it needs to be added to the the {@link com.risotto.view.wizard.WizardData} object.
 	 */
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -119,7 +119,7 @@ public class DrugSelect extends ListActivity implements View.OnClickListener {
 
 	public void onClick(View v) {
 		//only one button in this class, so no need to check view id
-		
+		//sends user to the DrugAdd class b/c they want to add a new drug		
 		Intent intent = new Intent();
 		intent.putExtra(WizardData.CONTENTS, wizardData);
 		intent.setClass(getApplicationContext(), DrugAdd.class);

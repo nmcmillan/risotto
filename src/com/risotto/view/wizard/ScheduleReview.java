@@ -6,7 +6,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +18,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.risotto.MainActivity;
 import com.risotto.R;
 import com.risotto.model.Drug;
 import com.risotto.model.Patient;
@@ -110,13 +114,14 @@ public class ScheduleReview extends Activity implements OnClickListener {
     }
 
 	public void onClick(View v) {
-		ContentValues drugCV = drug.toContentValues();
+		//don't need these since they get added when we make the prep object a content value
+/*		ContentValues drugCV = drug.toContentValues();
 		Uri newDrugUri = this.getContentResolver().insert(StorageProvider.DrugColumns.CONTENT_URI, drugCV);
 		Log.d(LOG_TAG,"finished adding drug; uri = " + newDrugUri);
 		
 		ContentValues patientCV = patient.toContentValues();
 		Uri newPatientUri = this.getContentResolver().insert(StorageProvider.PatientColumns.CONTENT_URI, patientCV);
-		Log.d(LOG_TAG,"finished adding drug; uri = " + newPatientUri);
+		Log.d(LOG_TAG,"finished adding drug; uri = " + newPatientUri);*/
 		
 		Iterator<Calendar> it = times.iterator();
 		
@@ -134,9 +139,22 @@ public class ScheduleReview extends Activity implements OnClickListener {
 		
 		ContentValues prescriptionCV = prep.toContentValues(getApplicationContext());
 		Uri newPrepUri = this.getContentResolver().insert(StorageProvider.PrescriptionColumns.CONTENT_URI, prescriptionCV);
-		Log.d(LOG_TAG,"finished adding drug; uri = " + newPrepUri);
+		Log.d(LOG_TAG,"finished adding prescription; uri = " + newPrepUri);
 		
-		finish();
+		
+		
+		new AlertDialog.Builder(this)
+	    .setTitle("Success!")
+	    .setMessage("You've successfully scheduled " + drug.getBrandName() + ". If you would like to modify this schedule, tap on the schedules icon on the home screen! Be well!")
+	    .setPositiveButton("Okay", new DialogInterface.OnClickListener() { 
+	    	public void onClick(DialogInterface dialog, int which) {
+		    	Intent intent = new Intent();
+				intent.setClass(getApplicationContext(), MainActivity.class);
+				startActivity(intent);} 
+	    	})
+	    .show();
+		
+		
 	}
 
 }

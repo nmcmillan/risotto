@@ -1,7 +1,6 @@
 package com.risotto.view.wizard;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -44,17 +43,17 @@ public class WizardData {
 	 * 
 	 * @param extras Bundle object from intent 
 	 * @return the hashtable from the intent
-	 * @throws Exception if the hashtable wasn't found
+	 * @throws IllegalArgumentException if the intent doesn't have the data
 	 */
-	public static HashMap<String,Object> getData(Bundle extras) throws Exception {
-		if(extras.containsKey(WizardData.CONTENTS)) {
+	public static HashMap<String,Object> getData(Bundle extras) throws IllegalArgumentException {
+		if(extras != null && extras.containsKey(WizardData.CONTENTS)) {
 			 return (HashMap<String,Object>)extras.getSerializable((WizardData.CONTENTS));
 		}
 		else {
 			Log.d(LOG_TAG,"containsKey returned false");
-			Log.d(LOG_TAG,"extra empty: " + extras.isEmpty());
-			Log.d(LOG_TAG,"extra contents: " + extras.size());
-			throw new Exception("No data found.");
+			Log.d(LOG_TAG,"extra empty?: " + extras.isEmpty());
+			Log.d(LOG_TAG,"extra size: " + extras.size());
+			throw new IllegalArgumentException("No data found.");
 		}
 	}
 	

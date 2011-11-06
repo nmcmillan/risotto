@@ -83,7 +83,7 @@ public class DrugAdd extends Activity implements View.OnClickListener, AdapterVi
 					newPatient = (Patient)wizardData.get(WizardData.PATIENT);
 					Log.d(LOG_TAG, newPatient.getFirstName());
 			  }
-		  } catch (Exception e) {
+		  } catch (IllegalArgumentException ie) {
 			  Log.d(LOG_TAG,"No data found in intent.");
 		}
 		

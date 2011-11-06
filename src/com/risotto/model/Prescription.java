@@ -550,6 +550,13 @@ public class Prescription implements Serializable {
 		return scheduledDays.elements();	
 	}
 	
+	/**
+	 * Returns a list of times that this prescription is scheduled for on a given day.
+	 * 
+	 * @param dayOfWeek A Calendar.<DAY> value
+	 * @return list of times prescription is scheduled for on a given day
+	 * @throws NullPointerException if day has no scheduled times
+	 */
 	@SuppressWarnings("unchecked")
 	public Enumeration<String> getScheduledTimes(int dayOfWeek) throws NullPointerException {
 		
@@ -830,6 +837,13 @@ public class Prescription implements Serializable {
 		return returnVector;
 	}
 
+	/**
+	 * Create a content value object out of the prescription object.  If the drug and/or patient object associated with this
+	 * object are not yet stored in the database, this method will store them.
+	 * 
+	 * @param context application context
+	 * @return the ContentValues object for storing in db
+	 */
 	public ContentValues toContentValues(Context context) {
 		ContentValues cv = new ContentValues();
 
@@ -996,7 +1010,10 @@ public class Prescription implements Serializable {
 	 * <li>PrescriptionColumns._ID <br>
 	 * <li>PrescriptionColumns.PRESCRIPTION_PATIENT <br>
 	 * <li>PrescriptionColumns.PRESCRIPTION_DRUG <br>
-	 * <li>PrescriptionColumns.PRESCRIPTION_DOSE_TYPE <br>
+	 * <li>PrescriptionColumns.PRESCRIPTION_DOSE_TYPE <br><br>
+	 * 
+	 * Note: this function does not operate on the cursor's location in the search results, so when passed in
+	 * the cursor must be pointing to the correct row.
 	 * 
 	 * @param cursor the cursor to process
 	 * @param context the application context (needed for ContentResolver queries)

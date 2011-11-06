@@ -30,6 +30,16 @@ public class Schedule {
 	private int _id;
 	private static final int INVALID_ID = -1;
 	
+	
+	/**
+	 * Creates a new schedule object.
+	 * 
+	 * @param prescriptionId - db id of the prescription that is being scheduled
+	 * @param firstTime - the first time, as a long, that the drug must be taken
+	 * @param interval - the interval for a given drug
+	 * @param nextTime - the next time a drug should be taken
+	 * @param countRemain - how many more times the schedule should be activated
+	 */
 	public Schedule(int prescriptionId, long firstTime, int interval, long nextTime, int countRemain) {
 		this(INVALID_ID, prescriptionId, firstTime, interval, nextTime, countRemain);
 	}

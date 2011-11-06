@@ -309,12 +309,14 @@ public class Drug implements Serializable{
 		try {
 			// Create the drug object
 			Drug newDrug = null;
-			
+			int _id = -1;
 			/**
 			 * GET THE REQUIRED FIELDS.
 			 */
 			// Get the ID
-			int _id = cursor.getInt(cursor.getColumnIndex(StorageProvider.DrugColumns._ID));
+			if( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns._ID))){
+				_id = cursor.getInt(cursor.getColumnIndex(StorageProvider.DrugColumns._ID));
+			}
 			
 			// Get the Brand Name
 			String brandName = "NULL";
@@ -383,6 +385,8 @@ public class Drug implements Serializable{
 			if ( ! cursor.isNull(cursor.getColumnIndex(StorageProvider.DrugColumns.DRUG_INTERACTIONS))) {
 				// TODO Get all interactions.
 			}
+			
+			Log.d(LOG_TAG,"finished parsing cursor data into drug object.");
 			
 			// Return the new drug!
 			return newDrug;

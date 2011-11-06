@@ -34,7 +34,7 @@ public class DrugDetailsView extends Activity {
 	
 	private String drugName;
 	private String drugID;
-	private Drug editDrug;
+	private Drug drug;
 	private Uri drugUri;
 	
 	private static String[] PROJECTION = {
@@ -66,13 +66,13 @@ public class DrugDetailsView extends Activity {
 		
 		dCursor.moveToFirst();
 		
-		editDrug = Drug.fromCursor(dCursor);
+		drug = Drug.fromCursor(dCursor);
 	
 		TextView dNameView = (TextView) this.findViewById(R.id.drug_details_drug_name);
 		dNameView.setText(drugName);
 		
 		TextView dStrengthView = (TextView) this.findViewById(R.id.drug_details_drug_strength);
-		dStrengthView.setText(editDrug.getPrintableStrength());
+		dStrengthView.setText(drug.getPrintableStrength());
 		dStrengthView.setTypeface(Typeface.create("null", Typeface.ITALIC));
 		
 		dCursor.close();
@@ -88,12 +88,12 @@ public class DrugDetailsView extends Activity {
 		switch (item.getItemId()) {
 		case MENU_ITEM_REMOVE_POSITION:
 			//remove drug from database
-			Log.d(LOG_TAG, "You clicked remove drug: " + editDrug.getBrandName());
+			Log.d(LOG_TAG, "You clicked remove drug: " + drug.getBrandName());
 			getContentResolver().delete(drugUri, null, null);
 			finish();
 			return true;
 		case MENU_ITEM_EDIT_POSITION:
-			Log.d(MainService.LOG_TAG, "You clicked edit drug: " + editDrug.getBrandName());
+			Log.d(MainService.LOG_TAG, "You clicked edit drug: " + drug.getBrandName());
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
